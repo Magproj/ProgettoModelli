@@ -34,8 +34,9 @@
     $conta= mysql_num_rows($result);
     
     if($conta==1){
-    
-        echo "I dati del sensore cercato sono i seguenti: <br><br>";
+        $str = "I dati del sensore cercato sono i seguenti: <br><br>";
+        
+        echo $str;
             
         $id = mysql_result($result, 0, "id_sensore");
         echo 'Identificatore:  ' . $id . ' </br>';
