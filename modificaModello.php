@@ -22,6 +22,9 @@
       } else{
 	    header('Location:Login.html');
       }
+      
+    
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin'){
 
     //dati del form
     $modello=$_POST['modello'];
@@ -57,6 +60,10 @@
         echo $str;
     } else {
         echo 'Attenzione, si è verificato un errore: ' . mysql_error();
+    }
+    
+    }else{
+	trigger_error('Non è possibile accedere alle informazioni.' , E_USER_NOTICE);
     }
 
 ?>

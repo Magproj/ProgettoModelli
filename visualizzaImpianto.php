@@ -24,7 +24,7 @@
 	    header('Location:Login.html');
       }
     
-    
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin'){
     
     //dati del form
     $id=$_POST['identificatore'];
@@ -45,7 +45,7 @@
     }
     
     //comando SQL
-    $sql = sprintf("SELECT id, tipo, dimensione, stato, id_cliente FROM impianto WHERE Id='%s'", mysqli_real_escape_string($id));
+    $sql = sprintf("SELECT id, tipo, dimensione, stato, id_cliente FROM impianto WHERE Id='%s'", mysqli_real_escape_string($mysqli, $id));
     $result = $mysqli->query($sql);
     $conta= mysqli_num_rows($result);
     
@@ -80,6 +80,10 @@
     } else {
         $str = '<br>L\'impianto non e\' stato trovato.';
         echo $str;
+    }
+    
+    }else{
+	trigger_error('Non è possibile accedere alle informazioni.' , E_USER_NOTICE);
     }
 
 ?>
