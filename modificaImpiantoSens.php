@@ -41,7 +41,8 @@
     
     if($result===true){
         echo 'Dati modificati correttamente<br />';
-        echo 'Torna alla <a href=\"modificaSensore.html\">modifica</a>';
+	$str = 'Torna alla <a href=\"modificaSensore.html\">modifica</a>'
+        echo $str;
     } else {
        trigger_error('Attenzione, si è verificato un errore: ' . mysql_error(), E_USER_NOTICE);
     }

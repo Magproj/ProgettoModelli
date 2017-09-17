@@ -22,17 +22,20 @@
     $idsensore=$_POST['idsensore'];
     
     
-    //database
-    define('DB_HOST', '127.0.0.1');
-    define('DB_USERNAME', 'root');
-    define('DB_PASSWORD', '');
-    define('DB_NAME', 'progetto');
-    
-    //get connection
-    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
-
-    if($mysqli->connect_errno){
-    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
+    //acquisizione dati dal form HTML
+    $codice = $_POST['codice'];
+    $modinvio = $_POST['modinvio'];
+    $tipo = $_POST['tipo'];
+    $tempo = $_POST['tempo'];
+    $info = $_POST['info'];
+    $partitaiva = $_POST['partiva'];
+	
+    $idimpianto = $_POST['idimpianto'];
+    $idsensore = $_POST['idsensore'];
+	
+    //controlli per l'input
+    if($partitaiva===null || $partitaiva<=0){
+    	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
     if(isset($_POST['stato'])) { 
@@ -41,7 +44,7 @@
     }
     
     //comando SQL
-    $sql = sprintf("INSERT INTO adattatore (Id, stato, id_sensore) VALUES ('%s','%s','%s')", mysql_real_escape_string($mysqli, $id), mysql_real_escape_string($mysqli, $stato), mysql_real_escape_string($mysqli, $idsensore));
+    $sql = sprintf("INSERT INTO adattatore (Id, stato, id_sensore) VALUES ('%s','%s','%s')", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $stato), mysqli_real_escape_string($mysqli, $idsensore));
     $result = $mysqli->query($sql);    
     
     if($result===true){
