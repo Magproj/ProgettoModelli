@@ -18,9 +18,12 @@
     $id=$_POST['identificatore'];
     $idimpianto = $_POST['idimpianto'];
     
-    if($id===null || $idimpianto===nulla){
+    if($id===null || $idimpianto===null || $id<0 || $idimpianto<0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
+    
+    $id = htmlspecialchars($id);
+    $idimpianto = htmlspecialchars($idimpianto);
     
     //database
     define('DB_HOST', '127.0.0.1');
@@ -51,14 +54,14 @@
 
         $id = $row[0];
 	$str = 'Sensore:  ' . $id . '  <a href="modificaIdSensore.html">Edit</a></br>';
-        echo htmlspecialchars($str);
+        echo $str;
         $stato = $row[1];
         if($stato===true){
 	    $str = 'Stato: Attivo <a href="modificaStatoSensore.html">Edit</a></br>';
-            echo htmlspecialchars($str);
+            echo $str;
         } else{
 	    $str = 'Stato: Non attivo <a href="modificaStatoSensore.html">Edit</a></br>';
-            echo htmlspecialchars($str);
+            echo $str;
         }
         $idimpianto = $row[2];
 	$str = 'Identificatore impianto: ' . $idimpianto . ' <a href="modificaImpiantoSens.html">Edit</a></br>';
