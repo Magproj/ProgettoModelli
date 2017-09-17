@@ -54,10 +54,10 @@
 	$str = 'I dati del sensore cercato sono i seguenti: <br><br>';
         echo $str;
 
-        $id = $row[0];
+        $id = htmlspecialchars($row[0]);
 	$str = 'Sensore:  ' . $id . ' </br>';
         echo $str;
-        $stato = $row[1];
+        $stato = htmlspecialchars($row[1]);
         if($stato===true){
 	    $str = 'Stato: Attivo </br>';
             echo $str;
@@ -65,25 +65,25 @@
 	    $str = 'Stato: Non attivo </br>';
             echo $str;
         }
-        $idimpianto = $row[2];
+        $idimpianto = htmlspecialchars($row[2]);
 	$str = 'Identificatore impianto: ' . $idimpianto . ' </br>';
         echo $str;
-	$tipo = $row[3];
+	$tipo = htmlspecialchars($row[3]);
 	$sql= sprintf("SELECT cifredecimali, codErrore, valMin, valMax  FROM modellostringa WHERE tipo='$tipo' AND id_impianto='$idimpianto'");
         $result1 = $mysqli->query($sql);
 	if($result1===false)
 	    trigger_error('Errore nella query $result1: ' . mysql_error(), E_USER_NOTICE );
 	$row1 = mysqli_fetch_array($result1, MYSQLI_NUM);    
-	$modello = $row1[0];
+	$modello = htmlspecialchars($row1[0]);
 	$str = 'Modello: ' . $modello . ' </br>';
 	echo $str;
-	$coderr = $row1[1];
+	$coderr = htmlspecialchars($row1[1]);
 	$str = 'Errore: ' . $coderr . '<br>';
 	echo $str;
-	$valmin = $row1[2];
+	$valmin = htmlspecialchars($row1[2]);
 	$str = 'Valore minimo: ' .$valmin . '<br>';
 	echo $str;
-	$valmax = $row1[3];
+	$valmax = htmlspecialchars($row1[3]);
 	$str = 'Valore massimo: ' . $valmax . '<br>';
 	echo $str;
 	$str = 'Si ricorda che se viene inserito un nuovo modello per questo sensore, esso corrispondera a un nuovo modello per tutti i sensori dello stesso tipo in questo impianto.<br>'; 

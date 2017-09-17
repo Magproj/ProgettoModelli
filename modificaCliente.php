@@ -43,28 +43,28 @@
         $str = 'I dati del cliente cercato sono i seguenti: <br><br>';
         echo $str;
         
-        $partitaiva = $row[0];
+        $partitaiva = htmlspecialchars($row[0]);
         $str = 'Partita Iva:  ' . $partitaiva . ' </br>';
         echo $str;
-        $nome = $row[1];
+        $nome = htmlspecialchars($row[1]);
         $str = 'Nome:  ' . $nome . ' <a href="modificaNome.html">Edit</a></br>';
         echo $str;
-        $domicilio = $row[2];
+        $domicilio = htmlspecialchars($row[2]);
         $str = 'Domicilio:  ' . $domicilio . ' <a href="modificaDomicilio.html">Edit</a></br>';
         echo $str;
-        $citta = $row[3];
+        $citta = htmlspecialchars($row[3]);
         $str = 'Citta: ' . $citta . ' <a href="modificaCitta.html">Edit</a></br>';
         echo $str;
-        $tel = $row[5];
+        $tel = htmlspecialchars($row[5]);
         $str = 'Telefono: ' . $tel . ' <a href="modificaTelefono.html">Edit</a></br>';
         echo $str;
-        $email = $row[4];
+        $email = htmlspecialchars($row[4]);
         $str = 'Email: ' . $email . ' <a href="modificaEmail.html">Edit</a></br>';
         echo $str;
-        $username = $row[6];
+        $username = htmlspecialchars($row[6]);
         $str = 'Username: ' . $username . ' <a href="modificaUsername.html">Edit</a></br>';
         echo $str;
-        $password = $row[7];
+        $password = htmlspecialchars($row[7]);
         $str = 'Password: ' . $password . ' <a href="modificaPassword.html">Edit</a></br>';
         echo $str;
     

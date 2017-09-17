@@ -21,8 +21,7 @@
     if($id===null || $id<0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
-    
-    $id = htmlspecialchars($id);
+
     
      //database
     define('DB_HOST', '127.0.0.1');
@@ -50,16 +49,16 @@
         $str = 'I dati dell\'impianto cercato sono i seguenti: <br><br>';
         echo $str;
         
-        $id = $row[0];
+        $id = htmlspecialchars($row[0]);
         $str = 'Identificatore:  ' . $id . ' </br>';
         echo $str;
-        $tipo = $row[1];
+        $tipo = htmlspecialchars($row[1]);
         $str = 'Tipo:  ' . $tipo . ' <a href="modificaTipoImpianto.html">Edit</a></br>';
         echo $str;
-        $dimensione = $row[2];
+        $dimensione = htmlspecialchars($row[2]);
         $str = 'Dimensione:  ' . $dimensione . ' <a href="modificaDimImpianto.html">Edit</a></br>';
         echo $str;
-        $stato = $row[3];
+        $stato = htmlspecialchars($row[3]);
         if($stato===true){
             $str = 'Stato: Attivo <a href="modificaStatoImpianto.html">Edit</a></br>';
             echo $str;
@@ -67,7 +66,7 @@
             $str = 'Stato: Non attivo <a href="modificaStatoImpianto.html">Edit</a></br>';
             echo $str;
         }
-        $idcliente = $row[4];
+        $idcliente = htmlspecialchars($row[4]);
         $str = 'Identificatore cliente: ' . $idcliente . ' <a href="modificaClienteImpianto.html">Edit</a></br>';
         echo $str;
     

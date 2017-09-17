@@ -34,11 +34,11 @@
 
     
     //comando SQL
-    $sql = sprintf("SELECT * FROM adattatore WHERE Id='%s'", mysqli_real_escape_string($mysqli, $id));
+    $sql = sprintf("SELECT id, stato, id_sensore FROM adattatore WHERE Id='%s'", mysqli_real_escape_string($mysqli, $id));
     $result = $mysqli->query($sql);
     $conta= mysqli_num_rows($result);
     
-    $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+    $row = mysqli_fetch_array($result, MYSQLI_NUM);
 
     if($conta===1){
         
@@ -46,10 +46,11 @@
 	
 	$str = 'I dati dell\'adattatore cercato sono i seguenti: <br><br>';
         echo $str;
-     
-	$str = 'Identificatore:  ' . $row['id'] . ' </br>';
+	
+	$id = htmlspecialchars($row[0]);
+	$str = 'Identificatore:  ' . $id . ' </br>';
         echo $str;
-        $stato = $row['stato'];
+        $stato = htmlspecialchars$row[1];
         if($stato===true){
 	    $str = 'Stato: Attivo <a href="modificaStatoAdatt.html">Edit</a></br>';
             echo $str;
@@ -57,7 +58,7 @@
 	    $str = 'Stato: Non attivo <a href="modificaStatoAdatt.html">Edit</a></br>';
             echo $str;
         }
-        $idsensore = $row['id_sensore'];
+        $idsensore = htmlspecialchars($row[2]);
 	$str = 'Identificatore sensore: ' . $idsensore . ' <a href="modificaSensoreAdatt.html">Edit</a></br>';
         echo $str;
     

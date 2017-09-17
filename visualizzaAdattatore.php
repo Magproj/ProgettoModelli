@@ -22,7 +22,6 @@
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    $id = htmlspecialchars($id);
     
     
    //database
@@ -49,10 +48,10 @@
         $str = 'I dati dell\'adattatore cercato sono i seguenti: <br><br>';
         echo $str;
             
-        $id = $row[0];
+        $id = htmlspecialchars($row[0]);
         $str = 'Identificatore:  ' . $id . ' </br>';
         echo $str;
-        $stato = $row[1];
+        $stato = htmlspecialchars($row[1]);
         if($stato===true){
             $str = 'Stato: Attivo </br>';
             echo $str;
@@ -60,7 +59,7 @@
             $str = 'Stato: Non attivo </br>';
             echo $str;
         }
-        $idsensore = $row[2];
+        $idsensore = htmlspecialchars($row[2]);
         $str = 'Identificatore sensore: ' . $idsensore . ' </br>';
         echo $str;
 
