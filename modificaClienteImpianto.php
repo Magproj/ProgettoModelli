@@ -20,11 +20,11 @@
     $idCliente=$_POST['idcliente'];
     $idimpianto=$_POST['id'];
     
-    if($idCliente===null || $idCliente>==0){
+    if($idCliente===null || $idCliente<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($idimpianto===null || $idimpianto>==0){
+    if($idimpianto===null || $idimpianto<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     

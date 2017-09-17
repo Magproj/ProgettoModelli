@@ -42,7 +42,7 @@
     //comando SQL
     $sql = "SELECT id_impianto, Id_sensore, valore FROM datirilevati JOIN impianto ON Id=id_impianto WHERE id_cliente='$partitaiva' ";
     $result = mysql_query($sql);
-    if($result===false || $result===null) trigger_error('Query fallita. ', E_USER_NOTICE);
+    if($result===false) trigger_error('Query fallita. ', E_USER_NOTICE);
     
     $sql1 = "SELECT id_impianto, ValMax, ValMin, Tipo FROM modellostringa";
     $result1 = mysql_query($sql1);

@@ -20,7 +20,7 @@
     $tipo=$_POST['tipo'];
     $idimpianto=$_POST['id'];
     
-    if($idimpianto===null || $idimpianto>==0){
+    if($idimpianto===null || $idimpianto<=0){
         trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
     }
     

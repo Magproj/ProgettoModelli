@@ -20,11 +20,11 @@
     $idsensore=$_POST['idsensore'];
     $idadatt=$_POST['id'];
     
-    if($idsensore===null || $idsensore>==0){
+    if($idsensore===null || $idsensore<=0){
         trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
     }
     
-    if($idadatt===null || $idadatt>==0){
+    if($idadatt===null || $idadatt<=0){
         trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
     }
     

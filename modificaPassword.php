@@ -20,7 +20,7 @@
     $passwordC=$_POST['password'];
     $partiva=$_POST['partitaiva'];
     
-    if($partiva===null || $partiva>==0){
+    if($partiva===null || $partiva<=0){
         trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
     }
     

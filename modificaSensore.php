@@ -18,7 +18,7 @@
     $id=$_POST['identificatore'];
     $idimpianto = $_POST['idimpianto'];
     
-    if($id===null || $id>==0 || $idimpianto===null || $idimpianto>==0){
+    if($id===null || $id<=0 || $idimpianto===null || $idimpianto<=0){
         trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
     }
     

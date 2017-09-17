@@ -36,7 +36,7 @@
 
     //execute query
     $query = sprintf("SELECT * FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'");
-    $result = $mysqli->query($query));
+    $result = $mysqli->query($query);
     $conta= mysqli_num_rows($result);
     
 

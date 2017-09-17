@@ -21,11 +21,11 @@
     $tipo=$_POST['tipo'];
     $idCliente=$_POST['idcliente'];
     
-    if($id===null || $id>==0){
+    if($id===null || $id<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($dimensione===null || $dimensione>==0){
+    if($dimensione===null || $dimensione<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     

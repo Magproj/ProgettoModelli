@@ -21,15 +21,15 @@
     $idsensorev=$_POST['idv'];
     $idimpianto=$_POST['idimpianto'];
     
-    if($idsensoren===null || $idsensoren>==0){
+    if($idsensoren===null || $idsensoren<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($idsensorev===null || $idsensorev>==0){
+    if($idsensorev===null || $idsensorev<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($idimpianto===null || $idimpianto>==0){
+    if($idimpianto===null || $idimpianto<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     

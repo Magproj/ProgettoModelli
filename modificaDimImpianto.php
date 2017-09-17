@@ -20,11 +20,11 @@
     $dimensione=$_POST['dim'];
     $idimpianto=$_POST['id'];
     
-    if($idimpianto===null || $idimpianto>==0){
+    if($idimpianto===null || $idimpianto<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($dimensione===null || $dimensione>==0){
+    if($dimensione===null || $dimensione<=0){
     trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     

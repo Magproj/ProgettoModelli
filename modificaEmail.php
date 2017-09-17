@@ -20,7 +20,7 @@
     $email=$_POST['email'];
     $partiva=$_POST['partitaiva'];
     
-    if($email===null || $partiva>==0 || $partiva===null){
+    if($email===null || $partiva<=0 || $partiva===null){
         trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     

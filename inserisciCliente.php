@@ -26,7 +26,7 @@ $usernameC=$_POST['username'];
 $passwordC=$_POST['password'];
 
 
-if($nome===null || $partiva>==0 || $partiva===null){
+if($nome===null || $partiva<=0 || $partiva===null){
     trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
 }
 

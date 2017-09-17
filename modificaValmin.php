@@ -21,15 +21,15 @@
     $idsensore=$_POST['id'];
     $idimpianto=$_POST['idimpianto'];
     
-    if($valmin===null || $valmin>==0){
+    if($valmin===null || is_numeric($valmin)===false){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($idsensore===null || $idsensore>==0){
+    if($idsensore===null || $idsensore<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($idimpianto===null || $idimpianto>==0){
+    if($idimpianto===null || $idimpianto<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     

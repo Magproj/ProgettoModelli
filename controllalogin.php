@@ -22,7 +22,7 @@ $username = $_POST['username'];
 $password = $_POST['password'];
 
 //controlli per l'input
-if($password===null || $password>=0){
+if($password===null){
     trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
 }
 
