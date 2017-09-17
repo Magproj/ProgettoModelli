@@ -19,7 +19,7 @@
     //dati del form
     $coderr = $_POST['coderr'];
     $idsensore=$_POST['id'];
-    $idimpianto=$_POST['idimpianto'];
+    $idimpianto=htmlentities($_POST['idimpianto']);
     
     //database
     define('DB_HOST', '127.0.0.1');
