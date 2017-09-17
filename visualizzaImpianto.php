@@ -16,45 +16,50 @@
 
 
 <?php
-
+    
+    session_start();
+    if(!isset($_SESSION['username'])){
+        header("Location: login.html");
+    }
+    
     //dati del form
     $id=$_POST['identificatore'];
     
-    //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
     
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
     //comando SQL
-    $sql = sprintf("SELECT * FROM impianto WHERE Id='%s'", mysql_real_escape_string($id));
-    $result = mysql_query($sql);
-    $conta= mysql_num_rows($result);
+    $sql = sprintf("SELECT id, tipo, dimensione, stato, id_cliente FROM impianto WHERE Id='%s'", mysqli_real_escape_string($id));
+    $result = $mysqli->query($sql);
+    $conta= mysqli_num_rows($result);
+    
+    $row = mysqli_fetch_array($result, MYSQLI_NUM);  
     
     if($conta===1){
         
         $str = 'I dati dell\'impianto cercato sono i seguenti: <br><br>';
         echo $str;
             
-        $id = mysql_result($result, 0, 'id');
+        $id = $row[0];
         $str =  'Identificatore:  ' . $id. ' </br>';
         echo $str;
-        $tipo = mysql_result($result, 0, 'tipo');
+        $tipo = $row[1];
         $str = 'Tipo: ' .$tipo. ' </br>';
         echo $str;
-        $dimensione = mysql_result($result, 0, 'dimensione');
+        $dimensione = $row[2];
         $str = 'Dimensione: '.$dimensione.' </br>';
         echo $str;
-        $stato = mysql_result($result, 0, 'stato');
+        $stato = $row[3];
         if($stato===true){
             $str = 'Stato: Attivo </br>';
             echo $str;
@@ -62,7 +67,7 @@
             $str = 'Stato: Non attivo </br>';
             echo $str;
         }
-        $idcliente = mysql_result($result, 0, 'id_cliente');
+        $idcliente = $row[4];
         $str = 'Identificatore cliente: ' .$idcliente. ' </br>';
         echo $str;
     
