@@ -18,6 +18,10 @@
     $id=$_POST['identificatore'];
     $idimpianto = $_POST['idimpianto'];
     
+    if($id===null || $idimpianto===nulla){
+	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
+    }
+    
     //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');
