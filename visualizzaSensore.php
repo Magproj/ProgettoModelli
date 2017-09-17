@@ -21,32 +21,32 @@
     $idimpianto=$_POST['idimpianto'];
     
     //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
     
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli===false){
+    	trigger_error('Connection failed: ' . $mysqli->error, E_USER_NOTICE);
     }
+
     
     //comando SQL
-    $sql = "SELECT * FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'";
-    $result = mysql_query($sql);
-    $conta= mysql_num_rows($result);
+    $sql = sprintf("SELECT * FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'");
+    $result = mysqli_query($mysqli, $sql);    
+    $conta= mysqli_num_rows($result);
     
     if($conta===1){
         $str = 'I dati del sensore cercato sono i seguenti: <br><br>';
-        
         echo $str;
-            
-        $id = mysql_result($result, 0, 'id_sensore');
-        $str = 'Identificatore:  ' . $id . ' </br>';
+        
+        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+
+        $str = 'Identificatore:  ' . $row['id'] . ' </br>';
         echo $str;
         $marca = mysql_result($result, 0, 'marca');
         $str = 'Marca:  ' . $marca . ' </br>';
