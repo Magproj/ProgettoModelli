@@ -42,7 +42,7 @@
     $tipo = $row[0];
     
     //comando SQL
-    $sql1 = sprintf("UPDATE modellostringa SET coderrore='%s' WHERE tipo='$tipo' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $idimpianto));
+    $sql1 = sprintf("UPDATE modellostringa SET coderrore='%s' WHERE tipo='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $idimpianto));
     $result1 = $mysqli->query($sql1);
     
     

@@ -21,41 +21,30 @@
     $idsensore=$_POST['id'];
     $idimpianto=$_POST['idimpianto'];
     
-    if($valmin===null || is_numeric($valmin)===false){
-	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
+    
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
-    if($idsensore===null || $idsensore<=0){
-	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
-    }
+    $sql = sprintf("SELECT tipo FROM sensore WHERE id_sensore='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $idsensore), mysqli_real_escape_string($mysqli, $idimpianto));
+    $result = $mysqli->query($sql);
+    $row = mysqli_fetch_array($result, MYSQLI_NUM);
     
-    if($idimpianto===null || $idimpianto<=0){
-	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
-    }
-    
-    //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
-    
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
-    }
-    
-    $sql = "SELECT * FROM sensore WHERE id_sensore='$idsensore' AND id_impianto='$idimpianto'";
-    $result = mysql_query($sql);
-    $tipo = mysql_result($result, 0, 'tipo');
+    $tipo = $row[0];
     
     //comando SQL
-    $sql1 = "UPDATE modellostringa SET valmin='$valmin' WHERE tipo='$tipo' AND id_impianto='$idimpianto'";
+    $sql1 = sprintf("UPDATE modellostringa SET valmin='%s' WHERE tipo='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $valmin), mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $idimpianto));
+    $result1 = $mysqli->query($sql1);
     
-    if(mysql_query($sql1)===true){
+    if($result1===true){
         echo 'Dati modificati correttamente<br />';
 	$str = "Torna alla <a href=\"modificaSensore.html\">modifica</a>";
         echo $str;
