@@ -16,12 +16,12 @@
 <?php
 
     //dati del form
-    $id=$_POST['identificatore'];
+    $id=htmlentities($_POST['identificatore']);
     
     if($id===null || $id<0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
-
+    
     
      //database
     define('DB_HOST', '127.0.0.1');
