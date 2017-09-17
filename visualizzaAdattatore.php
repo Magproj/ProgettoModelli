@@ -18,7 +18,7 @@
     //dati del form
     $id=$_POST['identificatore'];
     
-    if($id<=0 || $id===null){
+    if(is_numeric($id)===false || $id===null){
         trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
     }
 
