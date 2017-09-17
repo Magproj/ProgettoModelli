@@ -18,6 +18,11 @@
     //dati del form
     $id=$_POST['identificatore'];
     
+    if($id===null || $id<0){
+	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
+    }
+    
+    $id = htmlspecialchars($id);
     
      //database
     define('DB_HOST', '127.0.0.1');
