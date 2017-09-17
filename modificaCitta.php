@@ -21,6 +21,8 @@
       } else{
 	    header('Location:Login.html');
       }
+      
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin' ){
     
     //dati del form
     $citta=$_POST['citta'];
@@ -50,6 +52,10 @@
         echo $str;
     } else {
         echo 'Attenzione, si è verificato un errore: ' . mysql_error();
+    }
+    
+        }else{
+	trigger_error('Non è autorizzato a modificare questi dati. ' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
 ?>
