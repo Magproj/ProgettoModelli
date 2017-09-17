@@ -30,7 +30,7 @@
 
     //dati del form
 
-    $partitaiva=$_POST["partitaiva"];
+    $partitaiva=htmlentities($_POST["partitaiva"]);
     
     //controllo input
     if($partitaiva==null || $partitaiva<=0){
@@ -58,13 +58,13 @@
 	    while($i<$conta){
 
 
-	                            $id_impianto[$i] = $row[0];
-                                    $valore[$i] = $row[1];
-                                    $idsensore[$i]= $row[2];
-                                    $id [$j]= $row1[0];
-                                    $max [$j]= $row1[1];
-                                    $min [$j]= $row1[2];
-                                    $tipo[$j]= $row1[3];
+	                            $id_impianto[$i] = htmlspecialchars($row[0]);
+                                    $valore[$i] = htmlspecialchars($row[1]);
+                                    $idsensore[$i]= htmlspecialchars($row[2]);
+                                    $id [$j]= htmlspecialchars($row1[0]);
+                                    $max [$j]= htmlspecialchars($row1[1]);
+                                    $min [$j]= htmlspecialchars($row1[2]);
+                                    $tipo[$j]= htmlspecialchars($row1[3]);
 
                                     if($id_impianto=$id){
                                              if($valore<$min || $valore>$max){

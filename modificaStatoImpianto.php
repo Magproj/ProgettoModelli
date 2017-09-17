@@ -24,19 +24,17 @@
     }
     
     
-    //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
     
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
     if(isset($_POST['stato'])) { 
@@ -45,9 +43,10 @@
     }
     
     //comando SQL
-    $sql = "UPDATE impianto SET stato='$stato' WHERE id='$idimpianto'";
+    $sql = sprintf("UPDATE impianto SET stato='%s' WHERE id='%s'", mysqli_real_escape_string($mysqli, $stato), mysqli_real_escape_string($mysqli, $idimpianto));
+    $result = $mysqli->query($sql);
     
-    if(mysql_query($sql)===true){
+    if($result===true){
         echo 'Dati modificati correttamente<br />';
 	$str = "Torna alla <a href=\"modificaImpianto.html\">modifica</a>";
         echo $str;

@@ -43,7 +43,7 @@
         echo 'Dati modificati correttamente<br />';
         echo 'Torna alla <a href=\"modificaSensore.html\">modifica</a>';
     } else {
-        echo 'Attenzione, si è verificato un errore: ' . mysql_error();
+       trigger_error('Attenzione, si è verificato un errore: ' . mysql_error(), E_USER_NOTICE);
     }
 
 ?>
