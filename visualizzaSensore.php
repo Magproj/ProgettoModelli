@@ -20,6 +20,13 @@
     $id=$_POST['identificatore'];
     $idimpianto=$_POST['idimpianto'];
     
+    if($id===null || $idimpianto===null || $id<0 || $idimpianto<0){
+	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
+    }
+    
+    $id = htmlspecialchars($id);
+    $idimpianto = htmlspecialchars($idimpianto);
+    
     //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');
