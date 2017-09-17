@@ -15,7 +15,12 @@
 
 
 <?php
+    
+    //Apro la sessione e...
+    session_start();
 
+
+    
     //dati del form
     $coderr = $_POST['coderr'];
     $idsensore=$_POST['id'];
