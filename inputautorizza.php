@@ -44,7 +44,7 @@
 	$idsensore = $_POST['idsensore'];
 	
 	//controlli per l'input
-	if($partitaiva===null || $partitaiva<=0){
+	if($partitaiva===null || $partitaiva===0){
 		trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
 	}
 	
