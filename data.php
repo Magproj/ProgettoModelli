@@ -12,7 +12,7 @@ define('DB_NAME', 'progetto');
 $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
 if(!$mysqli){
-	die("Connection failed: " . $mysqli->error);
+	trigger_error('Connection failed: ' . $mysqli->error, E_USER_NOTICE);
 }
 
 //query to get data from the table
