@@ -17,6 +17,13 @@
 
 <?php
     
+    //autenticazione
+    session_start(); 
+    $user = $_SESSION['username'];
+    $pass = $_SESSION['password'];
+    
+    
+    
     //dati del form
     $id=$_POST['identificatore'];
     
@@ -33,6 +40,12 @@
 
     if($mysqli->connect_errno){
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
+    }
+    
+    $sql = sprintf("SELECT * FROM cliente WHERE username='%s' AND password='%s'", mysqli_real_escape_string($mysqli, $user), mysqli_real_escape_string($mysqli, $pass));
+    $result = $mysqli->query($sql);
+    if($result===false){
+        header("Location: Login.html");
     }
     
     //comando SQL
