@@ -34,9 +34,10 @@
 
     $partitaiva=$_POST["partitaiva"];
     
-    if($partitaiva===null){
+    //controllo input
+    if($partitaiva===null || $partitaiva<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
-    }
+    }else{
     
     //comando SQL
     $sql = "SELECT id_impianto, Id_sensore, valore FROM datirilevati JOIN impianto ON Id=id_impianto WHERE id_cliente='$partitaiva' ";
@@ -96,5 +97,5 @@
         echo $str;
     }
 
-
+    }
 ?>
