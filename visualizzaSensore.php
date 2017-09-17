@@ -34,7 +34,7 @@
     }
     
     //comando SQL
-    $sql = sprintf("SELECT id_sensore, stato, id_impianto, tipo FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $idimpianto));
+    $sql = sprintf("SELECT id_sensore, stato, id_impianto, tipo FROM sensore WHERE Id_sensore='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $idimpianto));
     
     $result = $mysqli->query($sql);
     $conta= mysqli_num_rows($result);
