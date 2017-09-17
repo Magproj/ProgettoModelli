@@ -34,7 +34,7 @@
 
     
     //comando SQL
-    $sql = sprintf("SELECT * FROM adattatore WHERE Id='%s'", mysql_real_escape_string($mysqli, $id));
+    $sql = sprintf("SELECT * FROM adattatore WHERE Id='%s'", mysqli_real_escape_string($mysqli, $id));
     $result = $mysqli->query($sql);
     $conta= mysqli_num_rows($result);
     

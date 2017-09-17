@@ -33,7 +33,7 @@
     }
     
     //comando SQL
-    $sql = sprintf("UPDATE cliente SET citta='%s' WHERE partitaiva='%s'", mysql_real_escape_string($mysqli, $citta), mysql_escape_string($mysqli, $partiva));
+    $sql = sprintf("UPDATE cliente SET citta='%s' WHERE partitaiva='%s'", mysqli_real_escape_string($mysqli, $citta), mysqli_real_escape_string($mysqli, $partiva));
     
     $result = $mysqli->query($sql);
     
