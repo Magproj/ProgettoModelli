@@ -15,7 +15,12 @@
 
 
 <?php
-
+    
+    session_start();
+    if(!isset($_SESSION['username'])){
+        header("Location: login.html");
+    }
+    
     //dati del form
     $tipo=$_POST['tipo'];
     $idimpianto=$_POST['id'];

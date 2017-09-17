@@ -14,7 +14,12 @@
 </html>
 
 <?php
-
+    
+    session_start();
+    if(!isset($_SESSION['username'])){
+        header("Location: login.html");
+    }
+    
     //accesso al database
     $host='localhost';
     $username='root';
@@ -35,7 +40,7 @@
 
     $partitaiva=$_POST['partitaiva'];
     
-    if($partitaiva===null || $partitaiva>==0){
+    if($partitaiva===null || $partitaiva<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
 

@@ -16,6 +16,11 @@
 
 <?php
 
+    session_start();
+    if(!isset($_SESSION['username'])){
+        header("Location: login.html");
+    }
+
     //dati del form
     $domicilio=$_POST['domicilio'];
     $partiva=$_POST['partitaiva'];

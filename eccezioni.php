@@ -14,7 +14,12 @@
 </html>
 
 <?php
-
+    
+    session_start();
+    if(!isset($_SESSION['username'])){
+        header("Location: login.html");
+    }
+    
     //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');
