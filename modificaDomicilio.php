@@ -21,7 +21,6 @@
     $partiva=$_POST['partitaiva'];
    
    
-    //accesso al database
     //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');

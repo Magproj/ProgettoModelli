@@ -34,7 +34,7 @@
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
-    $sql = sprintf("SELECT tipo FROM sensore WHERE id_sensore='$idsensore' AND id_impianto='$idimpianto'", mysqli_real_escape_string($mysqli, $idsensore), mysqli_real_escape_string($mysqli, $idimpianto));
+    $sql = sprintf("SELECT tipo FROM sensore WHERE id_sensore='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $idsensore), mysqli_real_escape_string($mysqli, $idimpianto));
     $result = $mysqli->query($sql);
     
     $row = mysqli_fetch_array($result, MYSQLI_NUM);
@@ -42,8 +42,8 @@
     $tipo = $row[0];
     
     //comando SQL
-    $sql1 = sprintf("UPDATE modellostringa SET coderrore='$coderr' WHERE tipo='$tipo' AND id_impianto='$idimpianto'", mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $idimpianto));
-    $result1 = $mysqli->query($sql);
+    $sql1 = sprintf("UPDATE modellostringa SET coderrore='%s' WHERE tipo='$tipo' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $idimpianto));
+    $result1 = $mysqli->query($sql1);
     
     
     if($result1===true){

@@ -20,33 +20,25 @@
     $idsensore=$_POST['idsensore'];
     $idadatt=$_POST['id'];
     
-    if($idsensore===null || $idsensore<=0){
-        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
-    }
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
     
-    if($idadatt===null || $idadatt<=0){
-        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
-    }
-    
-    //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
-    
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
     //comando SQL
-    $sql = "UPDATE adattatore SET id_sensore='$idsensore' WHERE id='$idadatt'";
+    $sql = sprintf("UPDATE adattatore SET id_sensore='%s' WHERE id='%s'", mysqli_real_escape_string($mysqli, $idsensore), mysqli_real_escape_string($mysqli, $idadatt));
     
-    if(mysql_query($sql)===true){
+    $result = $mysqli->query($sql);
+    
+    if($result===true){
         echo 'Dati modificati correttamente<br />';
 	$str = "Torna alla <a href=\"modificaAdattatore.html\">modifica</a>";
         echo $str;

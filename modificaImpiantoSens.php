@@ -21,38 +21,25 @@
     $idimpianton=$_POST['idimpianton'];
     $idsensore=$_POST['id'];
     
-    if($idimpianton===null || $idimpianton<=0){
-        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
-    }
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
     
-    if($idimpiantov===null || $idimpiantov<=0){
-        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
-    }
-    
-    if($idsensore===null || $idsensore<=0){
-        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
-    }
-    
-    //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
-    
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
     //comando SQL
-    $sql = 'UPDATE sensore SET id_impianto='$idimpianton' WHERE id_sensore='$idsensore' AND id_impianto'$idimpiantov'';
+    $sql = sprintf("UPDATE sensore SET id_impianto='%s' WHERE id_sensore='%s' AND id_impianto'%s'", mysqli_real_escape_string($mysqli, $idimpianton), mysqli_real_escape_string($mysqli, $idimpianton), mysqli_real_escape_string($mysqli, $idimpiantov) );
     
-    if(mysql_query($sql)===true){
+    $result = $mysqli->query($sql);
+    
+    if($result===true){
         echo 'Dati modificati correttamente<br />';
         echo 'Torna alla <a href=\"modificaSensore.html\">modifica</a>';
     } else {

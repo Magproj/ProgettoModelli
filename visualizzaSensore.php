@@ -20,7 +20,6 @@
     $id=$_POST['identificatore'];
     $idimpianto=$_POST['idimpianto'];
     
-    //accesso al database
     //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');
@@ -33,61 +32,59 @@
     if($mysqli->connect_errno){
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
-
-    //execute query
-    $query = sprintf("SELECT * FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'");
-    $result = $mysqli->query($query);
+    
+    //comando SQL
+    $sql = sprintf("SELECT id_sensore, stato, id_impianto, tipo FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $idimpianto));
+    
+    $result = $mysqli->query($sql);
     $conta= mysqli_num_rows($result);
     
-
+    $row = mysqli_fetch_array($result, MYSQLI_NUM);    
+    
+    
     if($conta===1){
         
-        $row = $result->fetch_array(MYSQLI_ASSOC);
+	$str = 'I dati del sensore cercato sono i seguenti: <br><br>';
+        echo $str;
 
-        $str = 'I dati del sensore cercato sono i seguenti: <br><br>';
+        $id = $row[0];
+	$str = 'Sensore:  ' . $id . ' </br>';
         echo $str;
-        
-        
-        $str = 'Identificatore:  ' . $row['id_sensore'] . ' </br>';
-        echo $str;
-        $str = 'Marca:  ' . $row['marca'] . ' </br>';
-        echo $str;
-        $str = 'Tipo:  ' . $row['tipo'] . ' </br>';
-        echo $str;
-        $stato = $row['stato'];
-        if($stato===true){;
-            $str = 'Stato: Attivo </br>';
+        $stato = $row[1];
+        if($stato===true){
+	    $str = 'Stato: Attivo </br>';
             echo $str;
         } else{
-            $str = 'Stato: Non attivo </br>';
+	    $str = 'Stato: Non attivo </br>';
             echo $str;
         }
-    
-        $str = 'Identificatore impianto: ' . $row['idimpianto'] . ' </br>';
+        $idimpianto = $row[2];
+	$str = 'Identificatore impianto: ' . $idimpianto . ' </br>';
         echo $str;
-        $sql2= "SELECT * FROM modellostringa WHERE tipo='$row['tipo]' AND id_impianto='$row['$idimpianto']'";
-        $result = $mysqli->query($query);
-        
-        $row = $result->fetch_array(MYSQLI_ASSOC);
-        
-    
-        $str = 'Modello: ' . $row['modello'] . '</br>';
+	$tipo = $row[3];
+	$sql= sprintf("SELECT cifredecimali, codErrore, valMin, valMax  FROM modellostringa WHERE tipo='$tipo' AND id_impianto='$idimpianto'");
+        $result1 = $mysqli->query($sql);
+	if($result1===false)
+	    trigger_error('Errore nella query $result1: ' . mysql_error(), E_USER_NOTICE );
+	$row1 = mysqli_fetch_array($result1, MYSQLI_NUM);    
+	$modello = $row1[0];
+	$str = 'Modello: ' . $modello . ' </br>';
 	echo $str;
-        $str = 'Valore minimo: ' . $row['valmin'] . '</br>';
-        echo $str;
-        $str = 'Valore massimo: ' . $row['valmax'] . '</br>';
-        echo $str;
-        $err = $row['coderrore'];
-        if($err===true){
-            $str = 'Errore rilevato.</br>';
-            echo $str;
-        } else {
-            $str = 'Errore non rilevato.</br>';
-            echo $str;
-        }
+	$coderr = $row1[1];
+	$str = 'Errore: ' . $coderr . '<br>';
+	echo $str;
+	$valmin = $row1[2];
+	$str = 'Valore minimo: ' .$valmin . '<br>';
+	echo $str;
+	$valmax = $row1[3];
+	$str = 'Valore massimo: ' . $valmax . '<br>';
+	echo $str;
+	$str = 'Si ricorda che se viene inserito un nuovo modello per questo sensore, esso corrispondera a un nuovo modello per tutti i sensori dello stesso tipo in questo impianto.<br>'; 
+	echo $str;
+	
     
     } else {
-        $str = 'Il sensore non e\' stato trovato. <br>';
+	$str = 'Il sensore non e\' stato trovato.';
         echo $str;
     }
 
