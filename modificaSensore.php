@@ -36,7 +36,7 @@
     }
     
     //comando SQL
-    $sql = sprintf("SELECT id_sensore, stato, id_impianto, tipo FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $idimpianto));
+    $sql = sprintf("SELECT id_sensore, stato, id_impianto, tipo FROM sensore WHERE Id_sensore='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $idimpianto));
     
     $result = $mysqli->query($sql);
     $conta= mysqli_num_rows($result);
@@ -51,14 +51,14 @@
 
         $id = $row[0];
 	$str = 'Sensore:  ' . $id . '  <a href="modificaIdSensore.html">Edit</a></br>';
-        echo $str;
+        echo htmlspecialchars($str);
         $stato = $row[1];
         if($stato===true){
 	    $str = 'Stato: Attivo <a href="modificaStatoSensore.html">Edit</a></br>';
-            echo $str;
+            echo htmlspecialchars($str);
         } else{
 	    $str = 'Stato: Non attivo <a href="modificaStatoSensore.html">Edit</a></br>';
-            echo $str;
+            echo htmlspecialchars($str);
         }
         $idimpianto = $row[2];
 	$str = 'Identificatore impianto: ' . $idimpianto . ' <a href="modificaImpiantoSens.html">Edit</a></br>';
