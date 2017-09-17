@@ -15,11 +15,6 @@
 
 <?php
 
-session_start();
-if(!isset($_SESSION['username'])){
-    header("Location: login.html");
-}
-
 //dati del form
 $nome=$_POST['nome'];
 $partiva=$_POST['partiva'];

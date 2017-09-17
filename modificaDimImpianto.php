@@ -15,12 +15,7 @@
 
 
 <?php
-    
-    session_start();
-    if(!isset($_SESSION['username'])){
-        header("Location: login.html");
-    }
-    
+
     //dati del form
     $dimensione=$_POST['dim'];
     $idimpianto=$_POST['id'];
