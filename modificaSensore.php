@@ -14,8 +14,6 @@
 </html>
 <?php
 
-    require_once 'HTMLPurifier.auto.php';
-
     //dati del form
     $id=$_POST['identificatore'];
     $idimpianto = $_POST['idimpianto'];
@@ -23,9 +21,6 @@
     if($id===null || $idimpianto===null || $id<0 || $idimpianto<0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
-    
-    $id = htmlentities($id);
-    $idimpianto = htmlentities($idimpianto);
     
     //database
     define('DB_HOST', '127.0.0.1');
@@ -54,10 +49,10 @@
 	$str = 'I dati del sensore cercato sono i seguenti: <br><br>';
         echo $str;
 
-        $id = $row[0];
+        $id = htmlspecialchars($row[0]);
 	$str = 'Sensore:  ' . $id . '  <a href="modificaIdSensore.html">Edit</a></br>';
         echo $str;
-        $stato = $row[1];
+        $stato = htmlspecialchars($row[1]);
         if($stato===true){
 	    $str = 'Stato: Attivo <a href="modificaStatoSensore.html">Edit</a></br>';
             echo $str;
@@ -65,25 +60,25 @@
 	    $str = 'Stato: Non attivo <a href="modificaStatoSensore.html">Edit</a></br>';
             echo $str;
         }
-        $idimpianto = $row[2];
+        $idimpianto = htmlspecialchars($row[2]);
 	$str = 'Identificatore impianto: ' . $idimpianto . ' <a href="modificaImpiantoSens.html">Edit</a></br>';
         echo $str;
-	$tipo = $row[3];
+	$tipo = htmlspecialchars($row[3]);
 	$sql= sprintf("SELECT cifredecimali, codErrore, valMin, valMax  FROM modellostringa WHERE tipo='$tipo' AND id_impianto='$idimpianto'");
         $result1 = $mysqli->query($sql);
 	if($result1===false)
 	    trigger_error('Errore nella query $result1: ' . mysql_error(), E_USER_NOTICE );
 	$row1 = mysqli_fetch_array($result1, MYSQLI_NUM);    
-	$modello = $row1[0];
+	$modello = htmlspecialchars($row1[0]);
 	$str = 'Modello: ' . $modello . ' <a href="modificaModello.html">Edit</a></br>';
 	echo $str;
-	$coderr = $row1[1];
+	$coderr = htmlspecialchars($row1[1]);
 	$str = 'Errore: ' . $coderr . '<a href="modificaErrore.html">Edit</a><br>';
 	echo $str;
-	$valmin = $row1[2];
+	$valmin = htmlspecialchars($row1[2]);
 	$str = 'Valore minimo: ' .$valmin . '<a href="modificaValmin.html">Edit</a><br>';
 	echo $str;
-	$valmax = $row1[3];
+	$valmax = htmlspecialchars($row1[3]);
 	$str = 'Valore massimo: ' . $valmax . '<a href="modificaValmax.html">Edit</a><br>';
 	echo $str;
 	$str = 'Si ricorda che se viene inserito un nuovo modello per questo sensore, esso corrispondera a un nuovo modello per tutti i sensori dello stesso tipo in questo impianto.<br>'; 
