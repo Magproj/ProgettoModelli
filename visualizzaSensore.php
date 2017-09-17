@@ -16,15 +16,18 @@
 
 <?php
     
-    
-    
-   session_start();
+    session_start();
       if(isset($_SESSION['username']) && isset($_SESSION['password'])){
 	    
       } else{
 	    header('Location:Login.html');
       }
     
+    
+    $user = $_SESSION['username'];
+    $pass = $_SESSION['password'];
+    
+    if($user!=='admin' && $pass!=='admin'){trigger_error('Non si ha l\'autorizzazione per questa pagina.', E_USER_NOTICE);}
     
     //dati del form
     $id=$_POST['identificatore'];
@@ -49,6 +52,8 @@
     if($mysqli->connect_errno){
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
+    
+     
     
     //comando SQL
     $sql = sprintf("SELECT id_sensore, stato, id_impianto, tipo FROM sensore WHERE Id_sensore='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $idimpianto));
