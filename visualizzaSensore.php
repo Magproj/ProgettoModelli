@@ -49,7 +49,7 @@
         $str = 'Identificatore:  ' . $id . ' </br>';
         echo $str;
         $marca = mysql_result($result, 0, 'marca');
-        $str 'Marca:  ' . $marca . ' </br>';
+        $str = 'Marca:  ' . $marca . ' </br>';
         echo $str;
         $tipo = mysql_result($result, 0, 'tipo');
         $str = 'Tipo:  ' . $tipo . ' </br>';
@@ -76,7 +76,7 @@
         $valmax = mysql_result($result, 0, 'valmax');
         $str = 'Valore massimo: ' . $valmax . '</br>';
         echo $str;
-        $err = mysql_result($result, 0, 'errore');
+        $err = mysql_result($result, 0, 'coderrore');
         if($err===true){
             $str = 'Errore rilevato.</br>';
             echo $str;

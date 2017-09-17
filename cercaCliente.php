@@ -68,7 +68,7 @@
         echo $str;
     
     } else {
-        $str = 'l cliente non e' stato trovato. <br> Torna alle <a href=\"opzioniazienda.php\">opzioni di selezione</a>";
+        $str = 'l cliente non e\' stato trovato. <br> Torna alle <a href=\"opzioniazienda.php\">opzioni di selezione</a>';
         echo $str;
     }
 

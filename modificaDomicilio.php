@@ -20,7 +20,7 @@
     $domicilio=$_POST['domicilio'];
     $partiva=$_POST['partitaiva'];
     
-    if($partiva===null || $partiva>==0 || $domicilio===null){
+    if($partiva===null || $partiva<=0 || $domicilio===null){
         trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
