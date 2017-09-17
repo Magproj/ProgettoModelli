@@ -14,6 +14,8 @@
 </html>
 <?php
 
+    require_once 'HTMLPurifier.auto.php';
+
     //dati del form
     $id=$_POST['identificatore'];
     $idimpianto = $_POST['idimpianto'];
@@ -22,8 +24,8 @@
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    $id = htmlspecialchars($id);
-    $idimpianto = htmlspecialchars($idimpianto);
+    $id = htmlentities($id);
+    $idimpianto = htmlentities($idimpianto);
     
     //database
     define('DB_HOST', '127.0.0.1');
