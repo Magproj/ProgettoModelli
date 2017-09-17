@@ -30,8 +30,8 @@
     if($user!=='admin' && $pass!=='admin'){trigger_error('Non si ha l\'autorizzazione per questa pagina.', E_USER_NOTICE);}
     
     //dati del form
-    $id=$_POST['identificatore'];
-    $idimpianto=$_POST['idimpianto'];
+    $id=htmlentities($_POST['identificatore']);
+    $idimpianto=htmlentities($_POST['idimpianto']);
     
     if($id===null || $idimpianto===null || $id<0 || $idimpianto<0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
