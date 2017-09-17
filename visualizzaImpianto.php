@@ -46,7 +46,7 @@
         echo $str;
             
         $id = mysql_result($result, 0, 'id');
-        $str =  'Identificatore:  ' . $id). ' </br>';
+        $str =  'Identificatore:  ' . $id. ' </br>';
         echo $str;
         $tipo = mysql_result($result, 0, 'tipo');
         $str = 'Tipo: ' .$tipo. ' </br>';
