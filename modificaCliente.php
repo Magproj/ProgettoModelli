@@ -14,7 +14,15 @@
 </html>
 
 <?php
-
+    
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
+    
+    
     //dati del form
     $partiva=$_POST['partitaiva'];
     
@@ -47,25 +55,25 @@
         $str = 'Partita Iva:  ' . $partitaiva . ' </br>';
         echo $str;
         $nome = htmlspecialchars($row[1]);
-        $str = 'Nome:  ' . $nome . ' <a href="modificaNome.html">Edit</a></br>';
+        $str = 'Nome:  ' . $nome . ' <a href="modificaNome1.php">Edit</a></br>';
         echo $str;
         $domicilio = htmlspecialchars($row[2]);
-        $str = 'Domicilio:  ' . $domicilio . ' <a href="modificaDomicilio.html">Edit</a></br>';
+        $str = 'Domicilio:  ' . $domicilio . ' <a href="modificaDomicilio1.php">Edit</a></br>';
         echo $str;
         $citta = htmlspecialchars($row[3]);
-        $str = 'Citta: ' . $citta . ' <a href="modificaCitta.html">Edit</a></br>';
+        $str = 'Citta: ' . $citta . ' <a href="modificaCitta1.php">Edit</a></br>';
         echo $str;
         $tel = htmlspecialchars($row[5]);
-        $str = 'Telefono: ' . $tel . ' <a href="modificaTelefono.html">Edit</a></br>';
+        $str = 'Telefono: ' . $tel . ' <a href="modificaTelefono1.php">Edit</a></br>';
         echo $str;
         $email = htmlspecialchars($row[4]);
-        $str = 'Email: ' . $email . ' <a href="modificaEmail.html">Edit</a></br>';
+        $str = 'Email: ' . $email . ' <a href="modificaEmail1.php">Edit</a></br>';
         echo $str;
         $username = htmlspecialchars($row[6]);
-        $str = 'Username: ' . $username . ' <a href="modificaUsername.html">Edit</a></br>';
+        $str = 'Username: ' . $username . ' <a href="modificaUsername1.php">Edit</a></br>';
         echo $str;
         $password = htmlspecialchars($row[7]);
-        $str = 'Password: ' . $password . ' <a href="modificaPassword.html">Edit</a></br>';
+        $str = 'Password: ' . $password . ' <a href="modificaPassword1.php">Edit</a></br>';
         echo $str;
     
     } else {

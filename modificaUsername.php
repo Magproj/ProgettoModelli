@@ -14,7 +14,14 @@
 </html>
 
 <?php
-
+    
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
+    
     //dati del form
     $usernameC=$_POST['username'];
     $partiva=$_POST['partitaiva'];

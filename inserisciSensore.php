@@ -16,6 +16,15 @@
 
 <?php
 
+    
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
+    
+
     //dati del form
     $id=$_POST['identificatore'];
     $marca=$_POST['marca'];
@@ -55,7 +64,7 @@
         $sql1=sprintf("SELECT * FROM modellostringa WHERE tipo='%s' AND id_impianto='%s'", mysql_real_escape_string($tipo), mysql_real_escape_string($idimpianto));
         $result = mysql_query($sql1, $dbh);
         $conta = mysql_num_rows($result);
-        if($conta>==1){
+        if($conta>=1){
             $segn=1;
         }        
     }

@@ -15,14 +15,21 @@
 
 
 <?php
-
+    
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
+    
+    
     //dati del form
-    $idimpianto=$_POST['id'];
+    $id=htmlentities($_POST['id']);
     
-    if($idimpianto===null || $idimpianto<=0){
-        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
+    if($id===null || $id<0){
+	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
-    
     
     //database
     define('DB_HOST', '127.0.0.1');
@@ -42,8 +49,9 @@
       $stato = $_POST['stato'] == 'true' ? true : false;
     }
     
+
     //comando SQL
-    $sql = sprintf("UPDATE impianto SET stato='%s' WHERE id='%s'", mysqli_real_escape_string($mysqli, $stato), mysqli_real_escape_string($mysqli, $idimpianto));
+    $sql = sprintf("UPDATE impianto SET stato='%s' WHERE id='%s'", mysqli_real_escape_string($mysqli, $stato), mysqli_real_escape_string($mysqli, $row[0]));
     $result = $mysqli->query($sql);
     
     if($result===true){

@@ -14,7 +14,14 @@
 </html>  
 
 <?php
-
+    
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
+    
     //dati del form
     $id=htmlentities($_POST['identificatore']);
     
@@ -60,10 +67,10 @@
         echo $str;
         $stato = htmlspecialchars($row[3]);
         if($stato===true){
-            $str = 'Stato: Attivo <a href="modificaStatoImpianto.html">Edit</a></br>';
+            $str = 'Stato: Attivo <a href="modificaStatoImpianto1.php">Edit</a></br>';
             echo $str;
         } else{
-            $str = 'Stato: Non attivo <a href="modificaStatoImpianto.html">Edit</a></br>';
+            $str = 'Stato: Non attivo <a href="modificaStatoImpianto1.php">Edit</a></br>';
             echo $str;
         }
         $idcliente = htmlspecialchars($row[4]);

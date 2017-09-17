@@ -15,6 +15,13 @@
 
 <?php
 
+      session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }     
+
 //dati del form
 $nome=$_POST['nome'];
 $partiva=$_POST['partiva'];
@@ -34,7 +41,7 @@ if($domicilio===null || $citta===null){
     trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
 }
 
-if($email===null || $telefono>==0 || $telefono===null){
+if($email===null || $telefono<=0 || $telefono===null){
     trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
 }
 

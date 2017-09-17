@@ -14,6 +14,14 @@
 </html> 
 
 <?php
+    
+    
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
 
     //dati del form
     $id=$_POST['identificatore'];
@@ -52,14 +60,14 @@
         echo $str;
         $stato = htmlspecialchars$row[1];
         if($stato===true){
-	    $str = 'Stato: Attivo <a href="modificaStatoAdatt.html">Edit</a></br>';
+	    $str = 'Stato: Attivo <a href="modificaStatoAdatt1.php">Edit</a></br>';
             echo $str;
         } else{
-	    $str = 'Stato: Non attivo <a href="modificaStatoAdatt.html">Edit</a></br>';
+	    $str = 'Stato: Non attivo <a href="modificaStatoAdatt1.php">Edit</a></br>';
             echo $str;
         }
         $idsensore = htmlspecialchars($row[2]);
-	$str = 'Identificatore sensore: ' . $idsensore . ' <a href="modificaSensoreAdatt.html">Edit</a></br>';
+	$str = 'Identificatore sensore: ' . $idsensore . ' <a href="modificaSensoreAdatt1.php">Edit</a></br>';
         echo $str;
     
     } else {

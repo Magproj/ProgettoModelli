@@ -14,7 +14,15 @@
 </html>
 
 <?php
-
+    
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
+    
+    
     //dati del form
     $id=$_POST['identificatore'];
     $dimensione=$_POST['dimensione'];
@@ -33,7 +41,7 @@
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    if($idCliente===null || $idCliente>==0){
+    if($idCliente===null || $idCliente<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
