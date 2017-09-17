@@ -22,6 +22,9 @@
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
+    $id = htmlentities($id);
+    $idimpianto = htmlentities($idimpianto);
+    
     //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');
