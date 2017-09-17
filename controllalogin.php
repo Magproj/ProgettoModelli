@@ -1,20 +1,16 @@
 <?php
 
-//accesso al database
-$host='localhost';
-$username='root';
-$password='';
-$db_nome='progetto';
-$tab_nome="cliente";
+//database
+define('DB_HOST', '127.0.0.1');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'progetto');
+    
+//get connection
+$mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
-
-$result = mysql_pconnect($host, $username, $password);
-if($result===false){
-    trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-}
-$result = mysql_select_db($db_nome);
-if($result===false){
-    trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+if($mysqli->connect_errno){
+    trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
 }
 
 //acquisizione dati dal form HTML
@@ -34,9 +30,9 @@ $password = mysql_real_escape_string($password);
 $passmd5 = md5($password);
 
 //lettura della tabella utenti
-$sql = "SELECT * FROM $tab_nome WHERE Username='$username' AND Password='$password'";
-$result = mysql_query($sql);
-$conta = mysql_num_rows($result);
+$sql = sprintf("SELECT * FROM cliente WHERE Username='%s' AND Password='%s'", mysqli_real_escape_string($mysqli, $username), mysqli_real_escape_string($mysqli, $password));
+$result = $mysqli->query($sql);
+$conta= mysqli_num_rows($result);
 if($conta>0){
     session_start();
     $_SESSION['username'] = $username;

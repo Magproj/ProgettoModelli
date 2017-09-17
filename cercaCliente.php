@@ -17,53 +17,53 @@
 <?php //dati del form
     $partiva=$_POST['partitaiva'];
     
-    //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
+    /database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
     
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
     //comando SQL
-    $sql = "SELECT * FROM cliente WHERE PartitaIva=$partiva";
-    $result = mysql_query($sql);
-    $conta= mysql_num_rows($result);
+    $sql = sprintf("SELECT partitaiva, nomeazienda, domicilio, citta, telefono, email, username, password FROM cliente WHERE PartitaIva='%s'", mysqli_real_escape_string($mysqli, $partiva));
+    $result = $mysqli->query($sql);
+    $conta= mysqli_num_rows($result);
+    
+    $row = mysqli_fetch_array($result, MYSQLI_NUM);   
     
     if($conta===1){
     
         $str = 'I dati del cliente cercato sono i seguenti: <br><br>';
         echo $str;
             
-        $partitaiva = mysql_result($result, 0, 'partitaiva');
+        $partitaiva = $row[0];
         $str = '<b>Partita Iva:  </b>' . $partitaiva . ' </br>';
         echo $str;
-        $nome = mysql_result($result, 0, 'nomeazienda');
+        $nome = $row[1]);
         $str = '<b>Nome: </b> ' . $nome . ' </br>';
         echo $str;
-        $domicilio = mysql_result($result, 0, 'domicilio');
+        $domicilio = $row[2];
         $str = '<b>Domicilio:  </b>' . $domicilio . ' </br>';
         echo $str;
-        $citta = mysql_result($result, 0, 'citta');
+        $citta = $row[3];
         $str = '<b>Citta: </b>' . $citta . ' </br>';
         echo $str;
-        $tel = mysql_result($result, 0, 'telefono');
+        $tel = $row[4];
         $str = '<b>Telefono: </b>' . $tel . ' </br>';
         echo $str;
-        $email = mysql_result($result, 0, 'email');
+        $email = $row[5];
         $str = '<b>Email: </b>' . $email . ' </br>';
         echo $str;
-        $username = mysql_result($result, 0, 'username');
+        $username = $row[6];
         $str =  '<b>Username: </b>' . $username . ' </br>';
         echo $str;
-        $password = mysql_result($result, 0, 'password');
+        $password = $row[7];
         $str = '<b>Password: </b>' . $password . ' </br>';
         echo $str;
     
