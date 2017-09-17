@@ -23,9 +23,10 @@
 	    header('Location:Login.html');
       }
     
+    $user = $_SESSION['username'];
+    $pass = $_SESSION['password'];
     //dati del form
     $domicilio=$_POST['domicilio'];
-    $partiva=$_POST['partitaiva'];
    
    
     //database
@@ -41,9 +42,12 @@
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
+    $sql = sprintf("SELECT partitaiva FROM cliente WHERE username='%s' AND password='%s'", mysqli_real_escape_string($mysqli, $user), mysqli_real_escape_string($mysqli, $pass));
+    $result = $mysqli->query($sql);
     
+    $row = mysqli_fetch_array($result);
     //comando SQL
-    $sql = sprintf("UPDATE cliente SET domicilio='%s' WHERE partitaiva='%s'", mysqli_real_escape_string($mysqli, $domicilio), mysqli_real_escape_string($mysqli, $partiva));
+    $sql = sprintf("UPDATE cliente SET domicilio='%s' WHERE partitaiva='%s'", mysqli_real_escape_string($mysqli, $domicilio), mysqli_real_escape_string($mysqli, $row[0]));
     $result = $mysqli->query($sql);
     
     
