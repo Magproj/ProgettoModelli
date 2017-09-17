@@ -22,6 +22,8 @@
 	    header('Location:Login.html');
       }
     
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin'){
+    
     
     //dati del form
     $id=$_POST['identificatore'];
@@ -76,4 +78,8 @@
         echo $str;
     }
 
+     }else{
+	trigger_error('Non è possibile accedere alle informazioni.' , E_USER_NOTICE);
+    }
+    
 ?>

@@ -23,11 +23,10 @@
 	    header('Location:Login.html');
       }
     
-    $user = $_SESSION['username'];
-    $pass = $_SESSION['password'];
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin'){
     //dati del form
     $domicilio=$_POST['domicilio'];
-   
+    $id = $_POST['partitaiva'];
    
     //database
     define('DB_HOST', '127.0.0.1');
@@ -42,12 +41,11 @@
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
-    $sql = sprintf("SELECT partitaiva FROM cliente WHERE username='%s' AND password='%s'", mysqli_real_escape_string($mysqli, $user), mysqli_real_escape_string($mysqli, $pass));
-    $result = $mysqli->query($sql);
+    
     
     $row = mysqli_fetch_array($result);
     //comando SQL
-    $sql = sprintf("UPDATE cliente SET domicilio='%s' WHERE partitaiva='%s'", mysqli_real_escape_string($mysqli, $domicilio), mysqli_real_escape_string($mysqli, $row[0]));
+    $sql = sprintf("UPDATE cliente SET domicilio='%s' WHERE partitaiva='%s'", mysqli_real_escape_string($mysqli, $domicilio), mysqli_real_escape_string($mysqli, $id));
     $result = $mysqli->query($sql);
     
     
@@ -61,5 +59,8 @@
     } else {
         echo 'Attenzione, si è verificato un errore: ' . mysql_error();
     }
-
+    
+     }else{
+	trigger_error('Non è possibile accedere alle informazioni.' , E_USER_NOTICE);
+    }
 ?>

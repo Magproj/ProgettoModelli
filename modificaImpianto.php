@@ -22,6 +22,8 @@
 	    header('Location:Login.html');
       }
     
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin'){
+    
     //dati del form
     $id=htmlentities($_POST['identificatore']);
     
@@ -80,6 +82,10 @@
     } else {
         $str = 'L\'impianto non e\' stato trovato.';
         echo $str;
+    }
+    
+     }else{
+	trigger_error('Non è possibile accedere alle informazioni.' , E_USER_NOTICE);
     }
 
 ?>
