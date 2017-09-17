@@ -21,28 +21,18 @@
     $id=$_POST['identificatore'];
     $idsensore=$_POST['idsensore'];
     
-    if($id===null || $id<=0){
-    trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
-    }
+    
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
+    
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
-    if($idsensore===null || $idsensore<=0){
-        trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
-    }
-    
-    
-    //accesso al database
-    $host='localhost';
-    $username='root';
-    $password='';
-    $db_nome='progetto';
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
-    
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
     if(isset($_POST['stato'])) { 
@@ -51,9 +41,10 @@
     }
     
     //comando SQL
-    $sql = "INSERT INTO adattatore (Id, stato, id_sensore) VALUES ('$id','$stato','$idsensore')";
+    $sql = sprintf("INSERT INTO adattatore (Id, stato, id_sensore) VALUES ('%s','%s','%s')", mysql_real_escape_string($mysqli, $id), mysql_real_escape_string($mysqli, $stato), mysql_real_escape_string($mysqli, $idsensore));
+    $result = $mysqli->query($sql);    
     
-    if(mysql_query($sql)===true){
+    if($result===true){
         echo 'Dati memorizzati correttamente<br />';
         $str = "Torna alle <a href=\"opzioniazienda.php\">opzioni di selezione</a>";
         echo $str;

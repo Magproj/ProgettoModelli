@@ -15,19 +15,17 @@
 
 <?php
 
-//accesso al database
-    $host="localhost";
-    $username="sensorsystem";
-    $password="";
-    $db_nome="my_sensorsystem";
-    $result = mysql_pconnect($host, $username, $password);
-    if($result===false){
-        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
-    }
+    //database
+    define('DB_HOST', '127.0.0.1');
+    define('DB_USERNAME', 'root');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', 'progetto');
     
-    $result = mysql_select_db($db_nome);
-    if($result===false){
-        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    //get connection
+    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
     //dati del form
@@ -40,16 +38,18 @@
     }
     
     //comando SQL
-    $sql = "SELECT id_impianto, Id_sensore, valore FROM datirilevati JOIN impianto ON Id=id_impianto WHERE id_cliente='$partitaiva' ";
-    $result = mysql_query($sql);
+    $sql = sprintf("SELECT id_impianto, Id_sensore, valore FROM datirilevati JOIN impianto ON Id=id_impianto WHERE id_cliente='%s' ", mysqli_real_escape_string($mysqli, $partitaiva));
+    $result = $mysqli->query($sql);
     if($result===false) trigger_error('Query fallita. ', E_USER_NOTICE);
+    $row = mysqli_fetch_array($result, MYSQLI_NUM);
     
-    $sql1 = "SELECT id_impianto, ValMax, ValMin, Tipo FROM modellostringa";
-    $result1 = mysql_query($sql1);
+    $sql1 = sprintf("SELECT id_impianto, ValMax, ValMin, Tipo FROM modellostringa");
+    $result1 = $mysqli->query($sql1);    
     if($result1===false) trigger_error('Query fallita. ', E_USER_NOTICE);
+    $row1 = mysqli_fetch_array($result1, MYSQLI_NUM);
   
-    $conta= mysql_num_rows($result);
-    $conta2= mysql_num_rows($result1);
+    $conta= mysqli_num_rows($result);
+    $conta2= mysqli_num_rows($result1);
 
     $i=0;
     $j=0;
@@ -58,13 +58,13 @@
 	    while($i<$conta){
 
 
-	                            $id_impianto[$i] = mysql_result($result, 0, "id_impianto");
-                                    $valore[$i] = mysql_result($result, 0, "valore");
-                                    $idsensore[$i]= mysql_result($result, 0, "Id_sensore");
-                                    $id [$j]= mysql_result($result1, 0, "id_impianto");
-                                    $max [$j]= mysql_result($result1, 0, "ValMax");
-                                    $min [$j]= mysql_result($result1, 0, "ValMin");
-                                    $tipo[$j]= mysql_result($result1, 0, "Tipo");
+	                            $id_impianto[$i] = $row[0];
+                                    $valore[$i] = $row[1];
+                                    $idsensore[$i]= $row[2];
+                                    $id [$j]= $row1[0];
+                                    $max [$j]= $row1[1];
+                                    $min [$j]= $row1[2];
+                                    $tipo[$j]= $row1[3];
 
                                     if($id_impianto=$id){
                                              if($valore<$min || $valore>$max){
