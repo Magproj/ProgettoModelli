@@ -25,6 +25,8 @@
     //dati del form
     $id=$_POST['identificatore'];
     
+    $id = htmlentities($id);
+    
     //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');
@@ -50,16 +52,16 @@
         $str = 'I dati dell\'impianto cercato sono i seguenti: <br><br>';
         echo $str;
             
-        $id = $row[0];
+        $id = htmlspecialchars($row[0]);
         $str =  'Identificatore:  ' . $id. ' </br>';
         echo $str;
-        $tipo = $row[1];
+        $tipo = htmlspecialchars($row[1]);
         $str = 'Tipo: ' .$tipo. ' </br>';
         echo $str;
-        $dimensione = $row[2];
+        $dimensione = htmlspecialchars($row[2]);
         $str = 'Dimensione: '.$dimensione.' </br>';
         echo $str;
-        $stato = $row[3];
+        $stato = htmlspecialchars($row[3]);
         if($stato===true){
             $str = 'Stato: Attivo </br>';
             echo $str;
@@ -67,7 +69,7 @@
             $str = 'Stato: Non attivo </br>';
             echo $str;
         }
-        $idcliente = $row[4];
+        $idcliente = htmlspecialchars($row[4]);
         $str = 'Identificatore cliente: ' .$idcliente. ' </br>';
         echo $str;
     
