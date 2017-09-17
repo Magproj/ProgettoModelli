@@ -22,7 +22,7 @@
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
     }
     
-    $id = htmlentities($id);
+    $id = htmlspecialchars($id);
     
    //database
     define('DB_HOST', '127.0.0.1');
