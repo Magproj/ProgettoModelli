@@ -24,10 +24,10 @@
     
     
     //dati del form
-    $id=$_POST['identificatore'];
-    $dimensione=$_POST['dimensione'];
-    $tipo=$_POST['tipo'];
-    $idCliente=$_POST['idcliente'];
+    $id=htmlentities($_POST['identificatore']);
+    $dimensione=htmlentities($_POST['dimensione']);
+    $tipo=htmlentities($_POST['tipo']);
+    $idCliente=htmlentities($_POST['idcliente']);
     
     if($id===null || $id<=0){
 	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
