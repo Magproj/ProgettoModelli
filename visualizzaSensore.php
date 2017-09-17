@@ -30,53 +30,54 @@
     //get connection
     $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
-    if($mysqli===false){
-    	trigger_error('Connection failed: ' . $mysqli->error, E_USER_NOTICE);
+    if($mysqli->connect_errno){
+    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
-    
-    //comando SQL
-    $sql = sprintf("SELECT * FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'");
-    $result = mysqli_query($mysqli, $sql);    
+    //execute query
+    $query = sprintf("SELECT * FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'");
+    $result = $mysqli->query($query));
     $conta= mysqli_num_rows($result);
     
+
     if($conta===1){
+        
+        $row = $result->fetch_array(MYSQLI_ASSOC);
+
         $str = 'I dati del sensore cercato sono i seguenti: <br><br>';
         echo $str;
         
-        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-
-        $str = 'Identificatore:  ' . $row['id'] . ' </br>';
+        
+        $str = 'Identificatore:  ' . $row['id_sensore'] . ' </br>';
         echo $str;
-        $marca = mysql_result($result, 0, 'marca');
-        $str = 'Marca:  ' . $marca . ' </br>';
+        $str = 'Marca:  ' . $row['marca'] . ' </br>';
         echo $str;
-        $tipo = mysql_result($result, 0, 'tipo');
-        $str = 'Tipo:  ' . $tipo . ' </br>';
+        $str = 'Tipo:  ' . $row['tipo'] . ' </br>';
         echo $str;
-        $stato = mysql_result($result, 0, 'stato');
-        if($stato===true){
+        $stato = $row['stato'];
+        if($stato===true){;
             $str = 'Stato: Attivo </br>';
             echo $str;
         } else{
             $str = 'Stato: Non attivo </br>';
             echo $str;
         }
-        $idimpianto = mysql_result($result, 0, 'id_impianto');
-        $str = 'Identificatore impianto: ' . $idimpianto . ' </br>';
+    
+        $str = 'Identificatore impianto: ' . $row['idimpianto'] . ' </br>';
         echo $str;
-        $sql2= "SELECT * FROM modellostringa WHERE tipo='$tipo' AND id_impianto='$idimpianto'";
-        $result = mysql_query($sql2);
-	$modello = mysql_result($result, 0, 'cifredecimali');
-        $str = 'Modello: ' . $modello . '</br>';
+        $sql2= "SELECT * FROM modellostringa WHERE tipo='$row['tipo]' AND id_impianto='$row['$idimpianto']'";
+        $result = $mysqli->query($query);
+        
+        $row = $result->fetch_array(MYSQLI_ASSOC);
+        
+    
+        $str = 'Modello: ' . $row['modello'] . '</br>';
 	echo $str;
-        $valmin = mysql_result($result, 0, 'valmin');
-        $str = 'Valore minimo: ' . $valmin . '</br>';
+        $str = 'Valore minimo: ' . $row['valmin'] . '</br>';
         echo $str;
-        $valmax = mysql_result($result, 0, 'valmax');
-        $str = 'Valore massimo: ' . $valmax . '</br>';
+        $str = 'Valore massimo: ' . $row['valmax'] . '</br>';
         echo $str;
-        $err = mysql_result($result, 0, 'coderrore');
+        $err = $row['coderrore'];
         if($err===true){
             $str = 'Errore rilevato.</br>';
             echo $str;
