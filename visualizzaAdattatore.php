@@ -4,10 +4,10 @@
 		  <title>SENSOR MANAGEMENT SYSTEM</title>
 	  	  <link rel="stylesheet" type="text/css" href="css/stile.css" media="screen">
 	</head>
-        
+
         <body>
-            
-            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;">
+
+            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 319px; width: 725px;">
 			<a href="opzioniazienda.php"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
 	    </div>
         </body>
@@ -16,37 +16,53 @@
 <?php
 
     //dati del form
-    $id=$_POST["identificatore"];
+    $id=$_POST['identificatore'];
+    
+    if($id>==0 || $id===null){
+        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
+    }
 
-    //accesso al database
-    $host="localhost";
-    $username="root";
-    $password="";
-    $db_nome="progetto";
-    mysql_connect($host, $username, $password) or die ('Impossibile connettersi al server: ' . mysql_error());
-    mysql_select_db($db_nome) or die ('Accesso al database non riuscito: ' . mysql_error());
+    ///accesso al database
+    $host='localhost';
+    $username='root';
+    $password='';
+    $db_nome='progetto';
+    $result = mysql_connect($host, $username, $password);
+    if($result===false){
+        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
+    }
+    
+    $result = mysql_select_db($db_nome);
+    if($result===false){
+        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    }
     
     //comando SQL
-    $sql = "SELECT * FROM adattatore WHERE Id=$id";
+    $sql = sprintf("SELECT * FROM adattatore WHERE Id='%s' ", mysql_real_escape_string($id));
     $result = mysql_query($sql);
     $conta= mysql_num_rows($result);
 
-    if($conta==1){
-    
-        echo "I dati dell'adattatore cercato sono i seguenti: <br><br>";
+    if($conta===1){
+        $str = 'I dati dell\'adattatore cercato sono i seguenti: <br><br>';
+        echo $str;
             
-        $id = mysql_result($result, 0, "id");
-        echo 'Identificatore:  ' . $id . ' </br>';
-        if($stato){
-            echo 'Stato: Attivo </br>';
+        $id = mysql_result($result, 0, 'id');
+        $str = 'Identificatore:  ' . $id . ' </br>';
+        echo $str;
+        if($stato===true){
+            $str = 'Stato: Attivo </br>';
+            echo $str;
         } else{
-            echo 'Stato: Non attivo </br>';
+            $str = 'Stato: Non attivo </br>';
+            echo $str;
         }
-        $idsensore = mysql_result($result, 0, "id_sensore");
-        echo 'Identificatore sensore: ' . $idsensore . ' </br>';
+        $idsensore = mysql_result($result, 0, 'id_sensore');
+        $str = 'Identificatore sensore: ' . $idsensore . ' </br>';
+        echo $str;
 
     } else {
-        echo "L'adattatore non e' stato trovato.";
+        $str = 'L\'adattatore non e\' stato trovato.';
+        echo $str;
     }
 
 ?>

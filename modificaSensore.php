@@ -1,31 +1,41 @@
 <html>
     <head>
-		  <meta http-equiv='content-type' content='text/html; charset=utf-8'>
+		  <meta http-equiv="content-type" content="text/html; charset=utf-8">
 		  <title>SENSOR MANAGEMENT SYSTEM</title>
-	  	  <link rel='stylesheet' type='text/css' href="css/stile.css" media='screen'>
+	  	  <link rel="stylesheet" type="text/css" href="css/stile.css" media="screen">
 	</head>
-        
+
         <body>
-            
-            <div style='margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;'>
-			<a href='opzioniazienda.html'><img style='border: 0px solid ; width: 709px; height: 86px;' class='classname' alt='' src='images/logo.png'></a>
+
+            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 319px; width: 725px;">
+			<a href="opzioniazienda.php"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
 	    </div>
         </body>
-</html>  
-
+</html>
 <?php
 
     //dati del form
     $id=$_POST['identificatore'];
     $idimpianto = $_POST['idimpianto'];
     
+    if($id===null || $id>==0 || $idimpianto===null || $idimpianto>==0){
+        trigger_error('Errore nell\'inserimento del dato. ' , E_USER_NOTICE);
+    }
+    
     //accesso al database
-    $host="localhost";
-    $username="root";
-    $password="";
-    $db_nome="progetto";
-    mysql_connect($host, $username, $password) or die ('Impossibile connettersi al server: ' . mysql_error());
-    mysql_select_db($db_nome) or die ('Accesso al database non riuscito: ' . mysql_error());
+    $host='localhost';
+    $username='root';
+    $password='';
+    $db_nome='progetto';
+    $result = mysql_pconnect($host, $username, $password);
+    if($result===false){
+        trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
+    }
+    
+    $result = mysql_select_db($db_nome);
+    if($result===false){
+        trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+    }
     
     //comando SQL
     $sql = "SELECT * FROM sensore WHERE Id_sensore='$id' AND id_impianto='$idimpianto'";
@@ -35,38 +45,49 @@
 
     
     
-    if($conta==1){
+    if($conta===1){
         
-        echo "I dati del sensore cercato sono i seguenti: <br><br>";
-        
-        $id = mysql_result($result, 0, "id_sensore");
-        echo 'Sensore:  ' . $id . '  <a href="modificaIdSensore.html">Edit</a></br>';
-        $stato = mysql_result($result, 0, "stato");
-        if($stato){
-            echo 'Stato: Attivo <a href="modificaStatoSensore.html">Edit</a></br>';
+	$str = 'I dati del sensore cercato sono i seguenti: <br><br>';
+        echo $str;
+
+        $id = mysql_result($result, 0, 'id_sensore');
+	$str = 'Sensore:  ' . $id . '  <a href="modificaIdSensore.html">Edit</a></br>';
+        echo $str;
+        $stato = mysql_result($result, 0, 'stato');
+        if($stato===true){
+	    $str = 'Stato: Attivo <a href="modificaStatoSensore.html">Edit</a></br>';
+            echo $str;
         } else{
-            echo 'Stato: Non attivo <a href="modificaStatoSensore.html">Edit</a></br>';
+	    $str = 'Stato: Non attivo <a href="modificaStatoSensore.html">Edit</a></br>';
+            echo $str;
         }
-        $idimpianto = mysql_result($result, 0, "id_impianto");
-        echo 'Identificatore impianto: ' . $idimpianto . ' <a href="modificaImpiantoSens.html">Edit</a></br>';
-	$tipo = mysql_result($result, 0, "tipo");
+        $idimpianto = mysql_result($result, 0, 'id_impianto');
+	$str = 'Identificatore impianto: ' . $idimpianto . ' <a href="modificaImpiantoSens.html">Edit</a></br>';
+        echo $str;
+	$tipo = mysql_result($result, 0, 'tipo');
 	$sql= "SELECT * FROM modellostringa WHERE tipo='$tipo' AND id_impianto='$idimpianto'";
         $result1 = mysql_query($sql);
-	if(!$result)
-	    die("Errore nella query $result1: " . mysql_error());
-	$modello = mysql_result($result1, 0, "cifredecimali");
-	echo 'Modello: ' . $modello . ' <a href="modificaModello.html">Edit</a></br>';
-	$coderr = mysql_result($result1, 0, "coderrore");
-	echo 'Errore: ' . $coderr . '<a href="modificaErrore.html">Edit</a><br>';
-	$valmin = mysql_result($result1, 0, "valmin");
-	echo 'Valore minimo: ' .$valmin . '<a href="modificaValmin.html">Edit</a><br>';
-	$valmax = mysql_result($result1, 0, "valmax");
-	echo 'Valore massimo: ' . $valmax . '<a href="modificaValmax.html">Edit</a><br>';
-	echo 'Si ricorda che se viene inserito un nuovo modello per questo sensore, esso corrispondera a un nuovo modello per tutti i sensori dello stesso tipo in questo impianto.<br>';
+	if(!$result1===false)
+	    trigger_error('Errore nella query $result1: ' . mysql_error(), E_USER_NOTICE );
+	$modello = mysql_result($result1, 0, 'cifredecimali');
+	$str = 'Modello: ' . $modello . ' <a href="modificaModello.html">Edit</a></br>';
+	echo $str;
+	$coderr = mysql_result($result1, 0, 'coderrore');
+	$str = 'Errore: ' . $coderr . '<a href="modificaErrore.html">Edit</a><br>';
+	echo $str;
+	$valmin = mysql_result($result1, 0, 'valmin');
+	$str = 'Valore minimo: ' .$valmin . '<a href="modificaValmin.html">Edit</a><br>';
+	echo $str;
+	$valmax = mysql_result($result1, 0, 'valmax');
+	$str = 'Valore massimo: ' . $valmax . '<a href="modificaValmax.html">Edit</a><br>';
+	echo $str;
+	$str = 'Si ricorda che se viene inserito un nuovo modello per questo sensore, esso corrispondera a un nuovo modello per tutti i sensori dello stesso tipo in questo impianto.<br>'; 
+	echo $str;
 	
     
     } else {
-        echo "Il sensore non e' stato trovato.";
+	$str = 'Il sensore non e\' stato trovato.';
+        echo $str;
     }
 
 ?>

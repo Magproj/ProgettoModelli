@@ -1,18 +1,30 @@
 <?php
 
-$host="localhost";
-$username="root";
-$password="";
-$db_nome="progetto";
+//accesso al database
+$host='localhost';
+$username='root';
+$password='';
+$db_nome='progetto';
 $tab_nome="cliente";
 
 
-mysql_connect($host, $username, $password) or die('Impossibile connettersi al server: ' . mysql_error());
-mysql_select_db($db_nome) or die ('Accesso al database non riuscito: ' . mysql_error());
+$result = mysql_pconnect($host, $username, $password);
+if($result===false){
+    trigger_error('Impossibile connettersi al server: ' . mysql_error(), E_USER_NOTICE);
+}
+$result = mysql_select_db($db_nome);
+if($result===false){
+    trigger_error('Accesso al database non riuscito: ' . mysql_error(), E_USER_NOTICE);
+}
 
 //acquisizione dati dal form HTML
 $username = $_POST['username'];
 $password = $_POST['password'];
+
+//controlli per l'input
+if($password===null || $password>==0){
+    trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
+}
 
 //protezione per SQL injection
 $username = stripcslashes($username);
@@ -31,15 +43,16 @@ if($conta>0){
     $_SESSION['password'] = $password;
     header("Location: opzionicliente.php");
 }
-elseif($username=="admin" && $password=="admin"){
+elseif($username==='admin' && $password==='admin'){
     session_start();
     $_SESSION['username'] = $username;
     $_SESSION['password'] = $password;
-    header("Location: opzioniazienda.php");
+    header('Location: opzioniazienda.php');
 }
 else {
-    echo "Identificazione non riuscita: nome utente o password errati <br />";
-    echo "Torna a pagina di <a href=\"Login.html\">login</a>";
+    echo 'Identificazione non riuscita: nome utente o password errati <br />';
+    $str = "Torna a pagina di <a href=\"Login.html\">login</a>";
+    echo $str;
 }
 
 ?>
