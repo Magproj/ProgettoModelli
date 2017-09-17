@@ -60,7 +60,7 @@
     for($j=0; $j<$NCAMPI; $j++){
 	$str = '<td>';
        echo $str;
-       echo $row[$i][$j];
+       echo htmlspecialchars($row[$i][$j]);
        $str = '</td>';
        echo $str;                                                       //stampa del recors set e quindi delle informazioni richieste
       }
