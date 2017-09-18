@@ -16,11 +16,17 @@
         
 <?php
     
+    session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
     
     //dati del form
     $partiva=$_POST['partitaiva'];
     
-    /database
+    //database
     define('DB_HOST', '127.0.0.1');
     define('DB_USERNAME', 'root');
     define('DB_PASSWORD', '');
@@ -48,7 +54,7 @@
         $partitaiva = $row[0];
         $str = '<b>Partita Iva:  </b>' . $partitaiva . ' </br>';
         echo $str;
-        $nome = $row[1]);
+        $nome = $row[1];
         $str = '<b>Nome: </b> ' . $nome . ' </br>';
         echo $str;
         $domicilio = $row[2];

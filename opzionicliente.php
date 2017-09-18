@@ -27,8 +27,8 @@ header("Location: Login.html");
 <div style="float: left; display: block; margin-top: 28px; height: 105px; text-align: left; margin-left: 110px; width: 735px;"><a href="opzionicliente.php"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a> </div>
 </div>
 <div>
-<div style="float: left; display: block; margin-top: 139px; text-align: center; margin-left: 139px; height: 249px; width: 236px;" class="wrapper"> <a href="visualizza.html"> <img style="border: 0px solid ; width: 249px; height: 247px;" class="classname" src="images/visualizza.jpg" alt=""></a> </div>
-<div style="float: left; display: block; margin-top: 139px; text-align: center; height: 249px; margin-left: 25px; width: 246px;" class="wrapper"> <a href="visualizzaDashboard.htm"> <img style="border: 0px solid ; width: 249px; height: 247px;" class="classname" src="images/dashboard.jpg" alt=""></a> </div>
-<div style="float: left; display: block; margin-top: 139px; text-align: center; height: 249px; margin-left: 19px; width: 255px;" class="wrapper"> <a href="autorizza.html"><img style="border: 0px solid ; width: 257px; height: 247px;" class="classname" alt="" src="images/autorizza.jpg"></a> </div>
+<div style="float: left; display: block; margin-top: 139px; text-align: center; margin-left: 139px; height: 249px; width: 236px;" class="wrapper"> <a href="visualizza.php"> <img style="border: 0px solid ; width: 249px; height: 247px;" class="classname" src="images/visualizza.jpg" alt=""></a> </div>
+<div style="float: left; display: block; margin-top: 139px; text-align: center; height: 249px; margin-left: 25px; width: 246px;" class="wrapper"> <a href="visualizzaDashboard.php"> <img style="border: 0px solid ; width: 249px; height: 247px;" class="classname" src="images/dashboard.jpg" alt=""></a> </div>
+<div style="float: left; display: block; margin-top: 139px; text-align: center; height: 249px; margin-left: 19px; width: 255px;" class="wrapper"> <a href="autorizza.php"><img style="border: 0px solid ; width: 257px; height: 247px;" class="classname" alt="" src="images/autorizza.jpg"></a> </div>
 </div>
 </body></html>

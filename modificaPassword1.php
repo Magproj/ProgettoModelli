@@ -10,15 +10,15 @@
       
 <html>
     <head>
-		<meta http-equiv="content-type" content="text/html"; charset=utf-8">
-		<title>SENSOR MANAGEMENT SYSTEM</title>
-		<link rel="stylesheet" type="text/css" href="css/stile.css" media="screen">
+		  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+		  <title>SENSOR MANAGEMENT SYSTEM</title>
+	  	  <link rel="stylesheet" type="text/css" href="css/stile.css" media="screen">
 	</head>
         
         <body>
             
             <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;">
-			<a href="home.html" TITLE="home"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" src="images/logo.png" ALT="logo"></a>
+			<a href="home.html"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
 	    </div>
             
             <h2 style="text-align: center;"><b>Modifica password cliente</b></h2>
@@ -30,7 +30,7 @@
                 <p>  Partita IVA: <input name="partitaiva" size="30" type="text"> </p>
                 
 		  <dl>
-		    <dt>  Password: <input name="password" size="30" type="text" autocomplete="off"></dt>
+		    <dt>  Password: <input name="password" size="30" type="text"></dt>
 		  </dl>
      
                 

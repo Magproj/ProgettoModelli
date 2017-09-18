@@ -8,12 +8,12 @@
       }
 ?>
 <html><head>    
-		<meta http-equiv="content-type" content="text/html"; charset=utf-8"><title>SENSOR MANAGEMENT SYSTEM</title>
+		  <meta http-equiv="content-type" content="text/html; charset=utf-8"><title>SENSOR MANAGEMENT SYSTEM</title>
 		  
-	  	<link rel="stylesheet" type="text/css" href="css/stile.css" media="screen"></head><body>
+	  	  <link rel="stylesheet" type="text/css" href="css/stile.css" media="screen"></head><body>
             
-			<div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;">
-			<a href="opzioniazienda.php" TITLE="opzioniazienda"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" src="images/logo.png" ALT="logo"></a>
+            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;">
+			<a href="opzioniazienda.php"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
 	    </div>
             
             <h2 style="text-align: center;"><b>Modifica valore massimo sensore</b></h2>
@@ -25,7 +25,7 @@
   <table style="text-align: left; width: 100px; margin-left: auto; margin-right: auto;" border="0" cellpadding="2" cellspacing="2">
 <tbody><tr><td style="vertical-align: top; text-align: center;">  Identificatore sensore: <br>
 </td><td style="vertical-align: top;"><input name="id" size="30" type="text"></td></tr><tr><td style="vertical-align: top; white-space: nowrap;"> Identificatore impianto: <br>
-</td><td style="vertical-align: top;"><input name="idimpianto" size="30" type="text"></td></tr><tr><td style="vertical-align: top; white-space: nowrap;">  Valore minimo: <br>
+</td><td style="vertical-align: top;"><input name="idimpianto" size="30" type="text"></td></tr><tr><td style="vertical-align: top; white-space: nowrap;">  Valore massimo: <br>
 </td><td style="vertical-align: top;"><input name="valmax" size="30" type="text"></td></tr></tbody>
   </table>
   <p> </p>
