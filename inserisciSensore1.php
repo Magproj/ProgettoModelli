@@ -38,14 +38,14 @@ session_start();
         </td>
       </tr>
 <tr>
-		<td style="vertical-align: top;"> Modello della stringa: (es: data/ora/valore) <br>
+		<td style="vertical-align: top;"> Modello della stringa: (es: data;ora;valore) <br>
 		</td>
 		<td style="vertical-align: top;">
 		<dl>
 		  <dt><br>
 		  </dt>
 		</dl>
-		<input name="modello" value="null" size="30" type="text">
+		<input name="modello" value="0" size="30" type="text">
 		<dl>
 		  <dt><br>
 </dt>

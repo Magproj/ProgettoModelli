@@ -26,14 +26,14 @@
     
 
     //dati del form
-    $id=htmlentities($_POST['identificatore']);
-    $marca=htmlentities($_POST['marca']);
-    $tipo=htmlentities($_POST['tipo']);
-    $idimpianto=htmlentities($_POST['idimpianto']);
-    $modello=htmlentities($_POST['modello']);
-    $coderr=htmlentities($_POST['codice']);
-    $valmin =htmlentities($_POST['valmin']);
-    $valmax=htmlentities($_POST['valmax']);
+    $id=$_POST['identificatore'];
+    $marca=$_POST['marca'];
+    $tipo=$_POST['tipo'];
+    $idimpianto=$_POST['idimpianto'];
+    $modello=$_POST['modello'];
+    $coderr=$_POST['codice'];
+    $valmin =$_POST['valmin'];
+    $valmax=$_POST['valmax'];
     $segn=0;
     
     
@@ -58,10 +58,10 @@
     
     
 
-    if($modello!=='null'){
+    if($modello!==0){
         $sql1=sprintf("SELECT * FROM modellostringa WHERE tipo='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $idimpianto));
         $result = $mysqli->query($sql1);
-        $conta = mysql_num_rows($result);
+        $conta = mysqli_num_rows($result);
         if($conta>=1){
             $segn=1;
         }        
@@ -69,23 +69,23 @@
     
     
     //comando SQL
-    $sql = sprintf("INSERT INTO sensore (Id_sensore, marca, tipo, stato, id_impianto, valmin, valmax) VALUES ('%s',  '%s', '%s', '%s', '%s', '%s', '%s')", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $marca), mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $stato), mysqli_real_escape_string($mysqli, $idimpianto), mysqli_real_escape_string($mysqli, $valmin), mysqli_real_escape_string($mysqli, $valmax));
+    $sql = sprintf("INSERT INTO sensore (Id_sensore, marca, tipo, stato, id_impianto) VALUES ('%s',  '%s', '%s', '%s', '%s')", mysqli_real_escape_string($mysqli, $id), mysqli_real_escape_string($mysqli, $marca), mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $stato), mysqli_real_escape_string($mysqli, $idimpianto));
     
     if($segn===1){
-        $sql2 = sprintf("UPDATE modellostringa SET cifredecimali='%s' AND coderrore='%s' AND valmin='%s' AND valmax='%s' WHERE tipo='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $modello), mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $valmin), mysql_real_escape_string($mysqli, $valmax), mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $idimpianto));
+        $sql2 = sprintf("UPDATE modellostringa SET cifredecimali='%s' AND coderrore='%s' AND valmin='%s' AND valmax='%s' WHERE tipo='%s' AND id_impianto='%s'", mysqli_real_escape_string($mysqli, $modello), mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $valmin), mysqli_real_escape_string($mysqli, $valmax), mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $idimpianto));
         $result2 = $mysqli->query($sql2);
-	if($result2)===true){
+	if($result2===true){
             echo 'Dati del modello della stringa aggiornati correttamente<br />';
         } else {
-            echo 'Attenzione, si è verificato un errore: ' . mysql_error();
+           trigger_error('Attenzione, si è verificato un errore:' . $mysqli->connect_error, E_USER_NOTICE);
         }
     }else{
-        $sql3 = sprintf("INSERT INTO modellostringa(tipo, cifredecimali, id_impianto, coderrore, valmin, valmax) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')," mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $modello), mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $valmin), mysqli_real_escape_string($mysqli, $valmax));
+        $sql3 = sprintf("INSERT INTO modellostringa(tipo, id_impianto, cifredecimali, coderrore, valmin, valmax) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", mysqli_real_escape_string($mysqli, $tipo), mysqli_real_escape_string($mysqli, $idimpianto), mysqli_real_escape_string($mysqli, $modello), mysqli_real_escape_string($mysqli, $coderr), mysqli_real_escape_string($mysqli, $valmin), mysqli_real_escape_string($mysqli, $valmax));
         $result3 = $mysqli->query($sql3);
 	if($result3===true){
             echo 'Dati del modello della stringa memorizzati correttamente<br />';
         } else {
-            echo 'Attenzione, si è verificato un errore: ' . mysql_error();
+            trigger_error('Attenzione, si è verificato un errore:' . $mysqli->connect_error, E_USER_NOTICE);
         }
     }
     
@@ -95,7 +95,7 @@
         $str = "Torna alle <a href=\"opzioniazienda.php\">opzioni di selezione</a>";
         echo $str;
     } else {
-        echo 'Attenzione, si è verificato un errore: ' . mysql_error();
+        trigger_error('Attenzione, si è verificato un errore:' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
 ?>
