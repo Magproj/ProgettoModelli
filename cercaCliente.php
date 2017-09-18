@@ -24,7 +24,7 @@
       }
     
     //dati del form
-    $partiva=$_POST['partitaiva'];
+    $partiva=htmlentities($_POST['partitaiva']);
     
     //database
     define('DB_HOST', '127.0.0.1');
@@ -51,28 +51,28 @@
         $str = 'I dati del cliente cercato sono i seguenti: <br><br>';
         echo $str;
             
-        $partitaiva = $row[0];
+        $partitaiva = htmlspecialchars($row[0]);
         $str = '<b>Partita Iva:  </b>' . $partitaiva . ' </br>';
         echo $str;
-        $nome = $row[1];
+        $nome = htmlspecialchars($row[1]);
         $str = '<b>Nome: </b> ' . $nome . ' </br>';
         echo $str;
-        $domicilio = $row[2];
+        $domicilio = htmlspecialchars($row[2]);
         $str = '<b>Domicilio:  </b>' . $domicilio . ' </br>';
         echo $str;
-        $citta = $row[3];
+        $citta = htmlspecialchars($row[3]);
         $str = '<b>Citta: </b>' . $citta . ' </br>';
         echo $str;
-        $tel = $row[4];
+        $tel = htmlspecialchars($row[4]);
         $str = '<b>Telefono: </b>' . $tel . ' </br>';
         echo $str;
-        $email = $row[5];
+        $email = htmlspecialchars($row[5]);
         $str = '<b>Email: </b>' . $email . ' </br>';
         echo $str;
-        $username = $row[6];
+        $username = htmlspecialchars($row[6]);
         $str =  '<b>Username: </b>' . $username . ' </br>';
         echo $str;
-        $password = $row[7];
+        $password = htmlspecialchars($row[7]);
         $str = '<b>Password: </b>' . $password . ' </br>';
         echo $str;
     
