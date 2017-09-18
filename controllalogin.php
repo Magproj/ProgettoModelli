@@ -27,7 +27,13 @@ $username = stripcslashes($username);
 $password = stripcslashes($password);
 $username = mysql_real_escape_string($username);
 $password = mysql_real_escape_string($password);
-$passmd5 = md5($password);
+
+
+$hashed_pass = password_hash($plain_pass, PASSWORD_BCRYPT, array('cost' => 13));
+if (password_verify($plain_pass, $hashed_pass)) { 
+  $valid = True;
+}
+
 
 //lettura della tabella utenti
 $sql = sprintf("SELECT * FROM cliente WHERE Username='%s' AND Password='%s'", mysqli_real_escape_string($mysqli, $username), mysqli_real_escape_string($mysqli, $password));
