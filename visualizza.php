@@ -7,17 +7,15 @@
 	    header('Location:Login.html');
       }
 ?>
-<html>
-	<head>
-		<meta http-equiv="content-type" content="text/html"; charset=utf-8">
-		<title>SENSOR MANAGEMENT SYSTEM</title>
-		<link rel="stylesheet" type="text/css" href="css/stile.css" media="screen">
-	</head>
+<html><head>
 
-        <body>
+	
+		  <meta http-equiv="content-type" content="text/html; charset=utf-8"><title>SENSOR MANAGEMENT SYSTEM</title>
+		  
+	  	  <link rel="stylesheet" type="text/css" href="css/stile.css" media="screen"></head><body>
 
-            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;">
-		    <a href="opzionicliente.php" TITLE="opzionicliente"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" src="images/logo.png" ALT="logo"></a>
+            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 209px; width: 875px;">
+		    <a href="opzionicliente.php"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
 	    </div>
 
         <h2 style="text-align: center;"><b>VISUALIZZAZIONE DATI RILEVATI</b></h2>
@@ -25,21 +23,19 @@
             </p>
 	    <div style="text-align: center;">
             <form action="visualizzaDati.php" method="post">
-                <p>  Identificatore Impianto: <input type="text" name="idimpianto" size="30"> </p>
-                <p>  Identificatore Sensore:  <input type="text" name="idsensore" size="30"> </p>
-		<p>  Partita Iva: <input type="text" name="partitaiva" size="30"> </p>
-                <p><input type="submit" value="invia" name="b1">
-                <input type="reset" value="annulla" name="b2"></p>
+                <p>  Identificatore Impianto: <input name="idimpianto" size="30" type="text"> </p>
+                <p>  Identificatore Sensore:  <input name="idsensore" size="30" type="text"> </p>
+		<p>  Partita Iva: <input name="partitaiva" size="30" type="text"> </p>
+                <p><input value="invia" name="b1" type="submit">
+                <input value="annulla" name="b2" type="reset"></p>
             </form>
 	    </div>
 	    <div style="text-align: center;">
          <p style="text-align: center;"><b>Altrimenti visualizza tutti i dati rilevati memorizzati</b></p>
         <form action="visualizzaTuttiDati.php" method="post">
-        				<p>  Partita Iva: <input type="text" name="partitaiva" size="30"> </p>
-		                <p><input type="submit" value="invia" name="b1">
-            </form>
-		</div>
+        				<p>  Partita Iva: <input name="partitaiva" size="30" type="text"> </p>
+		                <p><input value="invia" name="b1" type="submit">
+            
+		</p></form></div>
 
-        </body>
-
-</html>
+        </body></html>
