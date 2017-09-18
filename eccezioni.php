@@ -37,32 +37,18 @@
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
     
-    
-    //autenticazione
-    $sql = sprintf("SELECT username, password FROM cliente");
+
+	
+	
+    $sql = sprintf("SELECT partitaiva FROM cliente WHERE username='%s' AND password='%s'", mysqli_real_escape_string($mysqli, $_SESSION['username']), mysqli_real_escape_string($mysqli, $_SESSION['password']));
     $result = $mysqli->query($sql);
-    $conta= mysqli_num_rows($result);
-    $flag = false;
-    $s = 0;
     $row = mysqli_fetch_array($result, MYSQLI_NUM);
-    while($s<$conta){
-	if($_SESSION['username']===$row[0] && $_SESSION['password']===$row[1]){
-	    $flag=true;
-	}
-	$s++;
-    }
     
-    if($flag===true){
-	
-	
-    $sql = sprintf("SELECT partitaiva FROM cliente WHERE username='%s' AND password='%s'", mysqli_real_escape_string($mysqli, $_SESSION['username']), mysqli_real_escape_string($mysqli, $_SESSION['password]));
-    
-    
-    //dati del form
+    $partitaiva=$row[0];
     
     //controllo input
-    if($partitaiva==null || $partitaiva<=0){
-	trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
+    if($partitaiva===null || $partitaiva<=0){
+	trigger_error("Errore nell inserimento del dato. ", E_USER_NOTICE);
     }
     
     //comando SQL
@@ -123,10 +109,6 @@
     } else {
 	$str = ' Nessun dato trovato. <br>';
         echo $str;
-    }
-    
-    }else{
-	trigger_error('Non è autorizzato a modificare questi dati. ' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
 
