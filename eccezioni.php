@@ -23,6 +23,7 @@
 	    header('Location:Login.html');
       }
       
+      if(sizeof($_SESSION['username'])>0 && sizeof($_SESSION['password'])>0){
     
     //database
     define('DB_HOST', '127.0.0.1');
@@ -38,13 +39,8 @@
     }
     
 
-	
-	
-    $sql = sprintf("SELECT partitaiva FROM cliente WHERE username='%s' AND password='%s'", mysqli_real_escape_string($mysqli, $_SESSION['username']), mysqli_real_escape_string($mysqli, $_SESSION['password']));
-    $result = $mysqli->query($sql);
-    $row = mysqli_fetch_array($result, MYSQLI_NUM);
     
-    $partitaiva=$row[0];
+    $partitaiva=$_POST['partitaiva'];
     
     //controllo input
     if($partitaiva===null || $partitaiva<=0){
@@ -110,6 +106,10 @@
 	$str = ' Nessun dato trovato. <br>';
         echo $str;
     }
-
+    
+    
+    }else{
+	trigger_error('Non è autorizzato a modificare questi dati. ' . $mysqli->connect_error, E_USER_NOTICE);
+    }
 
 ?>
