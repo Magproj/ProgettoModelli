@@ -23,6 +23,8 @@
 	    header('Location:Login.html');
       }
     
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin' ){
+    
     //dati del form
     $partiva=htmlentities($_POST['partitaiva']);
     
@@ -80,7 +82,11 @@
         $str = 'l cliente non e\' stato trovato. <br> Torna alle <a href=\"opzioniazienda.php\">opzioni di selezione</a>';
         echo $str;
     }
-
+    
+     }else{
+	trigger_error('Non è autorizzato a modificare questi dati. ' . $mysqli->connect_error, E_USER_NOTICE);
+    }
+    
 ?>
 
 </body>
