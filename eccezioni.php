@@ -22,6 +22,7 @@
       } else{
 	    header('Location:Login.html');
       }
+      
     
     //database
     define('DB_HOST', '127.0.0.1');
@@ -35,7 +36,24 @@
     if($mysqli->connect_errno){
     	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
     }
-
+    
+    
+    //autenticazione
+    $sql = sprintf("SELECT username, password FROM cliente");
+    $result = $mysqli->query($sql);
+    $conta= mysqli_num_rows($result);
+    $flag = false;
+    $s = 0;
+    $row = mysqli_fetch_array($result, MYSQLI_NUM);
+    while($s>$conta){
+	if($_SESSION['username']===$row[0] && $_SESSION['password']===$row[1]){
+	    $flag=true;
+	}
+	$s++;
+    }
+    
+    if($flag===true){
+    
     //dati del form
 
     $partitaiva=htmlentities($_POST["partitaiva"]);
@@ -103,6 +121,10 @@
     } else {
 	$str = ' Nessun dato trovato. <br>';
         echo $str;
+    }
+    
+    }else{
+	trigger_error('Non è autorizzato a modificare questi dati. ' . $mysqli->connect_error, E_USER_NOTICE);
     }
 
 
