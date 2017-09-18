@@ -24,7 +24,8 @@
 	    header('Location:Login.html');
       }
     
-
+    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin'){
+    
     //dati del form
     $id=$_POST['identificatore'];
     $marca=$_POST['marca'];
@@ -96,6 +97,10 @@
         echo $str;
     } else {
         trigger_error('Attenzione, si è verificato un errore:' . $mysqli->connect_error, E_USER_NOTICE);
+    }
+    
+    }else{
+	trigger_error('Non è possibile accedere alle informazioni.' , E_USER_NOTICE);
     }
 
 ?>
