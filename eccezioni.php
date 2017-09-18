@@ -45,7 +45,7 @@
     $flag = false;
     $s = 0;
     $row = mysqli_fetch_array($result, MYSQLI_NUM);
-    while($s>$conta){
+    while($s<$conta){
 	if($_SESSION['username']===$row[0] && $_SESSION['password']===$row[1]){
 	    $flag=true;
 	}
@@ -53,10 +53,12 @@
     }
     
     if($flag===true){
+	
+	
+    $sql = sprintf("SELECT partitaiva FROM cliente WHERE username='%s' AND password='%s'", mysqli_real_escape_string($mysqli, $_SESSION['username']), mysqli_real_escape_string($mysqli, $_SESSION['password]));
+    
     
     //dati del form
-
-    $partitaiva=htmlentities($_POST["partitaiva"]);
     
     //controllo input
     if($partitaiva==null || $partitaiva<=0){
