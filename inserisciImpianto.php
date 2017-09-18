@@ -67,7 +67,10 @@
     
     //comando SQL
     $sql = "INSERT INTO impianto (Id, tipo, dimensione, stato, id_cliente) VALUES ('$id',  '$tipo', '$dimensione', '$stato', '$idCliente')";
-    
+    // You may use a 'trasparent' anti-CSRF control, like this:
+	include_once __DIR__ . '/libs/csrf/csrfprotector.php'; // FIXED
+	csrfProtector::init();
+  // Sensitive code follows...
     if(mysql_query($sql)===true){
         echo 'Dati memorizzati correttamente<br />';
     } else {
