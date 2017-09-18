@@ -4,7 +4,7 @@
       if(isset($_SESSION['username']) && isset($_SESSION['password'])){
 	    
       } else{
-	    header('Location:Login.html');
+	    header('Location:http://localhost/miosito/Login.html');
       }
 ?>
 <html><head><title>Sensor management system </title>
@@ -20,7 +20,7 @@
 	
 		<body>
 		<div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;">
-				<a href="dashboard.html"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
+				<a href="dashboard.php"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
 		</div>
 		<div style="text-align: center; margin-left: 388px; width: 599px; margin-top: 72px; height: 210px;" id="chart-container">
 			<canvas id="mycanvas"></canvas>

@@ -22,6 +22,8 @@
       } else{
 	    header('Location:Login.html');
       }
+      
+      if(sizeof($_SESSION['username'])>0 && sizeof($_SESSION['password'])>0){
 
     //database
     define('DB_HOST', '127.0.0.1');
@@ -79,4 +81,8 @@
 
  $str = '</table>';
  echo $str;
+ 
+ }else{
+	trigger_error('Non è autorizzato a modificare questi dati. ' . $mysqli->connect_error, E_USER_NOTICE);
+    }
 ?>

@@ -7,8 +7,9 @@ session_start();
 if(isset($_SESSION['username']) && isset($_SESSION['password'])){
 	    
 } else{
-	header('Location:Login.html');
+	header('Location:http://localhost/miosito/Login.html');
 }
+
 
 
 //database
@@ -23,6 +24,7 @@ $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 if(!$mysqli){
 	trigger_error('Connection failed: ' . $mysqli->error, E_USER_NOTICE);
 }
+
 
 //query to get data from the table
 $query = sprintf("SELECT tipo, AVG(valore) AS valore FROM datirilevati NATURAL JOIN sensore WHERE id_impianto='1' GROUP BY tipo");
