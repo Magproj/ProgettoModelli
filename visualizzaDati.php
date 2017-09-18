@@ -14,7 +14,16 @@
 </html>
 
 <?php
-
+    
+      
+      session_start();
+      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
+	    
+      } else{
+	    header('Location:Login.html');
+      }
+    
+    
     //accesso al database
     $host='localhost';
     $username='root';
