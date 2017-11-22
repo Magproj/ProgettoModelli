@@ -1,60 +1,45 @@
 <?php
 
-//database
-define('DB_HOST', '127.0.0.1');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_NAME', 'progetto');
-    
-//get connection
-$mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+$host="localhost";
+$username="root";
+$password="";
+$db_nome="progetto";
+$tab_nome="cliente";
 
-if($mysqli->connect_errno){
-    trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
-}
+
+mysql_connect($host, $username, $password) or die('Impossibile connettersi al server: ' . mysql_error());
+mysql_select_db($db_nome) or die ('Accesso al database non riuscito: ' . mysql_error());
 
 //acquisizione dati dal form HTML
 $username = $_POST['username'];
 $password = $_POST['password'];
-
-//controlli per l'input
-if($password===null){
-    trigger_error('Errore nell\'inserimento del dato. ', E_USER_NOTICE);
-}
 
 //protezione per SQL injection
 $username = stripcslashes($username);
 $password = stripcslashes($password);
 $username = mysql_real_escape_string($username);
 $password = mysql_real_escape_string($password);
-
-
-$hashed_pass = password_hash($plain_pass, PASSWORD_BCRYPT, array('cost' => 13));
-if (password_verify($plain_pass, $hashed_pass)) { 
-  $valid = True;
-}
-
+$passmd5 = md5($password);
 
 //lettura della tabella utenti
-$sql = sprintf("SELECT * FROM cliente WHERE Username='%s' AND Password='%s'", mysqli_real_escape_string($mysqli, $username), mysqli_real_escape_string($mysqli, $password));
-$result = $mysqli->query($sql);
-$conta= mysqli_num_rows($result);
+$sql = "SELECT * FROM $tab_nome WHERE Username='$username' AND Password='$password'";
+$result = mysql_query($sql);
+$conta = mysql_num_rows($result);
 if($conta>0){
     session_start();
     $_SESSION['username'] = $username;
     $_SESSION['password'] = $password;
     header("Location: opzionicliente.php");
 }
-elseif($username==='admin' && $password==='admin'){
+elseif($username=="admin" && $password=="admin"){
     session_start();
     $_SESSION['username'] = $username;
     $_SESSION['password'] = $password;
-    header('Location: opzioniazienda.php');
+    header("Location: opzioniazienda.php");
 }
 else {
-    echo 'Identificazione non riuscita: nome utente o password errati <br />';
-    $str = "Torna a pagina di <a href=\"Login.html\">login</a>";
-    echo $str;
+    echo "Identificazione non riuscita: nome utente o password errati <br />";
+    echo "Torna a pagina di <a href=\"Login.html\">login</a>";
 }
 
 ?>

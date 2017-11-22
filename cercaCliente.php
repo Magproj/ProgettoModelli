@@ -1,92 +1,55 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-    <head>
-		  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-		  <title>SENSOR MANAGEMENT SYSTEM</title>
-	  	  <link rel="stylesheet" type="text/css" href="css/stile.css" media="screen">
-	</head>
-
-        <body>
-
-            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 319px; width: 725px;">
+<html><head>
+	
+		  <meta http-equiv="content-type" content="text/html; charset=utf-8"><title>SENSOR MANAGEMENT SYSTEM</title>
+		  
+	  	  <link rel="stylesheet" type="text/css" href="css/stile.css" media="screen"></head><body>
+            
+            <div style="margin-top: 28px; height: 105px; text-align: left; margin-left: 359px; width: 725px;">
 			<a href="opzioniazienda.php"><img style="border: 0px solid ; width: 709px; height: 86px;" class="classname" alt="" src="images/logo.png"></a>
 	    </div>
-        </body>
-</html>
         
-<?php
+<?php //dati del form
+    $partiva=$_POST["partitaiva"];
     
-    session_start();
-      if(isset($_SESSION['username']) && isset($_SESSION['password'])){
-	    
-      } else{
-	    header('Location:Login.html');
-      }
-    
-    if($_SESSION['username']==='admin' && $_SESSION['password']==='admin' ){
-    
-    //dati del form
-    $partiva=htmlentities($_POST['partitaiva']);
-    
-    //database
-    define('DB_HOST', '127.0.0.1');
-    define('DB_USERNAME', 'root');
-    define('DB_PASSWORD', '');
-    define('DB_NAME', 'progetto');
-    
-    //get connection
-    $mysqli = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
-
-    if($mysqli->connect_errno){
-    	trigger_error('Connection failed: ' . $mysqli->connect_error, E_USER_NOTICE);
-    }
+    //accesso al database
+    $host="localhost";
+    $username="root";
+    $password="";
+    $db_nome="progetto";
+    mysql_connect($host, $username, $password) or die ('Impossibile connettersi al server: ' . mysql_error());
+    mysql_select_db($db_nome) or die ('Accesso al database non riuscito: ' . mysql_error());
     
     //comando SQL
-    $sql = sprintf("SELECT partitaiva, nomeazienda, domicilio, citta, telefono, email, username, password FROM cliente WHERE PartitaIva='%s'", mysqli_real_escape_string($mysqli, $partiva));
-    $result = $mysqli->query($sql);
-    $conta= mysqli_num_rows($result);
+    $sql = "SELECT * FROM cliente WHERE PartitaIva=$partiva";
+    $result = mysql_query($sql);
+    $conta= mysql_num_rows($result);
     
-    $row = mysqli_fetch_array($result, MYSQLI_NUM);   
+    if($conta==1){
     
-    if($conta===1){
-    
-        $str = 'I dati del cliente cercato sono i seguenti: <br><br>';
-        echo $str;
+        echo "I dati del cliente cercato sono i seguenti: <br><br>";
             
-        $partitaiva = htmlspecialchars($row[0]);
-        $str = '<b>Partita Iva:  </b>' . $partitaiva . ' </br>';
-        echo $str;
-        $nome = htmlspecialchars($row[1]);
-        $str = '<b>Nome: </b> ' . $nome . ' </br>';
-        echo $str;
-        $domicilio = htmlspecialchars($row[2]);
-        $str = '<b>Domicilio:  </b>' . $domicilio . ' </br>';
-        echo $str;
-        $citta = htmlspecialchars($row[3]);
-        $str = '<b>Citta: </b>' . $citta . ' </br>';
-        echo $str;
-        $tel = htmlspecialchars($row[4]);
-        $str = '<b>Telefono: </b>' . $tel . ' </br>';
-        echo $str;
-        $email = htmlspecialchars($row[5]);
-        $str = '<b>Email: </b>' . $email . ' </br>';
-        echo $str;
-        $username = htmlspecialchars($row[6]);
-        $str =  '<b>Username: </b>' . $username . ' </br>';
-        echo $str;
-        $password = htmlspecialchars($row[7]);
-        $str = '<b>Password: </b>' . $password . ' </br>';
-        echo $str;
+        $partitaiva = mysql_result($result, 0, "partitaiva");
+        echo '<b>Partita Iva:  </b>' . $partitaiva . ' </br>';
+        $nome = mysql_result($result, 0, "nomeazienda");
+        echo '<b>Nome: </b> ' . $nome . ' </br>';
+        $domicilio = mysql_result($result, 0, "domicilio");
+        echo '<b>Domicilio:  </b>' . $domicilio . ' </br>';
+        $citta = mysql_result($result, 0, "citta");
+        echo '<b>Citta: </b>' . $citta . ' </br>';
+        $tel = mysql_result($result, 0, "telefono");
+        echo '<b>Telefono: </b>' . $tel . ' </br>';
+        $email = mysql_result($result, 0, "email");
+        echo '<b>Email: </b>' . $email . ' </br>';
+        $username = mysql_result($result, 0, "username");
+        echo '<b>Username: </b>' . $username . ' </br>';
+        $password = mysql_result($result, 0, "password");
+        echo '<b>Password: </b>' . $password . ' </br>';
     
     } else {
-        $str = 'l cliente non e\' stato trovato. <br> Torna alle <a href=\"opzioniazienda.php\">opzioni di selezione</a>';
-        echo $str;
+        echo "Il cliente non e' stato trovato. <br> Torna alle <a href=\"opzioniazienda.php\">opzioni di selezione</a>";
     }
-    
-     }else{
-	trigger_error('Non è autorizzato a modificare questi dati. ' . $mysqli->connect_error, E_USER_NOTICE);
-    }
-    
+
 ?>
 
 </body>
