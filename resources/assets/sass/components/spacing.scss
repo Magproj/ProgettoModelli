@@ -1,0 +1,29 @@
+.spacing {
+    &-top {
+        &-large {
+            margin-top: 48px;
+        }
+
+        &-medium {
+            margin-top: 32px;
+        }
+
+        &-small {
+            margin-top: 16px;
+        }
+    }
+
+    &-bottom {
+        &-large {
+            margin-bottom: 48px;
+        }
+
+        &-medium {
+            margin-bottom: 32px;
+        }
+
+        &-small {
+            margin-bottom: 16px;
+        }
+    }
+}

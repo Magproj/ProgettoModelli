@@ -1,0 +1,24 @@
+.row {
+    display: flex;
+
+    &.gutter {
+        margin-left: -24px;
+        margin-right: -24px;
+
+        > .column {
+            padding: 0 24px;
+        }
+    }
+
+    .column {
+        flex: 1;
+
+        &.tight {
+            flex: none;
+        }
+
+        &.align-middle {
+            align-self: center;
+        }
+    }
+}
