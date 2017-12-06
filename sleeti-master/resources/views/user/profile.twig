@@ -1,0 +1,131 @@
+{#
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+
+{% extends 'templates/app.twig' %}
+
+{% block title %}Profile - {{ user.username }}{% endblock %}
+
+{% block extrameta %}
+	<meta name="description" content="{% if user.name %}{{ user.name }} ({{ user.username }}){% else %}{{ user.username }}{% endif %}'s account on {{ settings.site.title | default('sleeti') }}">
+{% endblock %}
+
+{% block extrajs %}
+	{% include 'templates/partials/confirm-delete.twig' %}
+	{% include 'templates/partials/js/file-list.twig' %}
+	{% include 'templates/partials/js/timeago.twig' %}
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-12">
+			<h1>
+				{% if user.name %}
+					{{ user.name }} <small>({{ user.username }})</small>
+				{% else %}
+					{{ user.username }}
+				{% endif %}
+			</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-3">
+			<p>
+				{% if user.isAdmin() %}
+					<span class="label label-danger">Administrator</span>
+				{% elseif user.isModerator() %}
+					<span class="label label-warning">Moderator</span>
+				{% endif %}
+			</p>
+
+			<p>
+				Joined <time class="timeago" datetime="{{ user.created_at | date('c') }}">{{ user.created_at | date('m/d/Y g:i:s A T') }}</time>.
+			</p>
+
+			{% if user.website is not empty %}
+				<h2>Website</h2>
+				<p>
+					<a href="{{ user.website }}">{{ user.website }}</a>
+				</p>
+			{% endif %}
+			{% if user.bio is not empty %}
+				<h2>Bio</h2>
+				{{ user.bio | markdown }}
+			{% endif %}
+			{% if user.id == auth.user.id or auth.user.isAdmin() %}
+				<p>
+					<div class="btn-group btn-group-xs" role="group" aria-label="Account functions">
+						{% if user.id != auth.user.id and auth.user.isAdmin() %}
+							<a href="{{ path_for('admin.user.giveperms', {'uid': user.id}) }}" class="btn btn-info"><span class="fa fa-shield"></span> Promote</a>
+						{% endif %}
+						<a href="{{ path_for('user.profile.edit', {id: user.id}) }}" class="btn btn-warning"><span class="fa fa-pencil-square"></span> Edit</a>
+						<a href="{{ path_for('user.profile.delete', {'id': user.id}) }}" class="btn btn-danger"><span class="fa fa-trash"></span> Delete</a>
+					</div>
+				</p>
+			{% endif %}
+		</div>
+		<div class="col-md-{{ (user.id == auth.user.id or auth.user.isModerator()) ? '7' : '9' }}">
+			{% if page.files.count > 0 %}
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered table-hover">
+						<thead>
+							<tr>
+								<th>File</th>
+								<th>Size</th>
+								<th>Date uploaded</th>
+								{% if user.id == auth.user.id or auth.user.isModerator() %}
+									<th>Privacy</th>
+									<th>Actions</th>
+								{% endif %}
+							</tr>
+						</thead>
+						<tbody>
+							{% for file in page.files %}
+								{% set filename = file.filename %}
+								<tr>
+									<td class="vert-align">
+										<a id="file-entry-{{ filename | url_encode }}" href="{{ path_for('file.view', {'owner': file.user.id, 'filename': filename | url_encode }) }}">{{ filename }}</a>
+									</td>
+									<td class="vert-align">
+										{{ filesize(settings.site.upload.path ~ file.getPath()) | format_bytes }}
+									</td>
+									<td class="vert-align">
+										<time class="timeago" datetime="{{ file.created_at | date('c') }}">{{ file.created_at | date('m/d/Y g:i:s A T') }}</time>
+									</td>
+									{% if user.id == auth.user.id or auth.user.isModerator() %}
+										<td class="vert-align">
+											<select data-role="privacy-dropdown" class="form-control input-sm">
+												<option data-route="{{ path_for('file.privacy.change', {'owner': file.user.id, 'filename': file.filename, 'privacy': constant('Sleeti\\Models\\File::PRIVACY_PUBLIC')}) }}" {% if file.privacy_state == constant('Sleeti\\Models\\File::PRIVACY_PUBLIC') %} selected{% endif %}>Public</option>
+												<option data-route="{{ path_for('file.privacy.change', {'owner': file.user.id, 'filename': file.filename, 'privacy': constant('Sleeti\\Models\\File::PRIVACY_UNLISTED')}) }}" {% if file.privacy_state == constant('Sleeti\\Models\\File::PRIVACY_UNLISTED') %} selected{% endif %}>Unlisted</option>
+												<option data-route="{{ path_for('file.privacy.change', {'owner': file.user.id, 'filename': file.filename, 'privacy': constant('Sleeti\\Models\\File::PRIVACY_PRIVATE')}) }}" {% if file.privacy_state == constant('Sleeti\\Models\\File::PRIVACY_PRIVATE') %} selected{% endif %}>Private</option>
+											</select>
+										</td>
+										<td class="vert-align text-center">
+											<button type="button" class="btn btn-danger btn-xs delete-file" data-toggle="modal" data-target="#deleteConfirm" data-filename="{{ filename }}" data-route="{{ path_for('file.delete', {owner: user.id, filename: filename}) }}"><span class="fa fa-trash"></span><span class="sr-only">Delete</span></button>
+										</td>
+									{% endif %}
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
+				{% if page.last != 1 %}
+					{% include '/templates/partials/pagination.twig' with {
+						currentPage: page.current,
+						paginationPath: path_for('user.profile', {'id': user.id}) ~ "?page=",
+						lastPage: page.last,
+						showAlwaysFirstAndLast: true
+					} only %}
+				{% endif %}
+			{% else %}
+				<b>This user hasn't uploaded any files.</b> :(
+			{% endif %}
+		</div>
+		{% if user.id == auth.user.id or auth.user.isModerator() %}
+			{% include 'templates/partials/privacy-levels-desc.twig' %}
+		{% endif %}
+	</div>
+{% endblock %}

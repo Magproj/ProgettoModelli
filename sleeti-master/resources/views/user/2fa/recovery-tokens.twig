@@ -1,0 +1,41 @@
+{#
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+
+{% extends 'templates/app.twig' %}
+
+{% block title %}2FA Recovery Tokens{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-danger">
+				<div class="panel-heading">
+					<h3 class="panel-title">2FA recovery tokens</h3>
+				</div>
+
+				<div class="panel-body">
+					<p class="lead">
+						These are your two-factor authentication recovery codes, which you can use to get into your account in case you lose your 2FA device. Save these, as <b class="text-danger">they will only be displayed once!</b>
+					</p>
+
+					<p>
+						These tokens are only good once, so you may want to mark them as used accordingly.
+					</p>
+
+					<ul>
+						{% for token in tokens %}
+							<li><code>{{ token }}</code></li>
+						{% endfor %}
+					</ul>
+
+					<p>
+						<a href="{{ path_for('user.profile.2fa') }}" class="btn btn-danger">Done</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{#
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+
+{% extends 'templates/app.twig' %}
+
+{% block title %}Setup 2FA{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Two factor authentication setup</h3>
+				</div>
+
+				<div class="panel-body">
+					<p class="lead">
+						Scan the following QR code with your 2FA app
+					</p>
+
+					<img src="{{ tfa.qr_code }}" alt="{{ tfa.secret }}" class="img-responsive center-block">
+
+					<p class="lead">
+						Or, enter the following code manually
+					</p>
+
+					<p>
+						<code>{{ tfa.secret }}</code>
+					</p>
+
+					<p class="lead">
+						Then, verify
+					</p>
+
+					<form action="{{ path_for('user.profile.2fa.setup') }}" method="post" autocomplete="off">
+						<div class="form-group{{ errors.tfa_code ? ' has-error' : '' }}">
+							<label for="tfa_code">Code</label>
+							<input type="text" class="form-control" name="tfa_code" id="tfa_code" placeholder="XXXXXX" autofocus>
+							{% if errors.tfa_code %}
+								<span class="help-block">{{ errors.tfa_code | first }}</span>
+							{% endif %}
+						</div>
+
+						<button type="submit" class="btn btn-default">Submit</button>
+
+						{{ csrf.field | raw }}
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

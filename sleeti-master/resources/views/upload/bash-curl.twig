@@ -1,0 +1,98 @@
+{#
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+
+{% extends 'templates/app.twig' %}
+
+{% block title %}Bash + cURL{% endblock %}
+
+{% block extracss %}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/magula.min.css">
+{% endblock %}
+
+{% block extrajs %}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+	<script>
+	hljs.initHighlightingOnLoad();
+	</script>
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-md-12">
+			<h1>Uploading with Bash and cURL</h1>
+			<p>
+				To use {{ settings.site.title | default('sleeti') }} with cURL and bash, use the following command:
+			</p>
+			<pre><code class="bash">curl -s -F file=@"/path/to/file.ext" -F identifier="{{ auth.user.username }}" -F password="PUT YOUR PASSWORD HERE" "{{ site.url }}"</code></pre>
+
+			<p>
+				Alternatively, use the following Bash script.
+			</p>
+			<pre><code class="bash">#!/bin/bash
+
+site="{{ site.url }}"
+
+user="{{ auth.user.username }}" # your username
+pass="PUT YOUR PASSWORD HERE" # your password
+
+exit_with_error() {
+	>&amp;2 echo "$(basename "$0"): $1"
+	exit "$2"
+}
+
+usage() {
+	echo "sleeti upload script"
+	echo ""
+	echo "Usage:"
+	echo "    $(basename "$0") &lt;file&gt;"
+	echo "Arguments:"
+	echo "    file    The file to upload (when -, read stdin)"
+	echo "Exit codes:"
+	echo "    1       file not found"
+	echo "    2       no file specified"
+	echo "    3       required details missing"
+	echo "    127     dependency missing"
+}
+
+# test for missing command dependencies
+type curl >/dev/null 2>&amp;1 || exit_with_error "curl: command not found" 127
+
+if [ -x "$site" ]; then
+	exit_with_error "no site specified - see script source" 3
+fi
+
+if [ -z "$user" ]; then
+	exit_with_error "no user specified - see script source" 3
+fi
+
+if [ -z "$pass" ]; then
+	exit_with_error "no password specified - see script source" 3
+fi
+
+if [ -z "$1" ]; then
+	usage
+	echo ""
+	exit_with_error "no file specified" 2
+fi
+
+if [ ! "$1" = "-" ]; then
+	if [ ! -f "$1" ]; then
+		exit_with_error "$1: file not found" 1
+	fi
+else
+	echo "^D to upload"
+fi
+
+file="@$2"
+
+if [ ! -z "$3" ]; then
+	file="$file; filename=$3"
+fi
+
+echo $(curl -s -F file="$file" -F identifier="$user" -F password="$pass" "$site")</code></pre>
+		</div>
+	</div>
+{% endblock %}
