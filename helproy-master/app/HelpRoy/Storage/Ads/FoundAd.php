@@ -1,0 +1,23 @@
+<?php
+
+namespace HelpRoy\Storage\Ads;
+
+class FoundAd extends \Eloquent
+{
+    protected $fillable = [
+        "place",
+        "found_date",
+        "coordinates",
+    ];
+
+    protected $primaryKey = 'ad_id';
+
+    /**
+     * Allows access to the main ad data related with this ad.
+     * @return Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function ad()
+    {
+        return $this->belongsTo('Ad');
+    }
+}
