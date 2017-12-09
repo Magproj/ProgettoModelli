@@ -1,9 +1,0 @@
-#
-#
-#
-
-composer.phar
-node_modules/
-var/
-vendor/
-webroot/lib/
