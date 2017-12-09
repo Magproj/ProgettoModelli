@@ -1,0 +1,66 @@
+<?php
+/**
+ * Nooku Framework - http://www.nooku.org
+ *
+ * @copyright	Copyright (C) 2011 - 2017 Johan Janssens and Timble CVBA. (http://www.timble.net)
+ * @license		GNU AGPLv3 <https://www.gnu.org/licenses/agpl.html>
+ * @link		https://github.com/timble/openpolice-platform
+ */
+
+namespace Nooku\Component\Contacts;
+
+use Nooku\Library;
+
+/**
+ * Contacts Model
+ *
+ * @author  Isreal Canasa <http://nooku.assembla.com/profile/israelcanasa>
+ * @package Nooku\Component\Contacts
+ */
+class ModelContacts extends Library\ModelTable
+{
+	public function __construct(Library\ObjectConfig $config)
+	{
+		parent::__construct($config);
+		
+		$this->getState()
+			->insert('published', 'boolean')
+			->insert('category' , 'slug')
+            ->insert('sort'     , 'cmd', 'ordering');
+	}
+
+	protected function _buildQueryColumns(Library\DatabaseQuerySelect $query)
+	{
+		parent::_buildQueryColumns($query);
+		
+		$query->columns(array(
+			'category_title'    => 'categories.title',
+			'category_slug'     => 'categories.slug'
+		));
+	}
+
+	protected function _buildQueryJoins(Library\DatabaseQuerySelect $query)
+	{
+		parent::_buildQueryJoins($query);
+		
+		$query->join(array('categories' => 'contacts_categories'), 'categories.contacts_category_id = tbl.contacts_category_id');
+	}
+
+	protected function _buildQueryWhere(Library\DatabaseQuerySelect $query)
+	{
+	    parent::_buildQueryWhere($query);
+		$state = $this->getState();
+		
+		if (is_bool($state->published)) {
+			$query->where('tbl.published = :published')->bind(array('published' => (int) $state->published));
+		}
+
+		if ($state->category) {
+			$query->where('tbl.contacts_category_id = :category')->bind(array('category' => (int) $state->category));
+		}
+
+		if ($state->search) {
+			$query->where('tbl.title LIKE :search')->bind(array('search' => '%'.$state->search.'%'));
+		}
+	}
+}

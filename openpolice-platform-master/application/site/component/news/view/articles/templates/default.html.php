@@ -1,0 +1,47 @@
+<?
+/**
+ * Belgian Police Web Platform - News Component
+ *
+ * @copyright	Copyright (C) 2012 - 2017 Timble CVBA. (http://www.timble.net)
+ * @license		GNU AGPLv3 <https://www.gnu.org/licenses/agpl.html>
+ * @link		https://github.com/timble/openpolice-platform
+ */
+?>
+
+<ktml:module position="left">
+    <? $modules = object('com:pages.model.modules')->position('quicklinks')->published('true')->getRowset(); ?>
+
+    <? foreach($modules as $module) : ?>
+        <div class="sidebar__element">
+            <h3><?= $module->title ?></h3>
+            <?= $module->content ?>
+        </div>
+    <? endforeach ?>
+</ktml:module>
+
+<? foreach ($articles as $article) : ?>
+    <article class="article">
+        <? $link = helper('route.article', array('row' => $article)); ?>
+        <header class="article__header">
+            <h1><a href="<?= $link ?>"><?= escape($article->title) ?></a></h1>
+            <div class="text--small">
+                <?= helper('date.format', array('date'=> $article->published_on, 'format' => translate('DATE_FORMAT_LC5'), 'attribs' => array('class' => 'published'))) ?>
+            </div>
+        </header>
+
+        <? if($article->attachments_attachment_id): ?>
+            <a class="article__thumbnail" tabindex="-1" href="<?= $link ?>">
+                <?= helper('com:police.image.thumbnail', array(
+                    'attachment' => $article->attachments_attachment_id,
+                    'attribs' => array('width' => '400', 'height' => '300'))) ?>
+            </a>
+        <? endif; ?>
+
+        <?= $article->introtext ?>
+
+        <? if ($article->fulltext) : ?>
+            <a href="<?= $link ?>"><?= translate('Read more') ?></a>
+        <? endif; ?>
+    </article>
+<? endforeach; ?>
+<?= helper('com:application.paginator.pagination', array('total' => $total, 'show_count' => false, 'show_limit' => false)) ?>

@@ -1,0 +1,7 @@
+load 'deploy'
+
+Dir['extensions/*.rb'].each {|l| require l }
+
+Dir['vendor/gems/*/recipes/*.rb','vendor/plugins/*/recipes/*.rb','recipes/*.rb'].each { |plugin| load(plugin) }
+
+load 'config/deploy'

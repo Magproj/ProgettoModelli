@@ -1,0 +1,70 @@
+<?php
+/**
+ * Nooku Framework - http://www.nooku.org
+ *
+ * @copyright	Copyright (C) 2011 - 2017 Johan Janssens and Timble CVBA. (http://www.timble.net)
+ * @license		GNU AGPLv3 <https://www.gnu.org/licenses/agpl.html>
+ * @link		https://github.com/timble/openpolice-platform
+ */
+
+namespace Nooku\Component\Files;
+
+use Nooku\Library;
+
+/**
+ * File Validator Command
+ *
+ * @author  Ercan Ozkaya <http://nooku.assembla.com/profile/ercanozkaya>
+ * @package Nooku\Component\Files
+ */
+class CommandValidatorFile extends CommandValidatorNode
+{
+	protected function _databaseBeforeSave(Library\CommandContext $context)
+	{
+		$row = $context->getSubject();
+
+		if (is_string($row->file) && !is_uploaded_file($row->file))
+		{
+			// remote file
+			try
+            {
+				$file = $this->getObject('com:files.database.row.url');
+				$file->setData(array('file' => $row->file));
+				$file->load();
+				$row->contents = $file->contents;
+
+			} catch (DatabaseExceptionRemoteAdapterError $e) {
+				throw new \RuntimeException($e->getMessage(), $e->getCode());
+			}
+
+			if (empty($row->name))
+			{
+				$uri  = $this->getObject('lib:http.url', array('url' => $row->file));
+	        	$path = $uri->toString(Library\HttpUrl::PATH | Library\HttpUrl::FORMAT);
+	        	if (strpos($path, '/') !== false) {
+	        		$path = basename($path);
+	        	}
+
+	        	$row->name = $path;
+			}
+		}
+
+        $result = parent::_databaseBeforeSave($context);
+
+        if ($result)
+        {
+            $filter = $this->getObject('com:files.filter.file.uploadable');
+            $result = $filter->validate($context->getSubject());
+            if ($result === false)
+            {
+                $errors = $filter->getErrors();
+                if (count($errors)) {
+                    $context->getSubject()->setStatusMessage(array_shift($errors));
+                }
+            }
+        }
+
+		return $result;
+
+	}
+}
