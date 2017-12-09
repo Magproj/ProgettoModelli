@@ -1,9 +1,0 @@
-# Ignore everything
-*
-
-# But not these
-!.gitignore
-!google-analytics-api-php
-!phpmailer
-!joomla
-!google-analytics-api-php
