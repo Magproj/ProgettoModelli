@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ PackList is an open-source packing-list for Android
+  ~
+  ~ Copyright (c) 2017 Nicolas Bossard and other contributors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+
+<manifest xmlns:tools="http://schemas.android.com/tools"
+          package="com.nbossard.packlist"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          tools:overrideLibrary="android.support.test.uiautomator.v18">
+
+
+    <!-- Required by ACRA for sending logs ??. -->
+    <!-- <uses-permission android:name="android.permission.READ_LOGS"/> -->
+
+    <uses-sdk tools:overrideLibrary="android.support.test.uiautomator.v18"/>
+
+    <application
+        android:name=".PackListApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/packlist_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:fullBackupContent="@xml/mybackupscheme"
+        android:theme="@style/AppTheme">
+
+        <activity
+            android:name=".gui.MainActivity"
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- ATTENTION: This intent was auto-generated. Follow instructions at
+            https://g.co/AppIndexing/AndroidStudio to publish your Android app deep links. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- ATTENTION: This data URL was auto-generated. We recommend that you use the HTTP scheme.
+                  TODO: Change the host or pathPrefix as necessary. -->
+                <data
+                    android:host="packlist.nbossard.com"
+                    android:pathPrefix="/main"
+                    android:scheme="http"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".gui.MainActivityForTest"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".gui.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:parentActivityName=".gui.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="UnusedAttribute">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".gui.MainActivity"/>
+        </activity>
+
+        <activity
+            android:name=".gui.HelpThirdPartyActivity"
+            android:parentActivityName=".gui.AboutActivity"
+            android:label="@string/help_legal__third_party__title"
+            android:theme="@style/AppTheme"
+            tools:ignore="UnusedAttribute">
+            <meta-data
+                android:name="android.support.AboutActivity"
+                android:value=".gui.MainActivity"/>
+        </activity>
+
+        <activity
+            android:name=".gui.SettingsActivity"
+            android:label="@string/activity_settings__title"
+            android:theme="@style/AppTheme"
+            android:parentActivityName=".gui.MainActivity"
+            tools:ignore="UnusedAttribute">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nbossard.packlist.gui.MainActivity"/>
+        </activity>
+    </application>
+
+</manifest>
