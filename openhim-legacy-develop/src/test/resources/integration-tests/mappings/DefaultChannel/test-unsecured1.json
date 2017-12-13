@@ -1,9 +1,0 @@
-{
-	"request": {
-		"urlPattern": "/test/unsecure",
-		"method": "GET"
-	},
-	"response": {
-		"status": 200
-	}
-}

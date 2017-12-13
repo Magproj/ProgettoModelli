@@ -1,9 +1,0 @@
-{
-	"request": {
-		"urlPattern": "/redirected",
-		"method": "GET"
-	},
-	"response": {
-		"status": 200
-	}
-}
