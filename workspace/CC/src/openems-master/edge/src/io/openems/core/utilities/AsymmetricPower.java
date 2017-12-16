@@ -145,13 +145,11 @@ public class AsymmetricPower {
 		}
 		try {
 			for (int i = 0; i < 3; i++) {
-				// Check if active power is already set
-				if (setActivePower[i].getWriteValue().isPresent()) {
+				try{
 					this.activePower[i] = setActivePower[i].getWriteValue().get();
-				}
-				// Check if reactive power is already set
-				if (setReactivePower[i].getWriteValue().isPresent()) {
 					this.reactivePower[i] = setReactivePower[i].getWriteValue().get();
+				}catch(NullPointerException e){
+					e.getMessage();
 				}
 				// set limits by allowed apparent
 				double cosPhi = ControllerUtils.calculateCosPhi(this.activePower[i], this.reactivePower[i]);
