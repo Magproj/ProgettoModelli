@@ -175,8 +175,7 @@ public class AsymmetricPower {
 				}
 			}
 
-			switch (reductionType) {
-			case PERSUM: {
+			if (reductionType==PERSUM) {
 				Long[] minActivePowers = new Long[] { Collections.max(minActivePowerPhase[0]),
 						Collections.max(minActivePowerPhase[1]), Collections.max(minActivePowerPhase[2]) };
 				Long[] maxActivePowers = new Long[] { Collections.min(maxActivePowerPhase[0]),
@@ -186,46 +185,34 @@ public class AsymmetricPower {
 				Long[] maxReactivePowers = new Long[] { Collections.min(maxReactivePowerPhase[0]),
 						Collections.min(maxReactivePowerPhase[1]), Collections.min(maxReactivePowerPhase[2]) };
 				
+				// after setting the MinMaxValue reduce to min/max values
 				for (int i = 0; i < 3; i++) {
 					if (activePower[i] > maxActivePowers[i]) {
 						setMinMaxValues(maxActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
 								activePowerSum, i);
+						long maxActivePower = Collections.min(maxActivePowerPhase[i]);
+						reducedActivePower[i] = maxActivePower;
 					} else if (activePower[i] < minActivePowers[i]) {
 						setMinMaxValues(minActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
 								activePowerSum, i);
+						long minActivePower = Collections.max(minActivePowerPhase[i]);
+						reducedActivePower[i] = minActivePower;
 					}
 					if (reactivePower[i] > maxReactivePowers[i]) {
 						setMinMaxValues(maxReactivePowers[i], reactivePower[i], maxReactivePowerPhase,
 								minReactivePowerPhase, reactivePowerSum, i);
+						long maxReactivePower = Collections.min(maxReactivePowerPhase[i]);
+						reducedReactivePower[i] = maxReactivePower;
 					} else if (reactivePower[i] < minReactivePowers[i]) {
 						setMinMaxValues(minReactivePowers[i], reactivePower[i], maxReactivePowerPhase,
 								minReactivePowerPhase, reactivePowerSum, i);
+						long minReactivePower = Collections.max(minReactivePowerPhase[i]);
+						reducedReactivePower[i] = minReactivePower;
 					}
 				}
 			}
-			default:
-				break;
-			}
-			// reduce to min/max values
-			for (int i = 0; i < 3; i++) {
-				long minReactivePower = Collections.max(minReactivePowerPhase[i]);
-				long maxReactivePower = Collections.min(maxReactivePowerPhase[i]);
-				long minActivePower = Collections.max(minActivePowerPhase[i]);
-				long maxActivePower = Collections.min(maxActivePowerPhase[i]);
-				if (activePower[i] > maxActivePower) {
-					reducedActivePower[i] = maxActivePower;
-				} else if (activePower[i] < minActivePower) {
-					reducedActivePower[i] = minActivePower;
-				}
-				if (reactivePower[i] > maxReactivePower) {
-					reducedReactivePower[i] = maxReactivePower;
-				} else if (reactivePower[i] < minReactivePower) {
-					reducedReactivePower[i] = minReactivePower;
-				}
-			}
-		} catch (
-
-		InvalidValueException e) {
+			
+		} catch (InvalidValueException e) {
 			log.error("Failed to reduce power", e);
 		}
 		log.info(
