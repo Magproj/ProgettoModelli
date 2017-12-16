@@ -172,10 +172,7 @@ public class AcIsland extends Controller {
 					if (!isProducerDisconnected) {
 						isProducerDisconnected = true;
 						timeProducerDisconnected = System.currentTimeMillis();
-					} else{
-						currentState = State.OFFGRID;
-					}
-					if (timeProducerDisconnected + switchDelay <= System.currentTimeMillis()) {
+					} else if (timeProducerDisconnected + switchDelay <= System.currentTimeMillis()){
 						currentState = State.OFFGRID;
 					}
 				} else {
@@ -193,9 +190,7 @@ public class AcIsland extends Controller {
 						if (!isProducerDisconnected) {
 							isProducerDisconnected = true;
 							timeProducerDisconnected = System.currentTimeMillis();
-						}
-						if (timeProducerDisconnected + switchDelay <= System.currentTimeMillis()
-								&& isProducerDisconnected) {
+						} else if (timeProducerDisconnected + switchDelay <= System.currentTimeMillis()){
 							connectOnGrid();
 						}
 					} else {
