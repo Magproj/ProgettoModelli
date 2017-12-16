@@ -72,8 +72,9 @@ public class Databus implements ChannelUpdateListener, ChannelChangeListener {
 		} else if (channel.id().equals("ActivePower")) {
 			if(channel.parent() instanceof SymmetricMeterNature){
 				((SymmetricMeterNature) channel.parent()).updateMinMaxSymmetricActivePower();
-			} else(channel.parent() instanceof ChargerNature) {
-					((ChargerNature) channel.parent()).updateMaxChargerActualPower();}
+			} else{
+					((ChargerNature) channel.parent()).updateMaxChargerActualPower();
+			}
 		}
 
 	}
