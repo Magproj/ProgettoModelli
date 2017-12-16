@@ -209,8 +209,6 @@ public class AsymmetricPower {
 				}
 			}
 			default:
-			case PERPHASE:
-
 				break;
 			}
 			// reduce to min/max values
