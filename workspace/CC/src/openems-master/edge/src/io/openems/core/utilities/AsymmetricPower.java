@@ -162,17 +162,13 @@ public class AsymmetricPower {
 				minReactivePowerPhase[i].add(reactivePower * -1);
 				maxActivePowerPhase[i].add(activePower);
 				minActivePowerPhase[i].add(activePower * -1);
-				if (setReactivePower[i].writeMax().isPresent()) {
+				try{
 					maxReactivePowerPhase[i].add(setReactivePower[i].writeMax().get());
-				}
-				if (setReactivePower[i].writeMin().isPresent()) {
 					minReactivePowerPhase[i].add(setReactivePower[i].writeMin().get());
-				}
-				if (setActivePower[i].writeMax().isPresent()) {
 					maxActivePowerPhase[i].add(setActivePower[i].writeMax().get());
-				}
-				if (setActivePower[i].writeMin().isPresent()) {
 					minActivePowerPhase[i].add(setActivePower[i].writeMin().get());
+				} catch (NullPointerException e){
+						e.getMessage();
 				}
 				if (this.activePower[i] < 0) {
 					minActivePowerPhase[i].add(allowedCharge.value() / activePowerNegSum * this.activePower[i]);
