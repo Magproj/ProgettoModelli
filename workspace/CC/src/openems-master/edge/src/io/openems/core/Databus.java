@@ -67,16 +67,15 @@ public class Databus implements ChannelUpdateListener, ChannelChangeListener {
 
 		// Update min/max values of meter
 		boolean value = channel.id().equals("ActivePowerL1") || channel.id().equals("ActivePowerL2") || channel.id().equals("ActivePowerL3");
-		if (channel.parent() instanceof AsymmetricMeterNature && value){
-			((AsymmetricMeterNature) channel.parent()).updateMinMaxAsymmetricActivePower();
-		} else if (channel.id().equals("ActivePower")) {
+		if (channel.id().equals("ActivePower")){
 			if(channel.parent() instanceof SymmetricMeterNature){
 				((SymmetricMeterNature) channel.parent()).updateMinMaxSymmetricActivePower();
 			} else{
 					((ChargerNature) channel.parent()).updateMaxChargerActualPower();
 			}
+		} else if (channel.id().equals("ActivePowerL1") || channel.id().equals("ActivePowerL2") || channel.id().equals("ActivePowerL3")) {
+			((AsymmetricMeterNature) channel.parent()).updateMinMaxAsymmetricActivePower();
 		}
-
 	}
 
 	@Override
