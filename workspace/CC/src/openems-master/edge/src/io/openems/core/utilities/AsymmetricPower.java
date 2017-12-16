@@ -185,6 +185,7 @@ public class AsymmetricPower {
 						Collections.max(minReactivePowerPhase[1]), Collections.max(minReactivePowerPhase[2]) };
 				Long[] maxReactivePowers = new Long[] { Collections.min(maxReactivePowerPhase[0]),
 						Collections.min(maxReactivePowerPhase[1]), Collections.min(maxReactivePowerPhase[2]) };
+				
 				for (int i = 0; i < 3; i++) {
 					if (activePower[i] > maxActivePowers[i]) {
 						setMinMaxValues(maxActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
