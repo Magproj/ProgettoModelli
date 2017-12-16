@@ -212,8 +212,7 @@ public class ClassRepository {
 		}
 
 		// parse all methods
-		Method method;
-		
+		ClassLoader method = new SafeClassLoader();
 		for (int i=0; i<clazz.size(); i++) {
 			Object b = Beans.instantiate(method, clazz.getMethods());
 			Class<?> type = null;
