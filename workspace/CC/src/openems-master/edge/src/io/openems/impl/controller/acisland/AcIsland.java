@@ -141,8 +141,7 @@ public class AcIsland extends Controller {
 		}
 
 		try {
-			switch (currentState) {
-			case OFFGRID:
+			if(currentState==OFFGRID{
 				if (isProducerOffGrid || isProducerOff) {
 					if (gridMode.equals(EssNature.ON_GRID)) {
 						currentState = State.SWITCHTOONGRID;
@@ -156,8 +155,8 @@ public class AcIsland extends Controller {
 				} else {
 					currentState = State.SWITCHTOOFFGRID;
 				}
-				break;
-			case ONGRID: {
+				break; 
+				}else if(currentState==ONGRID) {
 				if (isProducerOnGrid) {
 					if (gridMode.equals(EssNature.OFF_GRID)) {
 						currentState = State.SWITCHTOOFFGRID;
@@ -167,7 +166,7 @@ public class AcIsland extends Controller {
 				}
 			}
 			break;
-			case SWITCHTOOFFGRID:
+			} else if(currentState==SWITCHTOOFFGRID){
 				if (isProducerOff) {
 					if (!isProducerDisconnected) {
 						isProducerDisconnected = true;
@@ -181,7 +180,7 @@ public class AcIsland extends Controller {
 					disconnectOffGrid();
 				}
 				break;
-			case SWITCHTOONGRID:
+	}else if (currentState==SWITCHTOONGRID){
 				if (isProducerOnGrid) {
 					currentState = State.ONGRID;
 					isProducerDisconnected = false;
@@ -199,8 +198,7 @@ public class AcIsland extends Controller {
 						disconnectOffGrid();
 					}
 				}
-				break;
-			default: {
+				break;} else {
 				if (gridMode.equals(EssNature.ON_GRID)) {
 					currentState = State.SWITCHTOONGRID;
 				} else if (ess.gridMode.labelOptional().equals(Optional.of(EssNature.OFF_GRID))) {
@@ -208,7 +206,7 @@ public class AcIsland extends Controller {
 				}
 			}
 			break;
-
+			}
 			}
 		} catch (WriteChannelException | ConfigException e) {
 			log.error("Failed to switch Output!", e);
