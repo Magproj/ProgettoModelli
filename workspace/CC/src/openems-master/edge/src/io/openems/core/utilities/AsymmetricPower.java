@@ -117,7 +117,7 @@ public class AsymmetricPower {
 	 *
 	 * @throws WriteChannelException
 	 */
-	public void reducePower(ReductionType reductionType) throws WriteChannelException {
+	public void reducePower(ReductionType reductionType) throws NullPointerException {
 
 		// variables for reducedPower
 		long[] reducedActivePower = Arrays.copyOf(activePower, 3);
@@ -145,12 +145,10 @@ public class AsymmetricPower {
 		}
 		try {
 			for (int i = 0; i < 3; i++) {
-				try{
+					//throws possible NullPointerException
 					this.activePower[i] = setActivePower[i].getWriteValue().get();
 					this.reactivePower[i] = setReactivePower[i].getWriteValue().get();
-				}catch(NullPointerException e){
-					e.getMessage();
-				}
+				
 				// set limits by allowed apparent
 				double cosPhi = ControllerUtils.calculateCosPhi(this.activePower[i], this.reactivePower[i]);
 				long activePower = ControllerUtils.calculateActivePowerFromApparentPower(allowedApparent.value() / 3,
@@ -160,14 +158,13 @@ public class AsymmetricPower {
 				minReactivePowerPhase[i].add(reactivePower * -1);
 				maxActivePowerPhase[i].add(activePower);
 				minActivePowerPhase[i].add(activePower * -1);
-				try{
+				
+				//throws possible NullPointerException
 					maxReactivePowerPhase[i].add(setReactivePower[i].writeMax().get());
 					minReactivePowerPhase[i].add(setReactivePower[i].writeMin().get());
 					maxActivePowerPhase[i].add(setActivePower[i].writeMax().get());
 					minActivePowerPhase[i].add(setActivePower[i].writeMin().get());
-				} catch (NullPointerException e){
-						e.getMessage();
-				}
+				
 				if (this.activePower[i] < 0) {
 					minActivePowerPhase[i].add(allowedCharge.value() / activePowerNegSum * this.activePower[i]);
 				}else{
