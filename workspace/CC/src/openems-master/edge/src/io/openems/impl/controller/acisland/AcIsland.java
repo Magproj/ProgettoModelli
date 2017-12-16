@@ -141,7 +141,7 @@ public class AcIsland extends Controller {
 		}
 
 		try {
-			if(currentState==OFFGRID{
+			if(currentState==OFFGRID){
 				if (isProducerOffGrid || isProducerOff) {
 					if (gridMode.equals(EssNature.ON_GRID)) {
 						currentState = State.SWITCHTOONGRID;
@@ -204,11 +204,7 @@ public class AcIsland extends Controller {
 				} else if (ess.gridMode.labelOptional().equals(Optional.of(EssNature.OFF_GRID))) {
 					currentState = State.SWITCHTOOFFGRID;
 				}
-			}
-			break;
-			}
-			}
-		} catch (WriteChannelException | ConfigException e) {
+			} catch (WriteChannelException | ConfigException e) {
 			log.error("Failed to switch Output!", e);
 		}
 	}
