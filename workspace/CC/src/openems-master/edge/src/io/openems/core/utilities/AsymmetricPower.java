@@ -134,6 +134,7 @@ public class AsymmetricPower {
 		long activePowerNegSum = 0;
 		long activePowerSum = 0;
 		long reactivePowerSum = 0;
+		
 		for (int i = 0; i < 3; i++) {
 			if (activePower[i] > 0) {
 				activePowerPosSum += activePower[i];
@@ -143,6 +144,7 @@ public class AsymmetricPower {
 			activePowerSum += activePower[i];
 			reactivePowerSum += reactivePower[i];
 		}
+		
 		try {
 			for (int i = 0; i < 3; i++) {
 					//throws possible NullPointerException
@@ -182,25 +184,30 @@ public class AsymmetricPower {
 				Long[] maxReactivePowers = new Long[] { Collections.min(maxReactivePowerPhase[0]),
 						Collections.min(maxReactivePowerPhase[1]), Collections.min(maxReactivePowerPhase[2]) };
 				
-				// after setting the MinMaxValue reduce to min/max values
+				// set the MinMaxValue  and reduce to min/max values
 				for (int i = 0; i < 3; i++) {
+					
 					if (activePower[i] > maxActivePowers[i]) {
 						setMinMaxValues(maxActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
 								activePowerSum, i);
 						long maxActivePower = Collections.min(maxActivePowerPhase[i]);
 						reducedActivePower[i] = maxActivePower;
-					} else if (activePower[i] < minActivePowers[i]) {
+					} 
+					if (activePower[i] <= maxActivePowers[i] && activePower[i] < minActivePowers[i]) {
 						setMinMaxValues(minActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
 								activePowerSum, i);
 						long minActivePower = Collections.max(minActivePowerPhase[i]);
 						reducedActivePower[i] = minActivePower;
 					}
+					
 					if (reactivePower[i] > maxReactivePowers[i]) {
 						setMinMaxValues(maxReactivePowers[i], reactivePower[i], maxReactivePowerPhase,
 								minReactivePowerPhase, reactivePowerSum, i);
 						long maxReactivePower = Collections.min(maxReactivePowerPhase[i]);
 						reducedReactivePower[i] = maxReactivePower;
-					} else if (reactivePower[i] < minReactivePowers[i]) {
+					}
+					
+					if (reactivePower[i] <= maxReactivePowers[i] && reactivePower[i] < minReactivePowers[i]) {
 						setMinMaxValues(minReactivePowers[i], reactivePower[i], maxReactivePowerPhase,
 								minReactivePowerPhase, reactivePowerSum, i);
 						long minReactivePower = Collections.max(minReactivePowerPhase[i]);
