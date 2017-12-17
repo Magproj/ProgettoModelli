@@ -135,15 +135,32 @@ public class AsymmetricPower {
 		long activePowerSum = 0;
 		long reactivePowerSum = 0;
 		
-		for (int i = 0; i < 3; i++) {
-			if (activePower[i] > 0) {
-				activePowerPosSum += activePower[i];
+		
+			//sostituisce il for per la complessità ciclomatica
+			if (activePower[0] > 0) {
+				activePowerPosSum += activePower[0];
 			} else {
-				activePowerNegSum += activePower[i];
+				activePowerNegSum += activePower[0];
 			}
-			activePowerSum += activePower[i];
-			reactivePowerSum += reactivePower[i];
-		}
+			activePowerSum += activePower[0];
+			reactivePowerSum += reactivePower[0];
+			
+			if (activePower[1] > 0) {
+				activePowerPosSum += activePower[1];
+			} else {
+				activePowerNegSum += activePower[1];
+			}
+			activePowerSum += activePower[1];
+			reactivePowerSum += reactivePower[1];
+			
+			if (activePower[2] > 0) {
+				activePowerPosSum += activePower[2];
+			} else {
+				activePowerNegSum += activePower[2];
+			}
+			activePowerSum += activePower[2];
+			reactivePowerSum += reactivePower[2];
+		
 		
 			for (int i = 0; i < 3; i++) {
 					//throws possible NullPointerException
@@ -219,10 +236,17 @@ public class AsymmetricPower {
 				new Object[] { activePower[0], reducedActivePower[0], activePower[1], reducedActivePower[1],
 						activePower[2], reducedActivePower[2], reactivePower[0], reducedReactivePower[0],
 						reactivePower[1], reducedReactivePower[1], reactivePower[2], reducedReactivePower[2] });
-		for (int i = 0; i < 3; i++) {
-			this.activePower[i] = reducedActivePower[i];
-			this.reactivePower[i] = reducedReactivePower[i];
-		}
+			
+		//sostituisce il for per la complessità ciclomatica
+			this.activePower[0] = reducedActivePower[0];
+			this.reactivePower[0] = reducedReactivePower[0];
+			
+			this.activePower[1] = reducedActivePower[1];
+			this.reactivePower[1] = reducedReactivePower[1];
+			
+			this.activePower[2] = reducedActivePower[2];
+			this.reactivePower[2] = reducedReactivePower[2];
+		
 	}
 
 	/**
