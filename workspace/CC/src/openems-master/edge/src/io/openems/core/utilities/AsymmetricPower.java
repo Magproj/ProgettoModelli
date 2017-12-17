@@ -117,7 +117,7 @@ public class AsymmetricPower {
 	 *
 	 * @throws WriteChannelException
 	 */
-	public void reducePower(ReductionType reductionType) throws NullPointerException {
+	public void reducePower(ReductionType reductionType) throws NullPointerException, InvalidValueException {
 
 		// variables for reducedPower
 		long[] reducedActivePower = Arrays.copyOf(activePower, 3);
@@ -145,7 +145,6 @@ public class AsymmetricPower {
 			reactivePowerSum += reactivePower[i];
 		}
 		
-		try {
 			for (int i = 0; i < 3; i++) {
 					//throws possible NullPointerException
 					this.activePower[i] = setActivePower[i].getWriteValue().get();
@@ -192,8 +191,7 @@ public class AsymmetricPower {
 								activePowerSum, i);
 						long maxActivePower = Collections.min(maxActivePowerPhase[i]);
 						reducedActivePower[i] = maxActivePower;
-					} 
-					if (activePower[i] <= maxActivePowers[i] && activePower[i] < minActivePowers[i]) {
+					} else if (activePower[i] < minActivePowers[i]) {
 						setMinMaxValues(minActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
 								activePowerSum, i);
 						long minActivePower = Collections.max(minActivePowerPhase[i]);
@@ -205,9 +203,7 @@ public class AsymmetricPower {
 								minReactivePowerPhase, reactivePowerSum, i);
 						long maxReactivePower = Collections.min(maxReactivePowerPhase[i]);
 						reducedReactivePower[i] = maxReactivePower;
-					}
-					
-					if (reactivePower[i] <= maxReactivePowers[i] && reactivePower[i] < minReactivePowers[i]) {
+					} else if (reactivePower[i] < minReactivePowers[i]) {
 						setMinMaxValues(minReactivePowers[i], reactivePower[i], maxReactivePowerPhase,
 								minReactivePowerPhase, reactivePowerSum, i);
 						long minReactivePower = Collections.max(minReactivePowerPhase[i]);
@@ -216,9 +212,7 @@ public class AsymmetricPower {
 				}
 			}
 			
-		} catch (InvalidValueException e) {
-			log.error("Failed to reduce power", e);
-		}
+		
 		log.info(
 				"Reduce activePower L1:[{}]->[{}], L2:[{}]->[{}],L3:[{}]->[{}] "
 						+ "and reactivePower L1:[{}]->[{}], L2:[{}]->[{}], L3:[{}]->[{}]",
