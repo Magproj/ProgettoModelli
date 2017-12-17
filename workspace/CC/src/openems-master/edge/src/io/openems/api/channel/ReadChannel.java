@@ -277,12 +277,13 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	protected void updateValue(T newValue, boolean triggerEvent) throws NullPointerException {
 		Optional<T> oldValue = this.value;
 		boolean value1 = this.ignore.isPresent() && this.ignore.get().equals(newValue);
-		boolean value2 = multiplier.isPresent() || delta.isPresent() || negate;
+		//boolean value2 = multiplier.isPresent() || delta.isPresent() || negate;
 		
 		//tolto newValue==null e messo NullPointerException
 		if (value1) {
 			this.value = Optional.empty();
-		} else if (newValue instanceof Number && value2) {
+		} else if (newValue instanceof Number) {
+			//le opzioni presenti nell'if, dopo l'and, sono presenti dentro tutto il ramo
 			// special treatment for Numbers with given multiplier or delta
 			Number number = (Number) newValue;
 			double multiplier = 1;
