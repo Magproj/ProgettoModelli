@@ -33,6 +33,7 @@ public class BitUtils {
 			// ignore - no error
 			return 0;
 		}
+		//i casi restanti nello switch non sono stati implementati, quindi li considero come parte della seguente eccezione
 		throw new NotImplementedException("BitLength for type [" + type + "] is not implemented.");
 	}
 
@@ -47,19 +48,12 @@ public class BitUtils {
 
 		case LONG:
 			return ByteBuffer.allocate(BYTES_LONG).order(BYTE_ORDER).putLong((Long) value).array();
-
-		case BOOLEAN: // TODO put boolean value in a byte
-		case DOUBLE: // TODO
-		case INET_4_ADDRESS: // TODO
-		case STRING:
-		case LONG_ARRAY:
-		case JSON_ARRAY:
-		case JSON_OBJECT:
-		case DEVICE_NATURE:
-		case THING_MAP:
-			// igore - no error
+			
+		default:
+			// ignore - no error
 			return new byte[0];
 		}
+		//i casi restanti nello switch non sono stati implementati, quindi li considero come parte della seguente eccezione
 		throw new NotImplementedException(
 				"Converter to Byte for value [" + value + "] of type [" + type + "] is not implemented.");
 	}
@@ -81,20 +75,10 @@ public class BitUtils {
 			b.rewind();
 			return b.getLong();
 		}
-		case BOOLEAN: // TODO put boolean value in a byte
-		case DOUBLE: // TODO
-		case INET_4_ADDRESS: // TODO
-		case STRING:
-		case LONG_ARRAY:
-		case JSON_ARRAY:
-		case JSON_OBJECT:
-		case DEVICE_NATURE:
-		case THING_MAP:
+		default:
 			throw new NotImplementedException(
 					"Converter to Byte for value [" + value + "] of type [" + type + "] is not implemented.");
 		}
-		throw new NotImplementedException(
-				"Converter to Byte for value [" + value + "] of type [" + type + "] is not implemented.");
 	}
 
 	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
