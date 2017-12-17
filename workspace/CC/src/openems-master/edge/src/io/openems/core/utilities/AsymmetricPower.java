@@ -159,7 +159,7 @@ public class AsymmetricPower {
 				maxActivePowerPhase[i].add(activePower);
 				minActivePowerPhase[i].add(activePower * -1);
 				
-				//throws possible NullPointerException
+				//throws possible NullPointerException	
 					maxReactivePowerPhase[i].add(setReactivePower[i].writeMax().get());
 					minReactivePowerPhase[i].add(setReactivePower[i].writeMin().get());
 					maxActivePowerPhase[i].add(setActivePower[i].writeMax().get());
