@@ -135,32 +135,15 @@ public class AsymmetricPower {
 		long activePowerSum = 0;
 		long reactivePowerSum = 0;
 		
-		
-			//sostituisce il for per la complessità ciclomatica
-			if (activePower[0] > 0) {
-				activePowerPosSum += activePower[0];
+		for (int i = 0; i < 3; i++) {
+			if (activePower[i] > 0) {
+				activePowerPosSum += activePower[i];
 			} else {
-				activePowerNegSum += activePower[0];
+				activePowerNegSum += activePower[i];
 			}
-			activePowerSum += activePower[0];
-			reactivePowerSum += reactivePower[0];
-			
-			if (activePower[1] > 0) {
-				activePowerPosSum += activePower[1];
-			} else {
-				activePowerNegSum += activePower[1];
-			}
-			activePowerSum += activePower[1];
-			reactivePowerSum += reactivePower[1];
-			
-			if (activePower[2] > 0) {
-				activePowerPosSum += activePower[2];
-			} else {
-				activePowerNegSum += activePower[2];
-			}
-			activePowerSum += activePower[2];
-			reactivePowerSum += reactivePower[2];
-		
+			activePowerSum += activePower[i];
+			reactivePowerSum += reactivePower[i];
+		}
 		
 			for (int i = 0; i < 3; i++) {
 					//throws possible NullPointerException
