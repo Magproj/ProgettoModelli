@@ -274,27 +274,32 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	 * @param triggerEvent
 	 *            true if an event should be forwarded to {@link Databus}
 	 */
-	protected void updateValue(T newValue, boolean triggerEvent) {
+	protected void updateValue(T newValue, boolean triggerEvent) throws NullPointerException {
 		Optional<T> oldValue = this.value;
 		boolean value1 = this.ignore.isPresent() && this.ignore.get().equals(newValue);
 		boolean value2 = multiplier.isPresent() || delta.isPresent() || negate;
 		
-		if (newValue == null || value1) {
+		//tolto newValue==null e messo NullPointerException
+		if (value1) {
 			this.value = Optional.empty();
 		} else if (newValue instanceof Number && value2) {
 			// special treatment for Numbers with given multiplier or delta
 			Number number = (Number) newValue;
 			double multiplier = 1;
+			
 			if (this.multiplier.isPresent()) {
 				multiplier = Math.pow(10, this.multiplier.get());
 			}
+			
 			if (this.negate) {
 				multiplier *= -1;
 			}
 			long delta = 0;
+			
 			if (this.delta.isPresent()) {
 				delta = this.delta.get();
 			}
+			
 			number = (long) (number.longValue() * multiplier - delta);
 			@SuppressWarnings("unchecked") Optional<T> value = (Optional<T>) Optional.of(number);
 			this.value = value;
