@@ -88,7 +88,7 @@ public class InfluxdbSingleton implements TimedataSingleton {
 	 * "timestamp2" { "channel1": value, "channel2": value } }
 	 */
 	@Override
-	public void write(MetadataDevices devices, JsonObject jData) {
+	public void write(MetadataDevices devices, JsonObject jData) throws NullPointerException{
 		TreeBasedTable<Long, String, Object> data = TreeBasedTable.create();
 		for (MetadataDevice device : devices) {
 			int deviceId = device.getIdOpt().orElse(0);
@@ -154,10 +154,12 @@ public class InfluxdbSingleton implements TimedataSingleton {
 					for (Entry<String, JsonElement> channelEntry : jChannels.entrySet()) {
 						String channel = channelEntry.getKey();
 						Optional<Object> valueOpt = this.parseValue(channel, channelEntry.getValue());
-						if (valueOpt.isPresent()) {
+						
+						//tolto il controllo per vedere se il valore era presente
+						//viene lancia un'eccezione se non sono presenti valori, NullPointerException
 							Object value = valueOpt.get();
 							deviceCache.putToChannelCache(channel, value);
-						}
+						
 					}
 				}
 
@@ -165,10 +167,12 @@ public class InfluxdbSingleton implements TimedataSingleton {
 				for (Entry<String, JsonElement> channelEntry : jChannels.entrySet()) {
 					String channel = channelEntry.getKey();
 					Optional<Object> valueOpt = this.parseValue(channel, channelEntry.getValue());
-					if (valueOpt.isPresent()) {
+					
+					//tolto il controllo per vedere se il valore era presente
+					//viene lancia un'eccezione se non sono presenti valori, NullPointerException
 						Object value = valueOpt.get();
 						data.put(timestamp, channel, value);
-					}
+					
 				}
 			}
 
