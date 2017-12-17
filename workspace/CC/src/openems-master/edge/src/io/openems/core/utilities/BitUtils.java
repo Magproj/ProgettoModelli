@@ -29,15 +29,8 @@ public class BitUtils {
 		case BOOLEAN:
 			return BITS_BOOLEAN;
 
-		case DOUBLE: // TODO
-		case INET_4_ADDRESS: // TODO
-		case STRING:
-		case LONG_ARRAY:
-		case JSON_ARRAY:
-		case JSON_OBJECT:
-		case DEVICE_NATURE:
-		case THING_MAP:
-			// igore - no error
+		default:
+			// ignore - no error
 			return 0;
 		}
 		throw new NotImplementedException("BitLength for type [" + type + "] is not implemented.");
