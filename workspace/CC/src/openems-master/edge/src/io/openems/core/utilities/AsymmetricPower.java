@@ -135,17 +135,19 @@ public class AsymmetricPower {
 		long activePowerSum = 0;
 		long reactivePowerSum = 0;
 		
-		for (int i = 0; i < 3; i++) {
-			if (activePower[i] > 0) {
-				activePowerPosSum += activePower[i];
-			} else {
-				activePowerNegSum += activePower[i];
-			}
-			activePowerSum += activePower[i];
-			reactivePowerSum += reactivePower[i];
-		}
 		
 			for (int i = 0; i < 3; i++) {
+				
+				//il codice del for precedente lo inserisco in questo dato che le variabili usate per la somma
+				//non vengono utilizzate nel resto del codice e activePower viene modificato solo dopo averlo già inserito nella somma
+				if (activePower[i] > 0) {
+					activePowerPosSum += activePower[i];
+				} else {
+					activePowerNegSum += activePower[i];
+				}
+				activePowerSum += activePower[i];
+				reactivePowerSum += reactivePower[i];
+				
 					//throws possible NullPointerException
 					this.activePower[i] = setActivePower[i].getWriteValue().get();
 					this.reactivePower[i] = setReactivePower[i].getWriteValue().get();
@@ -219,17 +221,10 @@ public class AsymmetricPower {
 				new Object[] { activePower[0], reducedActivePower[0], activePower[1], reducedActivePower[1],
 						activePower[2], reducedActivePower[2], reactivePower[0], reducedReactivePower[0],
 						reactivePower[1], reducedReactivePower[1], reactivePower[2], reducedReactivePower[2] });
-			
-		//sostituisce il for per la complessità ciclomatica
-			this.activePower[0] = reducedActivePower[0];
-			this.reactivePower[0] = reducedReactivePower[0];
-			
-			this.activePower[1] = reducedActivePower[1];
-			this.reactivePower[1] = reducedReactivePower[1];
-			
-			this.activePower[2] = reducedActivePower[2];
-			this.reactivePower[2] = reducedReactivePower[2];
-		
+		for (int i = 0; i < 3; i++) {
+			this.activePower[i] = reducedActivePower[i];
+			this.reactivePower[i] = reducedReactivePower[i];
+		}
 	}
 
 	/**
