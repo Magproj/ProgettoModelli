@@ -215,12 +215,9 @@ public class ClassRepository {
 		for (int i=0; i<clazz.size(); i++) {
 			Object b = Beans.instantiate(method, clazz.getMethods());
 			Class<?> type = null;
-			if (method.getReturnType().isArray()) {
-				Class<?> rtype = method.getReturnType();
-				type = rtype.getComponentType();
-			} else {
-				type = method.getReturnType();
-			}
+			
+			type = testMethod(method);
+			
 			if (Channel.class.isAssignableFrom(type)) {
 				Optional<ChannelInfo> channelInfoOpt = getAnnotationForMethod(clazz, method.getName());
 				String channelId = method.getName();
@@ -250,6 +247,16 @@ public class ClassRepository {
 		return thingDoc;
 	}
 
+	
+	public Class<?> testMethod(Method method){
+	
+		if (method.getReturnType().isArray()) {
+			Class<?> rtype = method.getReturnType();
+			return rtype.getComponentType();
+		} else {
+			return method.getReturnType();
+		}
+	}
 	/**
 	 * Tries to find the annotation of the method in the class hierarchy
 	 *
