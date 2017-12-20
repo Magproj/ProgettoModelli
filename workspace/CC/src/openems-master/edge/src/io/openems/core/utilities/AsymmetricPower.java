@@ -137,8 +137,8 @@ public class AsymmetricPower {
 		
 		
 		//funzione
-		activePowerPosSum = PosSum();
-		activePowerNegSum = NegSum();
+		//activePowerPosSum = PosSum();
+		//activePowerNegSum = NegSum();
 		
 		activePowerSum = activePower[0] + activePower[1] + activePower[2];
 		reactivePowerSum = reactivePower[0] + reactivePower[1] + reactivePower[2];
