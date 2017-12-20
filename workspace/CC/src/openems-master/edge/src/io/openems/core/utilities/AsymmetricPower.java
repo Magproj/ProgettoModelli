@@ -189,7 +189,7 @@ public class AsymmetricPower {
 				for (int i = 0; i < 3; i++) {
 					
 					//funzione
-					MaxMinActive(maxActivePowers, minActivePowers, activePowerSum);
+					MaxMinActive(maxActivePowers, minActivePowers, activePowerSum, reducedActivePower, minActivePowerPhase,maxActivePowerPhase);
 					
 					if (reactivePower[i] > maxReactivePowers[i]) {
 						setMinMaxValues(maxReactivePowers[i], reactivePower[i], maxReactivePowerPhase,
@@ -225,7 +225,7 @@ public class AsymmetricPower {
 		}
 	}
 	
-	private void MinMaxActive(Long[] maxActivePowers, Long[] minActivePowers, long activePowerSum, long[] reducedActivePower, List<Long>[] minActivePowerPhase, List<Long>[] maxActivePowerPhase){
+	public void MaxMinActive(Long[] maxActivePowers, Long[] minActivePowers, long activePowerSum, long[] reducedActivePower, List<Long>[] minActivePowerPhase, List<Long>[] maxActivePowerPhase){
 		
 		for(int i=0; i<3; i++){
 			if (activePower[i] > maxActivePowers[i]) {
