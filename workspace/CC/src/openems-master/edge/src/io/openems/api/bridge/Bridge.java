@@ -260,7 +260,7 @@ public abstract class Bridge extends Thread implements Thing {
 	
 	
 	/*
-	 * 
+	 * Check if writeTasks doesn't throw exception
 	 */
 	private void checkTask(List<BridgeWriteTask> writeTasks){
 		
