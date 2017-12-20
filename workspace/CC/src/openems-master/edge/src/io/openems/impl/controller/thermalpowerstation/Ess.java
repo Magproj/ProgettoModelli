@@ -34,7 +34,9 @@ import io.openems.api.device.nature.ess.EssNature;
  *
  */
 public class Ess extends ThingMap {
-
+/**
+ * 
+ */
 	public ReadChannel<Long> soc;
 	public ReadChannel<Long> allowedCharge;
 	public ReadChannel<Long> allowedDischarge;
