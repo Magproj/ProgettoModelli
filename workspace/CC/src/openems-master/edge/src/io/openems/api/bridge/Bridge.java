@@ -185,13 +185,7 @@ public abstract class Bridge extends Thread implements Thing {
 					// get Scheduler
 					this.scheduler = ThingRepository.getInstance().getSchedulers().iterator().next();
 					boolean initSuccessful = initialize();
-					if (initSuccessful) {
-						isInitialized.set(true);
-						initializedMutex.release();
-						initialize.set(false);
-					} else {
-						initializedMutex.awaitOrTimeout(10000, TimeUnit.MILLISECONDS);
-					}
+					isInizialize(initSuccessful);
 				}
 
 				this.readOtherTaskCount = 0;
@@ -272,6 +266,20 @@ public abstract class Bridge extends Thread implements Thing {
 		}
 		dispose();
 		System.out.println("BridgeWorker was interrupted. Exiting gracefully...");
+	}
+	/*
+	 * Check if initialize is true and set the value
+	 */
+	private void isInizialize(boolean initSuccessful){
+		
+		if (initSuccessful) {
+			isInitialized.set(true);
+			initializedMutex.release();
+			initialize.set(false);
+		} else {
+			initializedMutex.awaitOrTimeout(10000, TimeUnit.MILLISECONDS);
+		}
+		
 	}
 
 	private void readOther(List<BridgeReadTask> tasks, long timeFinished, boolean forceRead) {
