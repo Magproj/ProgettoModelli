@@ -223,13 +223,10 @@ public abstract class Bridge extends Thread implements Thing {
 				while (!written) {
 					if (isWriteTriggered.get()) {
 						notifyListeners(Position.BEFOREWRITE);
-						for (BridgeWriteTask task : writeTasks) {
-							try {
-								task.runTask();
-							} catch (Exception e) {
-								log.error("failed to execute WriteTask.", e);
-							}
-						}
+						
+						//funzione
+						checkTask(writeTasks);
+						
 						isWriteTriggered.set(false);
 						written = true;
 					} else {
@@ -242,12 +239,9 @@ public abstract class Bridge extends Thread implements Thing {
 					}
 				}
 				notifyListeners(Position.BEFOREREADOTHER2);
-				// execute additional readTasks if time left
-				if (readTasks.size() > 0) {
-					if (getNextReadTime() - 10 - System.currentTimeMillis() - requiredTimeListeners() > 0) {
-						readOther(readTasks, getNextReadTime(), true);
-					}
-				}
+				
+				addTasks(readTasks);
+				
 				// Everything went ok: reset bridgeExceptionSleep
 				bridgeExceptionSleep = 1;
 			} catch (Throwable e) {
@@ -263,6 +257,23 @@ public abstract class Bridge extends Thread implements Thing {
 		dispose();
 		System.out.println("BridgeWorker was interrupted. Exiting gracefully...");
 	}
+	
+	
+	/*
+	 * 
+	 */
+	private void checkTask(List<BridgeWriteTask> writeTasks){
+		
+		for (BridgeWriteTask task : writeTasks) {
+			try {
+				task.runTask();
+			} catch (Exception e) {
+				log.error("failed to execute WriteTask.", e);
+			}
+		}
+		
+	}
+	
 	
 	/*
 	 * Calculate time until write
@@ -289,6 +300,19 @@ public abstract class Bridge extends Thread implements Thing {
 			initialize.set(false);
 		} else {
 			initializedMutex.awaitOrTimeout(10000, TimeUnit.MILLISECONDS);
+		}
+		
+	}
+	
+	/*
+	 * execute additional readTasks if time left
+	 */
+	private void addTasks(List<BridgeReadTask> readTasks){
+		
+		if (readTasks.size() > 0) {
+			if (getNextReadTime() - 10 - System.currentTimeMillis() - requiredTimeListeners() > 0) {
+				readOther(readTasks, getNextReadTime(), true);
+			}
 		}
 		
 	}
