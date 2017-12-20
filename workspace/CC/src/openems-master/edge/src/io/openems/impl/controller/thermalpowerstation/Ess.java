@@ -25,22 +25,24 @@ import io.openems.api.controller.IsThingMap;
 import io.openems.api.controller.ThingMap;
 import io.openems.api.device.nature.ess.EssNature;
 
+/*
+ * 
+ */
 @IsThingMap(type = EssNature.class)
 
 /**
- * Class that exdends ThingMap
+ * Class that extends ThingMap
  *
  * @author FENECON GmbH
  *
  */
 public class Ess extends ThingMap {
-/**
- * 
- */
+
 	public ReadChannel<Long> soc;
 	public ReadChannel<Long> allowedCharge;
 	public ReadChannel<Long> allowedDischarge;
-
+	
+	// method of the class Ess
 	public Ess(EssNature thing) {
 		super(thing);
 		this.soc = thing.soc().required();
