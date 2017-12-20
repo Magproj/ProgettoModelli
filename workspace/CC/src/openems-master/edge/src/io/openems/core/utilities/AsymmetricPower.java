@@ -137,8 +137,8 @@ public class AsymmetricPower {
 		
 		
 		//funzione
-		//activePowerPosSum = PosSum();
-		//activePowerNegSum = NegSum();
+		activePowerPosSum = PosSum();
+		activePowerNegSum = NegSum();
 		
 		activePowerSum = activePower[0] + activePower[1] + activePower[2];
 		reactivePowerSum = reactivePower[0] + reactivePower[1] + reactivePower[2];
@@ -188,17 +188,8 @@ public class AsymmetricPower {
 				// set the MinMaxValue  and reduce to min/max values
 				for (int i = 0; i < 3; i++) {
 					
-					if (activePower[i] > maxActivePowers[i]) {
-						setMinMaxValues(maxActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
-								activePowerSum, i);
-						long maxActivePower = Collections.min(maxActivePowerPhase[i]);
-						reducedActivePower[i] = maxActivePower;
-					} else if (activePower[i] < minActivePowers[i]) {
-						setMinMaxValues(minActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
-								activePowerSum, i);
-						long minActivePower = Collections.max(minActivePowerPhase[i]);
-						reducedActivePower[i] = minActivePower;
-					}
+					//funzione
+					MaxMinActive(maxActivePowers, minActivePowers, activePowerSum);
 					
 					if (reactivePower[i] > maxReactivePowers[i]) {
 						setMinMaxValues(maxReactivePowers[i], reactivePower[i], maxReactivePowerPhase,
@@ -234,8 +225,25 @@ public class AsymmetricPower {
 		}
 	}
 	
+	private void MinMaxActive(Long[] maxActivePowers, Long[] minActivePowers, long activePowerSum, long[] reducedActivePower, List<Long>[] minActivePowerPhase, List<Long>[] maxActivePowerPhase){
+		
+		for(int i=0; i<3; i++){
+			if (activePower[i] > maxActivePowers[i]) {
+				setMinMaxValues(maxActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
+						activePowerSum, i);
+				long maxActivePower = Collections.min(maxActivePowerPhase[i]);
+				reducedActivePower[i] = maxActivePower;
+			} else if (activePower[i] < minActivePowers[i]) {
+				setMinMaxValues(minActivePowers[i], activePower[i], maxActivePowerPhase, minActivePowerPhase,
+					activePowerSum, i);
+				long minActivePower = Collections.max(minActivePowerPhase[i]);
+				reducedActivePower[i] = minActivePower;
+			}
+		}
+	}
 	
-	private int PosSum(){
+	
+	private long PosSum(){
 		
 		int posSum = 0;
 		for (int i = 0; i < 3; i++) {
@@ -246,7 +254,7 @@ public class AsymmetricPower {
 		return posSum;
 	}
 	
-	private int NegSum(){
+	private long NegSum(){
 		
 		int negSum = 0;
 		for (int i = 0; i < 3; i++) {
