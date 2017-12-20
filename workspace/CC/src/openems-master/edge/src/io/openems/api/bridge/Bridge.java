@@ -214,14 +214,10 @@ public abstract class Bridge extends Thread implements Thing {
 				}
 				long timeUntilWrite = scheduler.getCycleStartTime() + scheduler.getRequiredTime() + 10
 						- requiredTimeListeners();
-				if (readTasks.size() > 0) {
-					// calculate time until write
-					// run tasks for not required channels
-					if (timeUntilWrite - System.currentTimeMillis() > 0) {
-						notifyListeners(Position.BEFOREREADOTHER1);
-						readOther(readTasks, timeUntilWrite, false);
-					}
-				}
+				
+				//funzione
+				ReadAndTime(readTasks, timeUntilWrite);
+				
 				// execute write Tasks
 				boolean written = false;
 				while (!written) {
@@ -267,6 +263,21 @@ public abstract class Bridge extends Thread implements Thing {
 		dispose();
 		System.out.println("BridgeWorker was interrupted. Exiting gracefully...");
 	}
+	
+	/*
+	 * Calculate time until write
+	 */
+	public void ReadAndTime(List<BridgeReadTask> readTasks, long time){
+		
+		if (readTasks.size() > 0) {
+			// run tasks for not required channels
+			if (time - System.currentTimeMillis() > 0) {
+				notifyListeners(Position.BEFOREREADOTHER1);
+				readOther(readTasks, time, false);
+			}
+		}
+	}
+	
 	/*
 	 * Check if initialize is true and set the value
 	 */
