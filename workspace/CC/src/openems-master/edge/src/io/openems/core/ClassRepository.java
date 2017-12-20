@@ -248,8 +248,8 @@ public class ClassRepository {
 	}
 
 	
-	public Class<?> testMethod(Method method){
-	
+	public Class<?> testMethod(Object method){
+		
 		if (method.getReturnType().isArray()) {
 			Class<?> rtype = method.getReturnType();
 			return rtype.getComponentType();
@@ -257,6 +257,7 @@ public class ClassRepository {
 			return method.getReturnType();
 		}
 	}
+	
 	/**
 	 * Tries to find the annotation of the method in the class hierarchy
 	 *
