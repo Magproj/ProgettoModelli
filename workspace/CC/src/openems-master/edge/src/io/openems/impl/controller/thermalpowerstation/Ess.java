@@ -25,10 +25,6 @@ import io.openems.api.controller.IsThingMap;
 import io.openems.api.controller.ThingMap;
 import io.openems.api.device.nature.ess.EssNature;
 
-/*
- * 
- */
-@IsThingMap(type = EssNature.class)
 
 /**
  * Class that extends ThingMap
