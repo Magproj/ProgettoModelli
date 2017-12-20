@@ -196,7 +196,8 @@ public class ClassRepository {
 	 *
 	 * @param clazz
 	 */
-	public ThingDoc getThingDoc(Class<? extends Thing> clazz) {
+	public ThingDoc getThingDoc(Class<? extends Thing> clazz) throws NullPointerException {
+		
 		if (this.thingDocs.containsKey(clazz)) {
 			// return from cache
 			return this.thingDocs.get(clazz);
@@ -205,11 +206,9 @@ public class ClassRepository {
 
 		// get info about thing
 		ThingInfo thing = clazz.getAnnotation(ThingInfo.class);
-		if (thing == null) {
-			log.warn("Thing [" + clazz.getName() + "] has no @ThingInfo annotation");
-		} else {
-			thingDoc.setThingDescription(thing);
-		}
+		//può sollevare una NullPointerException
+		thingDoc.setThingDescription(thing);
+		
 
 		// parse all methods
 		ClassLoader method = new SafeClassLoader();

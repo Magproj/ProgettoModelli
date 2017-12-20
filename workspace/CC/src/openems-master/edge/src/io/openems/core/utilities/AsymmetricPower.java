@@ -135,22 +135,22 @@ public class AsymmetricPower {
 		long activePowerSum = 0;
 		long reactivePowerSum = 0;
 		
+		for (int i = 0; i < 3; i++) {
+			if (activePower[i] > 0) {
+				activePowerPosSum += activePower[i];
+			} else {
+				activePowerNegSum += activePower[i];
+			}
+		}
 		
-			for (int i = 0; i < 3; i++) {
+		activePowerSum = activePower[0] + activePower[1] + activePower[2];
+		reactivePowerSum = reactivePower[0] + reactivePower[1] + reactivePower[2];
+		
+		for (int i = 0; i < 3; i++) {
 				
-				//il codice del for precedente lo inserisco in questo dato che le variabili usate per la somma
-				//non vengono utilizzate nel resto del codice e activePower viene modificato solo dopo averlo già inserito nella somma
-				if (activePower[i] > 0) {
-					activePowerPosSum += activePower[i];
-				} else {
-					activePowerNegSum += activePower[i];
-				}
-				activePowerSum += activePower[i];
-				reactivePowerSum += reactivePower[i];
-				
-					//throws possible NullPointerException
-					this.activePower[i] = setActivePower[i].getWriteValue().get();
-					this.reactivePower[i] = setReactivePower[i].getWriteValue().get();
+				//throws possible NullPointerException
+				this.activePower[i] = setActivePower[i].getWriteValue().get();
+				this.reactivePower[i] = setReactivePower[i].getWriteValue().get();
 				
 				// set limits by allowed apparent
 				double cosPhi = ControllerUtils.calculateCosPhi(this.activePower[i], this.reactivePower[i]);
@@ -163,10 +163,10 @@ public class AsymmetricPower {
 				minActivePowerPhase[i].add(activePower * -1);
 				
 				//throws possible NullPointerException	
-					maxReactivePowerPhase[i].add(setReactivePower[i].writeMax().get());
-					minReactivePowerPhase[i].add(setReactivePower[i].writeMin().get());
-					maxActivePowerPhase[i].add(setActivePower[i].writeMax().get());
-					minActivePowerPhase[i].add(setActivePower[i].writeMin().get());
+				maxReactivePowerPhase[i].add(setReactivePower[i].writeMax().get());
+				minReactivePowerPhase[i].add(setReactivePower[i].writeMin().get());
+				maxActivePowerPhase[i].add(setActivePower[i].writeMax().get());
+				minActivePowerPhase[i].add(setActivePower[i].writeMin().get());
 				
 				if (this.activePower[i] < 0) {
 					minActivePowerPhase[i].add(allowedCharge.value() / activePowerNegSum * this.activePower[i]);
@@ -175,7 +175,8 @@ public class AsymmetricPower {
 				}
 			}
 
-			if (reductionType==PERSUM) {
+			switch(reductionType){
+			case PERSUM: {
 				Long[] minActivePowers = new Long[] { Collections.max(minActivePowerPhase[0]),
 						Collections.max(minActivePowerPhase[1]), Collections.max(minActivePowerPhase[2]) };
 				Long[] maxActivePowers = new Long[] { Collections.min(maxActivePowerPhase[0]),
@@ -212,7 +213,13 @@ public class AsymmetricPower {
 						reducedReactivePower[i] = minReactivePower;
 					}
 				}
+				
+				break;
 			}
+			
+			default:
+				 break;
+		}
 			
 		
 		log.info(
@@ -221,6 +228,7 @@ public class AsymmetricPower {
 				new Object[] { activePower[0], reducedActivePower[0], activePower[1], reducedActivePower[1],
 						activePower[2], reducedActivePower[2], reactivePower[0], reducedReactivePower[0],
 						reactivePower[1], reducedReactivePower[1], reactivePower[2], reducedReactivePower[2] });
+		
 		for (int i = 0; i < 3; i++) {
 			this.activePower[i] = reducedActivePower[i];
 			this.reactivePower[i] = reducedReactivePower[i];
