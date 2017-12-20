@@ -135,16 +135,15 @@ public class AsymmetricPower {
 		long activePowerSum = 0;
 		long reactivePowerSum = 0;
 		
-		for (int i = 0; i < 3; i++) {
-			if (activePower[i] > 0) {
-				activePowerPosSum += activePower[i];
-			} else {
-				activePowerNegSum += activePower[i];
-			}
-		}
+		
+		//funzione
+		activePowerPosSum = PosSum();
+		activePowerNegSum = NegSum();
 		
 		activePowerSum = activePower[0] + activePower[1] + activePower[2];
 		reactivePowerSum = reactivePower[0] + reactivePower[1] + reactivePower[2];
+		
+		
 		
 		for (int i = 0; i < 3; i++) {
 				
@@ -234,7 +233,30 @@ public class AsymmetricPower {
 			this.reactivePower[i] = reducedReactivePower[i];
 		}
 	}
-
+	
+	
+	private int PosSum(){
+		
+		int posSum = 0;
+		for (int i = 0; i < 3; i++) {
+			if (activePower[i] > 0) {
+				posSum += activePower[i];
+			}
+		}
+		return posSum;
+	}
+	
+	private int NegSum(){
+		
+		int negSum = 0;
+		for (int i = 0; i < 3; i++) {
+			if (activePower[i] < 0) {
+				negSum += activePower[i];
+			}
+		}
+		return negSum;
+	}
+	
 	/**
 	 * Writes active and reactive power to the setActive-/setReactivePower Channel if the value was set
 	 *
