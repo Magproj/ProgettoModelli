@@ -226,12 +226,10 @@ public abstract class Bridge extends Thread implements Thing {
 						isWriteTriggered.set(false);
 						written = true;
 					} else {
-						try {
-							Thread.sleep(20l);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						
+						//funzione
+						check();
+						
 					}
 				}
 				notifyListeners(Position.BEFOREREADOTHER2);
@@ -271,6 +269,18 @@ public abstract class Bridge extends Thread implements Thing {
 		
 	}
 	
+	/*
+	 * Check the status of the thread
+	 */
+	private void check(){
+		
+		try {
+			Thread.sleep(20l);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	/*
 	 * Check if writeTasks doesn't throw exception
