@@ -162,12 +162,11 @@ public class InjectionUtils {
 		 * Get "Field" in Channels parent class
 		 */
 		Field field;
-		try {
-			field = channel.parent().getClass().getField(channel.id());
-		} catch (NoSuchFieldException | SecurityException e) {
-			throw new ReflectionException("Field for ConfigChannel [" + channel.address() + "] is not named ["
-					+ channel.id() + "] in [" + channel.getClass().getSimpleName() + "]");
-		}
+		
+		//funzione
+		checkField(field, channel);
+		
+		
 
 		/*
 		 * Get expected Object Type (List, Set, simple Object)
@@ -237,6 +236,20 @@ public class InjectionUtils {
 				return thingMaps.iterator().next();
 			}
 		}
+	}
+	
+	/*
+	 * Check field
+	 */
+	public void checkField(Field field, ConfigChannel<?> channel){
+		
+		try {
+			field = channel.parent().getClass().getField(channel.id());
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new ReflectionException("Field for ConfigChannel [" + channel.address() + "] is not named ["
+					+ channel.id() + "] in [" + channel.getClass().getSimpleName() + "]");
+		}
+		
 	}
 	
 	

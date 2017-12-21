@@ -102,16 +102,10 @@ public class InfluxdbSingleton implements TimedataSingleton {
 
 			// Sort incoming data by timestamp
 			TreeMap<Long, JsonObject> sortedData = new TreeMap<Long, JsonObject>();
-			for (Entry<String, JsonElement> entry : jData.entrySet()) {
-				try {
-					Long timestamp = Long.valueOf(entry.getKey());
-					JsonObject jChannels;
-					jChannels = JsonUtils.getAsJsonObject(entry.getValue());
-					sortedData.put(timestamp, jChannels);
-				} catch (OpenemsException e) {
-					log.error("Data error: " + e.getMessage());
-				}
-			}
+			
+			//funzione
+			sortedData = putSortData(jData);
+			
 
 			// Prepare data table. Takes entries starting with eldest timestamp (ascending order)
 			for (Entry<Long, JsonObject> dataEntry : sortedData.entrySet()) {
@@ -176,6 +170,26 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		}
 	}
 	
+	
+	/*
+	 * Sort incoming data by timestamp
+	 */
+	public TreeMap<Long, JsonObject>  putSortData(JsonObject jData){
+		
+		TreeMap<Long, JsonObject> sortData = new TreeMap<Long, JsonObject>();
+		
+		for (Entry<String, JsonElement> entry : jData.entrySet()) {
+			try {
+				Long timestamp = Long.valueOf(entry.getKey());
+				JsonObject jChannels;
+				jChannels = JsonUtils.getAsJsonObject(entry.getValue());
+				sortData.put(timestamp, jChannels);
+			} catch (OpenemsException e) {
+				log.error("Data error: " + e.getMessage());
+			}
+		}
+		
+	}
 	
 	/*
 	 * Update TimeStamp
