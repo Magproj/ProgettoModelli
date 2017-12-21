@@ -72,10 +72,10 @@ public class InfluxdbUtils {
 							String thingId = entry.getKey();
 							JsonObject jThing = new JsonObject();
 							JsonArray channelIds = JsonUtils.getAsJsonArray(entry.getValue());
-							for (JsonElement channelElement : channelIds) {
-								String channelId = JsonUtils.getAsString(channelElement);
-								jThing.add(channelId, JsonNull.INSTANCE);
-							}
+							
+							//funzione
+							jThing = addElement(channelIds);							
+							
 							jChannels.add(thingId, jThing);
 						}
 						jTimestamp.add("channels", jChannels);
@@ -97,6 +97,20 @@ public class InfluxdbUtils {
 	}
 	
 	
+	/*
+	 * 
+	 */
+	private JsonObject addElement(JsonArray channelIds){
+		
+		JsonObject jT = new JsonObject();
+		
+		for (JsonElement channelElement : channelIds) {
+			String channelId = JsonUtils.getAsString(channelElement);
+			jT.add(channelId, JsonNull.INSTANCE);
+		}
+		
+		return jT;
+	}
 	
 	/*
 	 * Add column when the column isn't equals to time 

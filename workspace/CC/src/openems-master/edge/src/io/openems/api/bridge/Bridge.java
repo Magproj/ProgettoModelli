@@ -194,15 +194,11 @@ public abstract class Bridge extends Thread implements Thing {
 				List<BridgeWriteTask> writeTasks = this.getWriteTasks();
 				// calculate startTime to run the read
 				long sleep = getNextReadTime() - System.currentTimeMillis() - 10 - requiredTimeListeners();
-				if (sleep > 0) {
-					try {
-						Thread.sleep(sleep);
-					} catch (InterruptedException e) {
-						log.error("sleep failed.", e);
-					}
-				} else {
-					log.debug("cycleTime smaller than required time: " + sleep);
-				}
+				
+				//funzione
+				checkSleep(sleep);
+				
+				
 				notifyListeners(Position.BEFOREREADREQUIRED);
 				// run all tasks to read required Channels
 				for (BridgeReadTask task : requiredReadTasks) {
@@ -256,6 +252,23 @@ public abstract class Bridge extends Thread implements Thing {
 		}
 		dispose();
 		System.out.println("BridgeWorker was interrupted. Exiting gracefully...");
+	}
+	
+	/*
+	 * If sleep fail there is an exception 
+	 */
+	private void checkSleep(long sleep){
+		
+		if (sleep > 0) {
+			try {
+				Thread.sleep(sleep);
+			} catch (InterruptedException e) {
+				log.error("sleep failed.", e);
+			}
+		} else {
+			log.debug("cycleTime smaller than required time: " + sleep);
+		}
+		
 	}
 	
 	
