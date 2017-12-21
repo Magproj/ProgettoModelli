@@ -95,10 +95,10 @@ public class InfluxdbSingleton implements TimedataSingleton {
 
 			// get existing or create new DeviceCache
 			DeviceCache deviceCache = this.deviceCacheMap.get(deviceId);
-			if (deviceCache == null) {
-				deviceCache = new DeviceCache();
-				this.deviceCacheMap.put(deviceId, deviceCache);
-			}
+			
+			//funzione
+			checkDevice(deviceCache);
+
 
 			// Sort incoming data by timestamp
 			TreeMap<Long, JsonObject> sortedData = new TreeMap<Long, JsonObject>();
@@ -170,6 +170,18 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		}
 	}
 	
+
+	/*
+	 * Check if deviceCache is null to put a new deviceCache
+	 */
+	public void checkDevice(DeviceCache deviceCache, int deviceId){
+		
+		if (deviceCache == null) {
+			deviceCache = new DeviceCache();
+			this.deviceCacheMap.put(deviceId, deviceCache);
+		}
+		
+	}
 	
 	/*
 	 * Sort incoming data by timestamp
@@ -264,12 +276,9 @@ public class InfluxdbSingleton implements TimedataSingleton {
 					if (channel.equals("ess0/Soc")) {
 						fields.put("Stack_SOC", value);
 						device.setSoc(value.intValue());
-					} else if (channel.equals("meter0/ActivePower")) {
-						fields.put("PCS_Grid_Power_Total", value * -1);
-					} else if (channel.equals("meter1/ActivePower")) {
-						fields.put("PCS_PV_Power_Total", value);
-					} else if (channel.equals("meter2/ActivePower")) {
-						fields.put("PCS_Load_Power_Total", value);
+					} else {
+						//funzione
+						convChannel(channel, value, fields);
 					}
 
 					// from here value needs to be divided by 10 for backwards compatibility
@@ -277,15 +286,9 @@ public class InfluxdbSingleton implements TimedataSingleton {
 					if (channel.equals("meter2/Energy")) {
 						fields.put("PCS_Summary_Consumption_Accumulative_cor", value);
 						fields.put("PCS_Summary_Consumption_Accumulative", value);
-					} else if (channel.equals("meter0/BuyFromGridEnergy")) {
-						fields.put("PCS_Summary_Grid_Buy_Accumulative_cor", value);
-						fields.put("PCS_Summary_Grid_Buy_Accumulative", value);
-					} else if (channel.equals("meter0/SellToGridEnergy")) {
-						fields.put("PCS_Summary_Grid_Sell_Accumulative_cor", value);
-						fields.put("PCS_Summary_Grid_Sell_Accumulative", value);
-					} else if (channel.equals("meter1/EnergyL1")) {
-						fields.put("PCS_Summary_PV_Accumulative_cor", value);
-						fields.put("PCS_Summary_PV_Accumulative", value);
+					} else {
+						//funzione
+						newValue(channel, value, fields);
 					}
 				}
 			}
@@ -300,6 +303,39 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		influxDB.write(batchPoints);
 	}
 
+	/*
+	 * convert channel ids to old identifiers
+	 */
+	public void convChannel(String channel, Long value, Map<String, Object> fields){
+		
+		if (channel.equals("meter0/ActivePower")) {
+			fields.put("PCS_Grid_Power_Total", value * -1);
+		} else if (channel.equals("meter1/ActivePower")) {
+			fields.put("PCS_PV_Power_Total", value);
+		} else if (channel.equals("meter2/ActivePower")) {
+			fields.put("PCS_Load_Power_Total", value);
+		}
+		
+	}
+	
+	/*
+	 * New value are put in fields
+	 */
+	public void newValue(String channel, Long value, Map<String, Object> fields){
+		
+		if (channel.equals("meter0/BuyFromGridEnergy")) {
+			fields.put("PCS_Summary_Grid_Buy_Accumulative_cor", value);
+			fields.put("PCS_Summary_Grid_Buy_Accumulative", value);
+		} else if (channel.equals("meter0/SellToGridEnergy")) {
+			fields.put("PCS_Summary_Grid_Sell_Accumulative_cor", value);
+			fields.put("PCS_Summary_Grid_Sell_Accumulative", value);
+		} else if (channel.equals("meter1/EnergyL1")) {
+			fields.put("PCS_Summary_PV_Accumulative_cor", value);
+			fields.put("PCS_Summary_PV_Accumulative", value);
+		}
+		
+	}
+	
 	/**
 	 * Add value to Influx Builder in the correct data format
 	 *
