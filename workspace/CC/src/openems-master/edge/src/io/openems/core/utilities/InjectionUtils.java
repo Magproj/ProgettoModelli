@@ -209,20 +209,15 @@ public class InjectionUtils {
 		ThingRepository thingRepository = ThingRepository.getInstance();
 		Set<Thing> matchingThings = thingRepository.getThingsAssignableByClass(thingClass);
 		Set<ThingMap> thingMaps = new HashSet<>();
-		for (Thing thing : matchingThings) {
-			if (filter.contains(thing.id()) || filter.contains("*")) {
-				ThingMap thingMap = (ThingMap) InjectionUtils.getInstance(thingMapClass, thing);
-				thingMaps.add(thingMap);
-			}
-		}
+		
+		//funzione
+		thingMaps = addThings(matchingThings, filter);
 
-		/*
-		 * Prepare return
-		 */
-		if (thingMaps.isEmpty() && !filter.isEmpty()) {
-			throw new ReflectionException("No matching ThingMap found for ConfigChannel [" + channel.address() + "]");
-		}
-
+		
+		//funzione
+		checkMap(thingMaps, filter, channel);
+		
+		
 		if (Collection.class.isAssignableFrom(expectedObjectClass)) {
 			if (Set.class.isAssignableFrom(expectedObjectClass)) {
 				return thingMaps;
@@ -243,6 +238,36 @@ public class InjectionUtils {
 			}
 		}
 	}
+	
+	
+	/*
+	 * Add element to thingMaps after checking that contains id or *
+	 */
+	private Set<ThingMap> addThings(Set<Thing> matchThings, Set<String> filt){
+		
+		Set<ThingMap> thingMaps = new HashSet<>();
+		
+		for (Thing thing : matcThings) {
+			if (filt.contains(thing.id()) || filt.contains("*")) {
+				ThingMap thingMap = (ThingMap) InjectionUtils.getInstance(thingMapClass, thing);
+				thingMaps.add(thingMap);
+			}
+		}
+		
+		return thingMaps;	
+	}
+	
+	/*
+	 * Prepare return
+	 */
+	private void checkMap(Set<ThingMap> thingMaps, Set<String> filter, ConfigChannel<?> channel) throws ReflectionException{
+		
+		if (thingMaps.isEmpty() && !filter.isEmpty()) {
+			throw new ReflectionException("No matching ThingMap found for ConfigChannel [" + channel.address() + "]");
+		}
+
+	}
+	
 
 	/**
 	 * Gets all important nature super interfaces and classes. This data is used by web client to visualize the data

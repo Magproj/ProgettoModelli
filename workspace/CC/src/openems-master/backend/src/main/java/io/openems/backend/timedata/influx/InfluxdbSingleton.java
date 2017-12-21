@@ -132,23 +132,9 @@ public class InfluxdbSingleton implements TimedataSingleton {
 					// update cache timestamp
 					deviceCache.setTimestamp(timestamp);
 
-					if (timestamp < cacheTimestamp + 5 * 60 * 1000) {
-						// cache is valid (not elder than 5 minutes)
-						// add cache data to write data
-						for (Entry<String, Object> cacheEntry : deviceCache.getChannelCacheEntries()) {
-							String channel = cacheEntry.getKey();
-							Object value = cacheEntry.getValue();
-							data.put(timestamp, channel, value);
-						}
-					} else {
-						// cache is not anymore valid (elder than 5 minutes)
-						// clear cache
-						if (cacheTimestamp != 0l) {
-							log.info("Invalidate cache for device [" + deviceId + "]. This timestamp [" + timestamp
-									+ "]. Cache timestamp [" + cacheTimestamp + "]");
-						}
-						deviceCache.clear();
-					}
+					//funzione
+					data = updateTimeStamp(timestamp, cacheTimestamp, deviceId, deviceCache, data);
+					
 
 					// add incoming data to cache (this replaces already existing cache values)
 					for (Entry<String, JsonElement> channelEntry : jChannels.entrySet()) {
@@ -182,15 +168,41 @@ public class InfluxdbSingleton implements TimedataSingleton {
 
 		// Hook to continue writing data to old Mini monitoring
 		// TODO remove after full migration
-		for (
-
-		MetadataDevice device : devices) {
+		for (MetadataDevice device : devices) {
 			if (device.getProductType().equals("MiniES 3-3")) {
 				writeDataToOldMiniMonitoring(device, data);
 				break;
 			}
 		}
 	}
+	
+	
+	/*
+	 * Update TimeStamp
+	 */
+	private TreeBasedTable<Long, String, Object> updateTimeStamp(Long timestamp, long cacheTimestamp, int deviceId, DeviceCache deviceCache, TreeBasedTable<Long, String, Object> data){
+		
+		if (timestamp < cacheTimestamp + 5 * 60 * 1000) {
+			// cache is valid (not elder than 5 minutes)
+			// add cache data to write data
+			for (Entry<String, Object> cacheEntry : deviceCache.getChannelCacheEntries()) {
+				String channel = cacheEntry.getKey();
+				Object value = cacheEntry.getValue();
+				data.put(timestamp, channel, value);
+			}
+		} else {
+			// cache is not anymore valid (elder than 5 minutes)
+			// clear cache
+			if (cacheTimestamp != 0l) {
+				log.info("Invalidate cache for device [" + deviceId + "]. This timestamp [" + timestamp
+						+ "]. Cache timestamp [" + cacheTimestamp + "]");
+			}
+			deviceCache.clear();
+		}
+		
+		return data;
+	}
+	
 
 	private void writeData(int deviceId, TreeBasedTable<Long, String, Object> data) {
 		BatchPoints batchPoints = BatchPoints.database(database) //
