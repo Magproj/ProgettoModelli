@@ -55,12 +55,9 @@ public class InfluxdbUtils {
 				for (Series series : seriess) {
 					// create thing/channel index
 					ArrayList<ChannelAddress> addressIndex = new ArrayList<>();
-					for (String column : series.getColumns()) {
-						if (column.equals("time")) {
-							continue;
-						}
-						addressIndex.add(ChannelAddress.fromString(column));
-					}
+					
+					addressIndex = checkTime(series);
+					
 					// first: create empty timestamp objects
 					for (List<Object> values : series.getValues()) {
 						JsonObject jTimestamp = new JsonObject();
@@ -97,6 +94,25 @@ public class InfluxdbUtils {
 				}
 		}
 		return j;
+	}
+	
+	
+	
+	/*
+	 * Add column when the column isn't equals to time 
+	 */
+	private ArrayList<ChannelAddress> checkTime(Series series){
+		
+		ArrayList<ChannelAddress> addressIndex = new ArrayList<>();
+		for (String column : series.getColumns()) {
+			if (column.equals("time")) {
+				continue;
+			}
+			addressIndex.add(ChannelAddress.fromString(column));
+		}
+		
+		return addressIndex;
+		
 	}
 
 //	private static JsonObject querykWh(InfluxDB influxdb, String database, Optional<Integer> fems,
