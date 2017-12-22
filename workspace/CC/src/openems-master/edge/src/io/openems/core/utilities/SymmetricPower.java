@@ -1,4 +1,4 @@
-* OpenEMS - Open Source Energy Management System
+/* OpenEMS - Open Source Energy Management System
  * Copyright (c) 2016 FENECON GmbH and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -87,14 +87,10 @@ public class SymmetricPower {
 		long reducedActivePower = 0L;
 		long reducedReactivePower = 0L;
 
-		// Check if active power is already set
-		if (setActivePower.getWriteValue().isPresent()) {
-			this.activePower = setActivePower.peekWrite().get();
-		}
-		// Check if reactive power is already set
-		if (setReactivePower.getWriteValue().isPresent()) {
-			this.reactivePower = setReactivePower.peekWrite().get();
-		}
+		//funzione
+		checkSet();
+		
+		
 
 		// calculate cosPhi
 		double cosPhi = ControllerUtils.calculateCosPhi(activePower, reactivePower);
@@ -127,20 +123,15 @@ public class SymmetricPower {
 				reducedActivePower2 = ControllerUtils.calculateActivePowerFromReactivePower(reducedReactivePower2,
 						cosPhi);
 			}
-			// get largest fitting active and reactive power for min max values
-			if (ControllerUtils.calculateApparentPower(reducedActivePower1, reducedReactivePower1) > ControllerUtils
-					.calculateApparentPower(reducedActivePower2, reducedReactivePower2)
-					&& minActivePower <= reducedActivePower1 && reducedActivePower1 <= maxActivePower
-					&& minReactivePower <= reducedReactivePower1 && reducedReactivePower1 <= maxReactivePower) {
-				reducedActivePower = reducedActivePower1;
-				reducedReactivePower = reducedReactivePower1;
-			} else if (minActivePower <= reducedActivePower2 && reducedActivePower2 <= maxActivePower
-					&& minReactivePower <= reducedReactivePower2 && reducedReactivePower2 <= maxReactivePower) {
-				reducedActivePower = reducedActivePower2;
-				reducedReactivePower = reducedReactivePower2;
-			} else {
-				log.error("Can't reduce power to fit the power limitations!");
-			}
+			
+			//funzione
+			long[] tot = reduce(reducedActivePower1,reducedReactivePower1, reducedActivePower2, reducedReactivePower2, 
+					 minActivePower,maxActivePower,minReactivePower,maxReactivePower,
+					reducedActivePower,reducedReactivePower);
+			
+			reducedActivePower = tot[1];
+			reducedReactivePower = tot[2];
+			
 		} else if (minActivePower > activePower || activePower > maxActivePower) {
 			// only activePower is out of allowed value range
 			if (minActivePower > activePower) {
@@ -172,6 +163,52 @@ public class SymmetricPower {
 		}
 		this.activePower = reducedActivePower;
 		this.reactivePower = reducedReactivePower;
+	}
+	
+	/*
+	 * Get largest fitting active and reactive power for min max values
+	 */
+	public long[] reduce(long reducedActivePower1,long reducedReactivePower1,long reducedActivePower2, long reducedReactivePower2, 
+			long minActivePower, long maxActivePower,long minReactivePower, long maxReactivePower,
+			long reducedActivePower, long reducedReactivePower){
+		
+		long[] tot = {0, 0};
+		
+		if (ControllerUtils.calculateApparentPower(reducedActivePower1, reducedReactivePower1) > ControllerUtils
+				.calculateApparentPower(reducedActivePower2, reducedReactivePower2)
+				&& minActivePower <= reducedActivePower1 && reducedActivePower1 <= maxActivePower
+				&& minReactivePower <= reducedReactivePower1 && reducedReactivePower1 <= maxReactivePower) {
+			reducedActivePower = reducedActivePower1;
+			reducedReactivePower = reducedReactivePower1;
+		} else if (minActivePower <= reducedActivePower2 && reducedActivePower2 <= maxActivePower
+				&& minReactivePower <= reducedReactivePower2 && reducedReactivePower2 <= maxReactivePower) {
+			reducedActivePower = reducedActivePower2;
+			reducedReactivePower = reducedReactivePower2;
+		} else {
+			log.error("Can't reduce power to fit the power limitations!");
+		}
+		
+		tot[1] = reducedActivePower;
+		tot[2] = reducedReactivePower;
+		
+		return tot;
+	}
+	
+	
+	/*
+	 * Check if the power is set
+	 */
+	public void checkSet(){
+	
+		// Check if active power is already set
+		if (setActivePower.getWriteValue().isPresent()) {
+			this.activePower = setActivePower.peekWrite().get();
+		}
+		// Check if reactive power is already set
+		if (setReactivePower.getWriteValue().isPresent()) {
+			this.reactivePower = setReactivePower.peekWrite().get();
+		}
+				
 	}
 
 	/**
