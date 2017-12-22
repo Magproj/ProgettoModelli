@@ -39,7 +39,11 @@ import com.google.gson.JsonPrimitive;
 
 import io.openems.api.exception.NotImplementedException;
 import io.openems.api.exception.ReflectionException;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public class JsonUtils {
 	public static JsonArray getAsJsonArray(JsonElement jElement) throws ReflectionException {
 		if (!jElement.isJsonArray()) {
@@ -166,6 +170,60 @@ public class JsonUtils {
 				value = ((Optional<?>) value).get();
 			}
 		}
+		//funzione
+		if(returnCorrect(value)){
+			return returnElement(value);
+		}
+		
+		throw new NotImplementedException("Converter for [" + value + "]" + " of type [" //
+				+ value.getClass().getSimpleName() + "]" //
+				+ " to JSON is not implemented.");
+	}
+	
+	
+	/*
+	 * Return true if the value is of a type implemented
+	 */
+	public boolean returnCorrect(Object value){
+		
+		if (value instanceof Number) {
+			/*
+			 * Number
+			 */
+			return true;
+		} else if (value instanceof String) {
+			/*
+			 * String
+			 */
+			return true;
+		} else if (value instanceof Boolean) {
+			/*
+			 * Boolean
+			 */
+			return true;
+		} else if (value instanceof Inet4Address) {
+			/*
+			 * Inet4Address
+			 */
+			return true;
+		} else if (value instanceof JsonElement) {
+			/*
+			 * JsonElement
+			 */
+			return true;
+		} else if (value instanceof Long[]){
+			/*
+			 * Long-Array
+			 */
+			return true;
+		}
+	}
+	
+	/*
+	 * Check what the value is e return the right instance
+	 */
+	public JsonElement returnElement(Object value){
+		
 		if (value instanceof Number) {
 			/*
 			 * Number
@@ -201,9 +259,7 @@ public class JsonUtils {
 			}
 			return js;
 		}
-		throw new NotImplementedException("Converter for [" + value + "]" + " of type [" //
-				+ value.getClass().getSimpleName() + "]" //
-				+ " to JSON is not implemented.");
+		
 	}
 
 	public static Object getAsType(Optional<Class<?>> typeOptional, JsonElement j) throws NotImplementedException {
@@ -263,7 +319,8 @@ public class JsonUtils {
 					if(j.isJsonArray()){
 						JsonArray js = j.getAsJsonArray();
 						Long[] la = new Long[js.size()];
-						for(int i = 0; i < js.size(); i++){
+						int sizeJs= js.size();
+						for(int i = 0; i < sizeJs; i++){
 							la[i] = js.get(i).getAsLong();
 						}
 						return la;
