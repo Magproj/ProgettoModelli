@@ -421,9 +421,9 @@ public class ConfigUtils {
 				JsonArray arr = j.getAsJsonArray();
 				Long[] larr = new Long[arr.size()];
 				int sizeArr=arr.size();
-				for (int i = 0; i < sizeArr; i++) {
-					larr[i] = arr.get(i).getAsLong();
-				}
+				//funzione
+				larr = getArr(arr, larr, sizeArr);
+				
 				return larr;
 			} else {
 				throw new ReflectionException(
@@ -432,6 +432,14 @@ public class ConfigUtils {
 		}
 	}
 
+	public Long[] getArr(JsonArray arr, Long[] larr, int sizeArr){
+		
+		for (int i = 0; i < sizeArr; i++) {
+			larr[i] = arr.get(i).getAsLong();
+		}
+		
+		return larr;
+	}
 	
 	public Set<Long[]> function(JsonArray var, Set<Long[]> erg, ConfigChannel<?> channel) throws ReflectionException{
 		
