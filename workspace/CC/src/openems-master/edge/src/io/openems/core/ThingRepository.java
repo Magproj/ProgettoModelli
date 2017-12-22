@@ -156,12 +156,10 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 							"Channel is returning null! Thing [" + thing.id() + "], Member [" + member.getName() + "]");
 					continue;
 				}
-				for (Channel channel : channels) {
-					
+				
 					//funzione
-					addChanToThing(channel);
+					addChanToThing(channels);
 					
-				}
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
 			}
@@ -175,21 +173,19 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 	/*
 	 * Add channel to thingChannels or to thingConfigChannels
 	 */
-	public void addChanToThing(Channel channel){
+	public void addChanToThing(List<Channel> channels){
 		
-		if (channel instanceof ConfigChannel) {
-			// Add Channel to thingChannels
-			thingChannels.put(thing, channel.id(), channel);
+		for (Channel channel : channels) {
+			if (channel instanceof ConfigChannel) {
+				// Add Channel to thingChannels
+				thingChannels.put(thing, channel.id(), channel);
 
-			// Add Channel to configChannels
-			thingConfigChannels.put(thing, (ConfigChannel<?>) channel);
+				// Add Channel to configChannels
+				thingConfigChannels.put(thing, (ConfigChannel<?>) channel);
+			}
 		}
-		
 	}
 	
-	/*
-	 * Add member to channels 
-	 */
 	/*
 	 * Add member to channels 
 	 */
@@ -272,13 +268,45 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 	 *
 	 * @param thing
 	 */
-	public synchronized void removeThing(Thing thing) {
+	public void removeThing(Thing thing) {
+		synchronized (this) {
 		// Remove from thingIds
 		thingIds.remove(thing.id());
 
 		// Remove from thingClasses
 		thingClasses.remove(thing.getClass(), thing);
 
+		removeInstance(thing);
+
+		// Remove controller
+		if (thing instanceof Controller) {
+			Controller controller = (Controller) thing;
+			for (Scheduler scheduler : getSchedulers()) {
+				scheduler.removeController(controller);
+			}
+		}
+
+		// Remove device
+		if (thing instanceof Device) {
+			for (Bridge bridge : bridges) {
+				bridge.removeDevice((Device) thing);
+			}
+		}
+
+		// Remove Listener
+		thing.removeListener(this);
+		// TODO further cleaning if required
+		for (ThingsChangedListener listener : thingListeners) {
+			listener.thingChanged(thing, Action.REMOVE);
+		}
+	} }
+	
+	
+	/*
+	 * Remove thing of the right instance
+	 */
+	public void removeInstance(Thing thing){
+		
 		// Remove from bridges
 		if (thing instanceof Bridge) {
 			bridges.remove(thing);
@@ -303,28 +331,7 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 		if (thing instanceof DeviceNature) {
 			deviceNatures.remove(thing);
 		}
-
-		// Remove controller
-		if (thing instanceof Controller) {
-			Controller controller = (Controller) thing;
-			for (Scheduler scheduler : getSchedulers()) {
-				scheduler.removeController(controller);
-			}
-		}
-
-		// Remove device
-		if (thing instanceof Device) {
-			for (Bridge bridge : bridges) {
-				bridge.removeDevice((Device) thing);
-			}
-		}
-
-		// Remove Listener
-		thing.removeListener(this);
-		// TODO further cleaning if required
-		for (ThingsChangedListener listener : thingListeners) {
-			listener.thingChanged(thing, Action.REMOVE);
-		}
+				
 	}
 
 	public Thing getThing(String thingId) {
@@ -516,22 +523,17 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 		// Add Channels to thingChannels, thingConfigChannels and thingWriteChannels
 		ThingDoc thingDoc = classRepository.getThingDoc(thing.getClass());
 		for (ChannelDoc channelDoc : thingDoc.getChannelDocs()) {
-			Member member = channelDoc.getMember();
+			ClassLoader member = channelDoc.getMember();
 			try {
 				List<Channel> channels = new ArrayList<>();
-				if (member instanceof Method) {
-					if (((Method) member).getReturnType().isArray()) {
-						Channel[] ch = (Channel[]) ((Method) member).invoke(thing);
-						for (Channel c : ch) {
-							channels.add(c);
-						}
-					} else {
-						// It's a Method with ReturnType Channel
-						channels.add((Channel) ((Method) member).invoke(thing));
-					}
-				} else if (member instanceof Field) {
+				if (member.nonstaticMethod()) {
+					
+				//funzione
+				channels = addChan(member.nonstaticMethod());
+				
+				} else if (member.nonstaticMethod()) {
 					// It's a Field with Type Channel
-					channels.add((Channel) ((Field) member).get(thing));
+					channels.add((Channel) ((ClassLoader) member).get(thing));
 				} else {
 					continue;
 				}
@@ -541,26 +543,67 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 					continue;
 				}
 				for (Channel channel : channels) {
-					if (channel != null) {
-						// Add Channel to thingChannels
-						thingChannels.put(thing, channel.id(), channel);
-
-						// Add Channel to writeChannels
-						if (channel instanceof WriteChannel) {
-							thingWriteChannels.put(thing, (WriteChannel<?>) channel);
-						}
-
-						// Register Databus as listener
-						if (channel instanceof ReadChannel) {
-							((ReadChannel<?>) channel).addUpdateListener(databus);
-							((ReadChannel<?>) channel).addChangeListener(databus);
-						}
+				
+					thingChannel(channel);
+					
+					ReadChannel<?> chan = dataChannel(channel, databus);
+					
 					}
-				}
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
 			}
 		}
+	}
+	
+	/*
+	 * Add channel to thing or thingWrite
+	 */
+	public void thingChannel(Channel channel){
+		
+		if (channel != null) {
+			// Add Channel to thingChannels
+			thingChannels.put(thing, channel.id(), channel);
+		}
+		
+		// Add Channel to writeChannels
+		if (channel instanceof WriteChannel) {
+			thingWriteChannels.put(thing, (WriteChannel<?>) channel);
+		}
+		
+	}
+	
+	/*
+	 * If channel is instance of ReadChannel add databus
+	 */
+	public ReadChannel<?> dataChannel(Channel channel, Databus databus){
+		
+		// Register Databus as listener
+		if (channel instanceof ReadChannel) {
+			((ReadChannel<?>) channel).addUpdateListener(databus);
+			((ReadChannel<?>) channel).addChangeListener(databus);
+		}
+		
+		return channel;
+	}
+
+	/*
+	 * Add channel
+	 */
+	public void addChan(ClassLoader member){
+		
+		List<Channel> channels = new ArrayList<>();
+		
+			if (((ClassLoader) member).getReturnType().isArray()) {
+				Channel[] ch = (Channel[]) ((ClassLoader) member).invoke(thing);
+				for (Channel c : ch) {
+					channels.add(c);
+				}
+			} else {
+				// It's a Method with ReturnType Channel
+				channels.add((Channel) ((ClassLoader) member).invoke(thing));
+			}
+			
+			return channels;
 	}
 
 	/**
