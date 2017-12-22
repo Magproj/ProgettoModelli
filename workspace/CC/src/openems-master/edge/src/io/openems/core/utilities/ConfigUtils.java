@@ -121,48 +121,49 @@ public class ConfigUtils {
 			 */
 			Thing thing = (Thing) value;
 			JsonObject j = new JsonObject();
-			if (format == ConfigFormat.OPENEMS_UI || !thing.id().startsWith("_")) {
-				// ignore generated id names starting with "_"
-				j.addProperty("id", thing.id());
-				j.addProperty("alias", thing.getAlias());
-			}
+			
+			//funzione
+			addJ(thing, j, format);
+			
 			// for file-format class is not needed for DeviceNatures
 			j.addProperty("class", thing.getClass().getCanonicalName());
 			ThingRepository thingRepository = ThingRepository.getInstance();
-			for (ConfigChannel<?> channel : thingRepository.getConfigChannels(thing)) {
-				if(channel.isReadAllowed(role)) { // check read permissions
-					JsonElement jChannel = null;
-					jChannel = ConfigUtils.getAsJsonElement(channel, format, role);
-					if (jChannel != null) {
-						j.add(channel.id(), jChannel);
-					}
-				}
-			}
+			
+			//funzione
+			j = checkChan(thingRepository, role, j);
+			
 			// for Bridge: add 'devices' array of thingIds
-			if (value instanceof Bridge) {
-				Bridge bridge = (Bridge) value;
-				JsonArray jDevices = new JsonArray();
-				for (Device device : bridge.getDevices()) {
-					jDevices.add(device.id());
-				}
-				j.add("devices", jDevices);
-			}
+			//funzione
+			addDev(value, j);
+			
 			return j;
-		} else if (value instanceof ConfigChannel<?>) {
+		} else {
+			//funzione
+			if(optValue(value, format, role)!=null){
+				return optValue(value, format, role);
+			}
+		}
+		
+		
+		
+		throw new NotImplementedException("Converter for [" + value + "]" + " of type [" //
+				+ value.getClass().getSimpleName() + "]" //
+				+ " to JSON is not implemented.");
+	}
+	
+	
+	public static JsonElement optValue(Object value, ConfigFormat format, Role role){
+		
+		if (value instanceof ConfigChannel<?>) {
 			/*
 			 * type ConfigChannel
 			 */
 			ConfigChannel<?> channel = (ConfigChannel<?>) value;
-			if (!channel.valueOptional().isPresent()) {
-				// no value set
-				return null;
-			} else if (format == ConfigFormat.FILE && channel.getDefaultValue().equals(channel.valueOptional())) {
-				// default value not changed
-				return null;
-			} else {
-				// recursive call
-				return ConfigUtils.getAsJsonElement(channel.valueOptional().get(), format, role);
-			}
+			
+			//funzione
+			return checkOpt(channel, format, role);
+			
+			
 		} else if (value instanceof ThingMap) {
 			/*
 			 * ThingMap (we need only id)
@@ -173,25 +174,111 @@ public class ConfigUtils {
 			 * List
 			 */
 			JsonArray jArray = new JsonArray();
-			for (Object v : (List<?>) value) {
-				jArray.add(ConfigUtils.getAsJsonElement(v, format, role));
-			}
+			//funzione
+			jArray = addElement(value, jArray);
+			
 			return jArray;
 		} else if (value instanceof Set<?>) {
 			/*
 			 * Set
 			 */
 			JsonArray jArray = new JsonArray();
-			for (Object v : (Set<?>) value) {
-				jArray.add(ConfigUtils.getAsJsonElement(v, format, role));
-			}
+			//funzione
+			jArray = addSet(value, jArray);
 			return jArray;
 		}
-		throw new NotImplementedException("Converter for [" + value + "]" + " of type [" //
-				+ value.getClass().getSimpleName() + "]" //
-				+ " to JSON is not implemented.");
+		
+		return null;
 	}
-
+	
+	public JsonObject checkChan(ThingRepository thingRepository, Role role, JsonObject j){
+		
+		for (ConfigChannel<?> channel : thingRepository.getConfigChannels(thing)) {
+			if(channel.isReadAllowed(role)) { // check read permissions
+				JsonElement jChannel = null;
+				jChannel = ConfigUtils.getAsJsonElement(channel, format, role);
+				if (jChannel != null) {
+					j.add(channel.id(), jChannel);
+				}
+			}
+		}
+		
+		return j;
+		
+	}
+	/*
+	 * Check different option 
+	 */
+	public JsonElement checkOpt(ConfigChannel<?> channel, ConfigFormat format, Role role){
+		
+		if (!channel.valueOptional().isPresent()) {
+			// no value set
+			return null;
+		} else if (format == ConfigFormat.FILE && channel.getDefaultValue().equals(channel.valueOptional())) {
+			// default value not changed
+			return null;
+		} else {
+			// recursive call
+			return ConfigUtils.getAsJsonElement(channel.valueOptional().get(), format, role);
+		}
+		
+	}
+	
+	/*
+	 * Add bridge to device
+	 */
+	public JsonObject addDev(Thing value, JsonObject j){
+		
+		if (value instanceof Bridge) {
+			Bridge bridge = (Bridge) value;
+			JsonArray jDevices = new JsonArray();
+			for (Device device : bridge.getDevices()) {
+				jDevices.add(device.id());
+			}
+			j.add("devices", jDevices);
+		}
+		
+		return j;
+		
+	}
+	
+	
+	public JsonObject addJ(Thing thing, JsonObject j, ConfigFormat format){
+		
+		if (format == ConfigFormat.OPENEMS_UI || !thing.id().startsWith("_")) {
+			// ignore generated id names starting with "_"
+			j.addProperty("id", thing.id());
+			j.addProperty("alias", thing.getAlias());
+		}
+		
+		return j;
+		
+	}
+	
+	/*
+	 * Add element to jArray, as List
+	 */
+	public JsonArray addElement(Object value, JsonArray jArray){
+		
+		for (Object v : (List<?>) value) {
+			jArray.add(ConfigUtils.getAsJsonElement(v, format, role));
+		}
+		
+		return jArray;
+	}
+	
+	/*
+	 * Add element to jArray, as Set
+	 */
+	public JsonArray addSet(Object value, JsonArray jArray){
+		
+		for (Object v : (Set<?>) value) {
+			jArray.add(ConfigUtils.getAsJsonElement(v, format, role));
+		}
+		
+		return jArray;
+	}
+	
 	/**
 	 * Receives a matching value for the ConfigChannel from a JsonElement
 	 *
@@ -203,10 +290,11 @@ public class ConfigUtils {
 	public static Object getConfigObject(ConfigChannel<?> channel, JsonElement j, Object... args)
 			throws ReflectionException {
 		Optional<Class<?>> typeOptional = channel.type();
-		if (!typeOptional.isPresent()) {
-			String clazz = channel.parent() != null ? " in implementation [" + channel.parent().getClass() + "]" : "";
-			throw new ReflectionException("Type is null for channel [" + channel.address() + "]" + clazz);
-		}
+		
+		//funzione
+		checkTypeOpt(typeOptional, channel);
+		
+		
 		Class<?> type = typeOptional.get();
 
 		/*
@@ -247,6 +335,18 @@ public class ConfigUtils {
 			return getLongArrayFromConfig(channel, j);
 		}
 		throw new ReflectionException("Unable to match config [" + j + "] to class type [" + type + "]");
+	}
+	
+	/*
+	 * If typeOptional is not present thorws an Exception
+	 */
+	public void checkTypeOpt(Optional<Class<?>> typeOptional, ConfigChannel<?> channel) throws ReflectionException{
+		
+		if (!typeOptional.isPresent()) {
+			String clazz = channel.parent() != null ? " in implementation [" + channel.parent().getClass() + "]" : "";
+			throw new ReflectionException("Type is null for channel [" + channel.address() + "]" + clazz);
+		}
+		
 	}
 
 	private static Thing getThingFromConfig(Class<? extends Thing> type, JsonElement j, Object... objects)
@@ -300,20 +400,10 @@ public class ConfigUtils {
 			if (j.isJsonArray()) {
 				Set<Long[]> erg = new HashSet<>();
 				JsonArray var= j.getAsJsonArray();
-				for (JsonElement e : var) {
-					if (e.isJsonArray()) {
-						JsonArray arr = e.getAsJsonArray();
-						Long[] larr = new Long[arr.size()];
-						int sizeArr=arr.size();
-						for (int i = 0; i < sizeArr; i++) {
-							larr[i] = arr.get(i).getAsLong();
-						}
-						erg.add(larr);
-					} else {
-						throw new ReflectionException("The Json object for ConfigChannel [" + channel.address()
-						+ "] is no twodimensional array!");
-					}
-				}
+				
+				//funzione
+				erg = function(var, erg, channel);
+				
 				if (Set.class.isAssignableFrom(expectedObjectClass)) {
 					return erg;
 				} else if (List.class.isAssignableFrom(expectedObjectClass)) {
@@ -342,6 +432,27 @@ public class ConfigUtils {
 		}
 	}
 
+	
+	public Set<Long[]> function(JsonArray var, Set<Long[]> erg, ConfigChannel<?> channel) throws ReflectionException{
+		
+		for (JsonElement e : var) {
+			if (e.isJsonArray()) {
+				JsonArray arr = e.getAsJsonArray();
+				Long[] larr = new Long[arr.size()];
+				int sizeArr=arr.size();
+				for (int i = 0; i < sizeArr; i++) {
+					larr[i] = arr.get(i).getAsLong();
+				}
+				erg.add(larr);
+			} else {
+				throw new ReflectionException("The Json object for ConfigChannel [" + channel.address()
+				+ "] is no twodimensional array!");
+			}
+		}
+		
+		return erg;
+	}
+	
 	public static Set<Class<? extends Thing>> getAvailableClasses(String topLevelPackage, Class<? extends Thing> clazz,
 			String suffix) throws ReflectionException {
 		Set<Class<? extends Thing>> clazzes = new HashSet<>();
