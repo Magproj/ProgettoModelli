@@ -272,69 +272,145 @@ public class JsonUtils {
 
 	public static Object getAsType(Class<?> type, JsonElement j) throws NotImplementedException {
 		try {
-			if (Integer.class.isAssignableFrom(type)) {
-				/*
-				 * Asking for an Integer
-				 */
-				return j.getAsInt();
-
-			} else if (Long.class.isAssignableFrom(type)) {
-				/*
-				 * Asking for an Long
-				 */
-				return j.getAsLong();
-			} else if (Boolean.class.isAssignableFrom(type)) {
-				/*
-				 * Asking for an Boolean
-				 */
-				return j.getAsBoolean();
-			} else if (Double.class.isAssignableFrom(type)) {
-				/*
-				 * Asking for an Double
-				 */
-				return j.getAsDouble();
-			} else if (String.class.isAssignableFrom(type)) {
-				/*
-				 * Asking for a String
-				 */
-				return j.getAsString();
-			} else if (JsonObject.class.isAssignableFrom(type)) {
-				/*
-				 * Asking for a JsonObject
-				 */
-				return j.getAsJsonObject();
-			} else if (JsonArray.class.isAssignableFrom(type)) {
-				/*
-				 * Asking for a JsonArray
-				 */
-				return j.getAsJsonArray();
-			} else if (type.isArray()){
-				/**
-				 * Asking for Array
-				 */
-				if(Long.class.isAssignableFrom(type.getComponentType())){
-					/**
-					 * Asking for ArrayOfLong
-					 */
-					if(j.isJsonArray()){
-						JsonArray js = j.getAsJsonArray();
-						Long[] la = new Long[js.size()];
-						int sizeJs= js.size();
-						for(int i = 0; i < sizeJs; i++){
-							la[i] = js.get(i).getAsLong();
-						}
-						return la;
-					}
-
-				}
+			
+			//funzione
+			if(returnTrue(type)){
+				return returnObj();
 			}
+			
 		} catch (IllegalStateException e) {
 			throw new IllegalStateException("Failed to parse JsonElement [" + j + "]", e);
 		}
 		throw new NotImplementedException(
 				"Converter for value [" + j + "] to class type [" + type + "] is not implemented.");
 	}
+	
+	/*
+	 * Check if there is a value to return
+	 */
+	public boolean returnTrue(Class<?> type){
+		
+		if (Integer.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Integer
+			 */
+			return true;
 
+		} else if (Long.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Long
+			 */
+			return true;
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Boolean
+			 */
+			return true;
+		} else if (Double.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Double
+			 */
+			return true;
+		} else if (String.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for a String
+			 */
+			return true;
+		} else if (JsonObject.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for a JsonObject
+			 */
+			return true;
+		} else if (JsonArray.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for a JsonArray
+			 */
+			return true;
+		} else if (type.isArray()){
+			/**
+			 * Asking for Array
+			 */
+			return true;
+		}
+		
+		return false;
+		
+	}
+
+	/*
+	 * Check what is the value to return
+	 */
+	public Object returnObj(Class<?> type, JsonElement j){
+		
+		if (Integer.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Integer
+			 */
+			return j.getAsInt();
+
+		} else if (Long.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Long
+			 */
+			return j.getAsLong();
+		} else if (Boolean.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Boolean
+			 */
+			return j.getAsBoolean();
+		} else if (Double.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for an Double
+			 */
+			return j.getAsDouble();
+		} else if (String.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for a String
+			 */
+			return j.getAsString();
+		} else if (JsonObject.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for a JsonObject
+			 */
+			return j.getAsJsonObject();
+		} else if (JsonArray.class.isAssignableFrom(type)) {
+			/*
+			 * Asking for a JsonArray
+			 */
+			return j.getAsJsonArray();
+		} else if (type.isArray()){
+			
+			//funzione
+			return arrOfLong(type, j);
+
+		}
+		
+	}
+	
+	/*
+	 * Get the array of long
+	 */
+	public Object arrOfLong(Class<?> type, JsonElement j){
+		/**
+		 * Asking for Array
+		 */
+		if(Long.class.isAssignableFrom(type.getComponentType())){
+			/**
+			 * Asking for ArrayOfLong
+			 */
+			if(j.isJsonArray()){
+				JsonArray js = j.getAsJsonArray();
+				Long[] la = new Long[js.size()];
+				int sizeJs= js.size();
+				for(int i = 0; i < sizeJs; i++){
+					la[i] = js.get(i).getAsLong();
+				}
+				return la;
+			}
+
+		}
+	}
+	
 	public static boolean hasElement(JsonElement j, String... paths) {
 		return getMatchingElements(j, paths).size() > 0;
 	}
