@@ -183,10 +183,10 @@ public class BrowserWebsocketSingleton
 						 */
 						Optional<OpenemsSession> openemsSessionOpt = OpenemsWebsocket.instance()
 								.getOpenemsSession(deviceName);
-						Optional<JsonObject> openemsConfig = Optional.empty();
-						if (openemsSessionOpt.isPresent()) {
-							openemsConfig = openemsSessionOpt.get().getData().getOpenemsConfigOpt();
-						}
+						Optional<JsonObject> openemsConfig;
+						//funzione
+						openemsConfig = configSess(openemsSessionOpt, openemsConfig);
+						
 						if (!openemsConfig.isPresent()) {
 							// set configMode to empty, so that the request is forwarded to Edge
 							configModeOpt = Optional.empty();
@@ -208,6 +208,18 @@ public class BrowserWebsocketSingleton
 		}
 	}
 	
+	/*
+	 * Configure Session
+	 */
+	public Optional<JsonObject> configSess(Optional<OpenemsSession> openemsSessionOpt, Optional<JsonObject> openemsConfig){
+		
+		if (openemsSessionOpt.isPresent()) {
+			return openemsSessionOpt.get().getData().getOpenemsConfigOpt();
+		}
+		
+		return Optional.empty();
+		
+	}
 	
 	/*
 	 * Query historic data
