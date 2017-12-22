@@ -82,21 +82,23 @@ public class Config implements ChannelChangeListener {
 	private List<BridgeInitializedEventListener> bridgeInitEventListeners = new ArrayList<>();
 	private List<SchedulerInitializedEventListener> schedulerInitEventListeners = new ArrayList<>();
 
-	public static synchronized Config getInstance() throws ConfigException {
+	public static Config getInstance() throws ConfigException {
+		synchronized (Config.class) {
 		if (Config.instance == null) {
 			throw new ConfigException("Config is not initialized please call initialize() firs!");
 		}
 		return Config.instance;
-	}
+	}}
 
-	public static synchronized Config initialize(String path) throws ConfigException {
+	public static Config initialize(String path) throws ConfigException {
+		synchronized (Config.class) {
 		if (Config.instance == null) {
 			Config.instance = new Config(path);
 			return Config.instance;
 		} else {
 			throw new ConfigException("Config is already initialized!");
 		}
-	}
+	}}
 
 	private final ThingRepository thingRepository;
 	private final Path configFile;
@@ -353,25 +355,8 @@ public class Config implements ChannelChangeListener {
 		 * read each Bridge in "things" array
 		 */
 		JsonArray jThings = JsonUtils.getAsJsonArray(jConfig, "things");
-		for (JsonElement jBridgeElement : jThings) {
-			JsonObject jBridge = JsonUtils.getAsJsonObject(jBridgeElement);
-			String bridgeClass = JsonUtils.getAsString(jBridge, "class");
-			Bridge bridge = (Bridge) InjectionUtils.getThingInstance(bridgeClass);
-			thingRepository.addThing(bridge);
-			log.info("Add Bridge[" + bridge.id() + "], Implementation[" + bridge.getClass().getSimpleName() + "]");
-			ConfigUtils.injectConfigChannels(thingRepository.getConfigChannels(bridge), jBridge);
-			/*
-			 * read each Device in "things" array
-			 */
-			List<Device> devices = new ArrayList<>();
-			JsonArray jDevices = JsonUtils.getAsJsonArray(jBridge, "devices");
-			for (JsonElement jDeviceElement : jDevices) {
-				JsonObject jDevice = JsonUtils.getAsJsonObject(jDeviceElement);
-				Device device = thingRepository.createDevice(jDevice, bridge);
-				devices.add(device);
-				bridge.addDevice(device);
-			}
-		}
+		readBridge(jThings);
+		
 		/*
 		 * Init bridge
 		 */
@@ -432,9 +417,36 @@ public class Config implements ChannelChangeListener {
 	}
 		
 	}
-		
+	
 	/*
-	 * 
+	 * Read Bridge
+	 */
+	public void readBridge(JsonArray jThings){
+		
+		for (JsonElement jBridgeElement : jThings) {
+			JsonObject jBridge = JsonUtils.getAsJsonObject(jBridgeElement);
+			String bridgeClass = JsonUtils.getAsString(jBridge, "class");
+			Bridge bridge = (Bridge) InjectionUtils.getThingInstance(bridgeClass);
+			thingRepository.addThing(bridge);
+			log.info("Add Bridge[" + bridge.id() + "], Implementation[" + bridge.getClass().getSimpleName() + "]");
+			ConfigUtils.injectConfigChannels(thingRepository.getConfigChannels(bridge), jBridge);
+			/*
+			 * read each Device in "things" array
+			 */
+			List<Device> devices = new ArrayList<>();
+			JsonArray jDevices = JsonUtils.getAsJsonArray(jBridge, "devices");
+			for (JsonElement jDeviceElement : jDevices) {
+				JsonObject jDevice = JsonUtils.getAsJsonObject(jDeviceElement);
+				Device device = thingRepository.createDevice(jDevice, bridge);
+				devices.add(device);
+				bridge.addDevice(device);
+			}
+		}
+		
+	}
+	
+	/*
+	 * Read if jConfig has scheduler
 	 */
 	public void readSched(JsonObject jConfig){
 		

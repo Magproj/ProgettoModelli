@@ -305,7 +305,16 @@ public class JsonUtils {
 			 * Asking for an Double
 			 */
 			return j.getAsDouble();
-		} else if (String.class.isAssignableFrom(type)) {
+		} else {
+			
+			return checkRest(type, j);
+		}
+		
+	}
+	
+	public Object checkRest(Class<?> type, JsonElement j){
+		
+		if (String.class.isAssignableFrom(type)) {
 			/*
 			 * Asking for a String
 			 */
@@ -326,7 +335,6 @@ public class JsonUtils {
 			return arrOfLong(type, j);
 
 		}
-		
 	}
 	
 	/*
@@ -379,13 +387,27 @@ public class JsonUtils {
 			}
 		} else if (j.isJsonPrimitive()) {
 			JsonPrimitive jP = j.getAsJsonPrimitive();
-			if (jP.isString()) {
-				if (jP.getAsString().equals(path)) {
-					result.add(jP);
-				}
-			}
+			
+			//funzione
+			result = checkPrimitive(result, jP);
+			
 		}
 		return result;
+	}
+	
+	/*
+	 * Check if jP is a string and is equals to path
+	 */
+	public Set<JsonElement> checkPrimitive(Set<JsonElement> result, JsonPrimitive jP ){
+		
+		if (jP.isString()) {
+			if (jP.getAsString().equals(path)) {
+				result.add(jP);
+			}
+		}
+		
+		return result;
+		
 	}
 
 	/**
