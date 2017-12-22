@@ -112,6 +112,7 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 	 * @param thing
 	 */
 	public synchronized void addThing(Thing thing) {
+		
 		if (thingIds.containsValue(thing)) {
 			// Thing was already added
 			return;
@@ -122,11 +123,103 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 		// Add to thingClasses
 		thingClasses.put(thing.getClass(), thing);
 
+		
+		//funzione
+		addInstance(thing);
+
+		// Add Listener
+		thing.addListener(this);
+
+		// Apply channel annotation (this happens now and again after initializing the thing via init()
+		this.applyChannelAnnotation(thing);
+
+		// Add Channels thingConfigChannels
+		ThingDoc thingDoc = classRepository.getThingDoc(thing.getClass());
+		for (ChannelDoc channelDoc : thingDoc.getConfigChannelDocs()) {
+			Member member = channelDoc.getMember();
+			try {
+				List<Channel> channels = new ArrayList<>();
+				MyObject member = new MyObject();//Create an instance
+				;//Refer to the instance's class's code
+				if (member.nonstaticMethod()) {
+					
+					channels = addChannel(member);
+
+				} else if (member.nonstaticMethod()) {
+					// It's a Field with Type Channel
+					channels.add((Channel) ((MyObject) member).get(thing));
+				} else {
+					continue;
+				}
+				if (channels.isEmpty()) {
+					log.error(
+							"Channel is returning null! Thing [" + thing.id() + "], Member [" + member.getName() + "]");
+					continue;
+				}
+				for (Channel channel : channels) {
+					
+					//funzione
+					addChanToThing(channel);
+					
+				}
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
+			}
+		}
+		for (ThingsChangedListener listener : thingListeners) {
+			listener.thingChanged(thing, Action.ADD);
+		}
+	}
+	
+	
+	/*
+	 * Add channel to thingChannels or to thingConfigChannels
+	 */
+	public void addChanToThing(Channel channel){
+		
+		if (channel instanceof ConfigChannel) {
+			// Add Channel to thingChannels
+			thingChannels.put(thing, channel.id(), channel);
+
+			// Add Channel to configChannels
+			thingConfigChannels.put(thing, (ConfigChannel<?>) channel);
+		}
+		
+	}
+	
+	/*
+	 * Add member to channels 
+	 */
+	/*
+	 * Add member to channels 
+	 */
+	public List<Channel> addChannel(MyObject member){
+		
+		List<Channel> channels = new ArrayList<>();
+		
+		if (((MyObject) member).getReturnType().isArray()) {
+			Channel[] ch = (Channel[]) ((MyObject) member).invoke(thing);
+			for (Channel c : ch) {
+				channels.add(c);
+			}
+		} else {
+			// It's a Method with ReturnType Channel
+			channels.add((Channel) ((MyObject) member).invoke(thing));
+		}
+		return channels;
+		
+	}
+
+	/*
+	 * Add if thing to the right object
+	 */
+	public void addInstance(Thing thing){
+		
 		// Add to bridges
 		if (thing instanceof Bridge) {
 			bridges.add((Bridge) thing);
 		}
-
+		
 		// Add to schedulers
 		if (thing instanceof Scheduler) {
 			schedulers.add((Scheduler) thing);
@@ -146,58 +239,12 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 		if (thing instanceof DeviceNature) {
 			deviceNatures.add((DeviceNature) thing);
 		}
-
-		// Add Listener
-		thing.addListener(this);
-
-		// Apply channel annotation (this happens now and again after initializing the thing via init()
-		this.applyChannelAnnotation(thing);
-
-		// Add Channels thingConfigChannels
-		ThingDoc thingDoc = classRepository.getThingDoc(thing.getClass());
-		for (ChannelDoc channelDoc : thingDoc.getConfigChannelDocs()) {
-			Member member = channelDoc.getMember();
-			try {
-				List<Channel> channels = new ArrayList<>();
-				if (member instanceof Method) {
-					if (((Method) member).getReturnType().isArray()) {
-						Channel[] ch = (Channel[]) ((Method) member).invoke(thing);
-						for (Channel c : ch) {
-							channels.add(c);
-						}
-					} else {
-						// It's a Method with ReturnType Channel
-						channels.add((Channel) ((Method) member).invoke(thing));
-					}
-				} else if (member instanceof Field) {
-					// It's a Field with Type Channel
-					channels.add((Channel) ((Field) member).get(thing));
-				} else {
-					continue;
-				}
-				if (channels.isEmpty()) {
-					log.error(
-							"Channel is returning null! Thing [" + thing.id() + "], Member [" + member.getName() + "]");
-					continue;
-				}
-				for (Channel channel : channels) {
-					if (channel instanceof ConfigChannel) {
-						// Add Channel to thingChannels
-						thingChannels.put(thing, channel.id(), channel);
-
-						// Add Channel to configChannels
-						thingConfigChannels.put(thing, (ConfigChannel<?>) channel);
-					}
-				}
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
-			}
-		}
-		for (ThingsChangedListener listener : thingListeners) {
-			listener.thingChanged(thing, Action.ADD);
-		}
+		
+		
 	}
-
+	
+		
+	
 	public void applyChannelAnnotation(Thing thing) {
 		ThingDoc thingDoc = classRepository.getThingDoc(thing.getClass());
 		for (ChannelDoc channelDoc : thingDoc.getChannelDocs()) {
