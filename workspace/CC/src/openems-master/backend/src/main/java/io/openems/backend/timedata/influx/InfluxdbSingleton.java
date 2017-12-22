@@ -90,6 +90,7 @@ public class InfluxdbSingleton implements TimedataSingleton {
 	@Override
 	public void write(MetadataDevices devices, JsonObject jData) throws NullPointerException{
 		TreeBasedTable<Long, String, Object> data = TreeBasedTable.create();
+		
 		for (MetadataDevice device : devices) {
 			int deviceId = device.getIdOpt().orElse(0);
 
@@ -129,18 +130,11 @@ public class InfluxdbSingleton implements TimedataSingleton {
 					//funzione
 					data = updateTimeStamp(timestamp, cacheTimestamp, deviceId, deviceCache, data);
 					
-
-					// add incoming data to cache (this replaces already existing cache values)
-					for (Entry<String, JsonElement> channelEntry : jChannels.entrySet()) {
-						String channel = channelEntry.getKey();
-						Optional<Object> valueOpt = this.parseValue(channel, channelEntry.getValue());
-						
-						//tolto il controllo per vedere se il valore era presente
-						//viene lancia un'eccezione se non sono presenti valori, NullPointerException
-							Object value = valueOpt.get();
-							deviceCache.putToChannelCache(channel, value);
-						
-					}
+					
+					//funzione
+					deviceCache = putChannel(jChannels, deviceCache);
+					
+					
 				}
 
 				// add incoming data to write data
@@ -148,8 +142,6 @@ public class InfluxdbSingleton implements TimedataSingleton {
 					String channel = channelEntry.getKey();
 					Optional<Object> valueOpt = this.parseValue(channel, channelEntry.getValue());
 					
-					//tolto il controllo per vedere se il valore era presente
-					//viene lancia un'eccezione se non sono presenti valori, NullPointerException
 						Object value = valueOpt.get();
 						data.put(timestamp, channel, value);
 					
@@ -171,6 +163,24 @@ public class InfluxdbSingleton implements TimedataSingleton {
 	}
 	
 
+	/*
+	 * Add incoming data to cache (this replaces already existing cache values) 
+	 */
+	public DeviceCache putChannel(JsonObject jChannels, DeviceCache deviceCache){
+		
+		for (Entry<String, JsonElement> channelEntry : jChannels.entrySet()) {
+			String channel = channelEntry.getKey();
+			Optional<Object> valueOpt = this.parseValue(channel, channelEntry.getValue());
+			
+				Object value = valueOpt.get();
+				deviceCache.putToChannelCache(channel, value);
+			
+		}
+		
+		return deviceCache;
+		
+	}
+	
 	/*
 	 * Check if deviceCache is null to put a new deviceCache
 	 */
@@ -345,28 +355,18 @@ public class InfluxdbSingleton implements TimedataSingleton {
 	 * @return
 	 */
 	private Optional<Object> parseValue(String channel, Object value) {
+		
 		if (value == null) {
 			return Optional.empty();
 		}
+		
 		// convert JsonElement
 		if (value instanceof JsonElement) {
 			JsonElement jValueElement = (JsonElement) value;
-			if (jValueElement.isJsonPrimitive()) {
-				JsonPrimitive jValue = jValueElement.getAsJsonPrimitive();
-				if (jValue.isNumber()) {
-					try {
-						// Avoid GSONs LazilyParsedNumber
-						value = NumberFormat.getInstance().parse(jValue.toString());
-					} catch (ParseException e) {
-						log.error("Unable to parse Number: " + e.getMessage());
-						value = jValue.getAsNumber();
-					}
-				} else if (jValue.isBoolean()) {
-					value = jValue.getAsBoolean();
-				} else if (jValue.isString()) {
-					value = jValue.getAsString();
-				}
-			}
+			
+			//funzione
+			value  = convJsonElement(jValueElement);
+
 		}
 		if (value instanceof Number) {
 			Number numberValue = (Number) value;
@@ -384,6 +384,35 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		}
 		log.warn("Unknown type of value [" + value + "] channel [" + channel + "]. This should never happen.");
 		return Optional.empty();
+	}
+	
+	
+	/*
+	 * 
+	 */
+	public Object convJsonElement(JsonElement jValueElement){
+		
+		JsonElement value = new JsonElement();
+		
+		if (jValueElement.isJsonPrimitive()) {
+			JsonPrimitive jValue = jValueElement.getAsJsonPrimitive();
+			if (jValue.isNumber()) {
+				try {
+					// Avoid GSONs LazilyParsedNumber
+					value = NumberFormat.getInstance().parse(jValue.toString());
+				} catch (ParseException e) {
+					log.error("Unable to parse Number: " + e.getMessage());
+					value = jValue.getAsNumber();
+				}
+			} else if (jValue.isBoolean()) {
+				value = jValue.getAsBoolean();
+			} else if (jValue.isString()) {
+				value = jValue.getAsString();
+			}
+		}
+		
+		return value;
+		
 	}
 
 	@Override
