@@ -186,37 +186,14 @@ public class JsonUtils {
 	 */
 	public boolean returnCorrect(Object value){
 		
-		if (value instanceof Number) {
+		if (value instanceof Number || value instanceof String || value instanceof Boolean || value instanceof Inet4Address || value instanceof JsonElement || value instanceof Long[]) {
 			/*
 			 * Number
 			 */
 			return true;
-		} else if (value instanceof String) {
-			/*
-			 * String
-			 */
-			return true;
-		} else if (value instanceof Boolean) {
-			/*
-			 * Boolean
-			 */
-			return true;
-		} else if (value instanceof Inet4Address) {
-			/*
-			 * Inet4Address
-			 */
-			return true;
-		} else if (value instanceof JsonElement) {
-			/*
-			 * JsonElement
-			 */
-			return true;
-		} else if (value instanceof Long[]){
-			/*
-			 * Long-Array
-			 */
-			return true;
-		}
+		}   
+		
+		return false;
 	}
 	
 	/*
@@ -290,48 +267,13 @@ public class JsonUtils {
 	 */
 	public boolean returnTrue(Class<?> type){
 		
-		if (Integer.class.isAssignableFrom(type)) {
+		if (Integer.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type) || Double.class.isAssignableFrom(type) || String.class.isAssignableFrom(type) || JsonObject.class.isAssignableFrom(type) || JsonArray.class.isAssignableFrom(type) || type.isArray()) {
 			/*
 			 * Asking for an Integer
 			 */
 			return true;
 
-		} else if (Long.class.isAssignableFrom(type)) {
-			/*
-			 * Asking for an Long
-			 */
-			return true;
-		} else if (Boolean.class.isAssignableFrom(type)) {
-			/*
-			 * Asking for an Boolean
-			 */
-			return true;
-		} else if (Double.class.isAssignableFrom(type)) {
-			/*
-			 * Asking for an Double
-			 */
-			return true;
-		} else if (String.class.isAssignableFrom(type)) {
-			/*
-			 * Asking for a String
-			 */
-			return true;
-		} else if (JsonObject.class.isAssignableFrom(type)) {
-			/*
-			 * Asking for a JsonObject
-			 */
-			return true;
-		} else if (JsonArray.class.isAssignableFrom(type)) {
-			/*
-			 * Asking for a JsonArray
-			 */
-			return true;
-		} else if (type.isArray()){
-			/**
-			 * Asking for Array
-			 */
-			return true;
-		}
+		}  
 		
 		return false;
 		
