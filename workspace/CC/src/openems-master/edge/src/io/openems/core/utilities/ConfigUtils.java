@@ -20,6 +20,7 @@
  *******************************************************************************/
 package io.openems.core.utilities;
 
+import java.beans.Beans;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -28,6 +29,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.nio.channels.Channel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +59,11 @@ import io.openems.api.thing.Thing;
 import io.openems.common.session.Role;
 import io.openems.core.ConfigFormat;
 import io.openems.core.ThingRepository;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public class ConfigUtils {
 	private final static Logger log = LoggerFactory.getLogger(ConfigUtils.class);
 
@@ -273,7 +279,7 @@ public class ConfigUtils {
 		/*
 		 * Get "Field" in Channels parent class
 		 */
-		Field field;
+		ClassLoader field = new SafeClassLoader();
 		try {
 			field = channel.parent().getClass().getField(channel.id());
 		} catch (NoSuchFieldException | SecurityException e) {
@@ -284,20 +290,22 @@ public class ConfigUtils {
 		/*
 		 * Get expected Object Type (List, Set, simple Object)
 		 */
-		Type expectedObjectType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-		if (expectedObjectType instanceof ParameterizedType) {
-			expectedObjectType = ((ParameterizedType) expectedObjectType).getRawType();
+		ClassLoader expectedObjectType = (ClassLoader) ((field).getRawType()).getActualTypeArguments()[0];
+		if (((Object) expectedObjectType).nonstaticMethod()) {
+			expectedObjectType = (ClassLoader) (expectedObjectType).getRawType();
 		}
-		Class<?> expectedObjectClass = (Class<?>) expectedObjectType;
+		ClassLoader expectedObjectClass = (ClassLoader) expectedObjectType;
 
 		if (Collection.class.isAssignableFrom(expectedObjectClass)) {
 			if (j.isJsonArray()) {
 				Set<Long[]> erg = new HashSet<>();
-				for (JsonElement e : j.getAsJsonArray()) {
+				JsonArray var= j.getAsJsonArray();
+				for (JsonElement e : var) {
 					if (e.isJsonArray()) {
 						JsonArray arr = e.getAsJsonArray();
 						Long[] larr = new Long[arr.size()];
-						for (int i = 0; i < arr.size(); i++) {
+						int sizeArr=arr.size();
+						for (int i = 0; i < sizeArr; i++) {
 							larr[i] = arr.get(i).getAsLong();
 						}
 						erg.add(larr);
@@ -322,7 +330,8 @@ public class ConfigUtils {
 			if (j.isJsonArray()) {
 				JsonArray arr = j.getAsJsonArray();
 				Long[] larr = new Long[arr.size()];
-				for (int i = 0; i < arr.size(); i++) {
+				int sizeArr=arr.size();
+				for (int i = 0; i < sizeArr; i++) {
 					larr[i] = arr.get(i).getAsLong();
 				}
 				return larr;
@@ -359,12 +368,12 @@ public class ConfigUtils {
 	 * @param clazz
 	 * @return
 	 */
-	public static List<Member> getMembers(Class<? extends Thing> clazz) {
-		List<Member> members = new LinkedList<>();
-		for (Method method : clazz.getMethods()) {
+	public static List<MemberLoader> getMembers(Class<? extends Thing> clazz) {
+		List<MemberLoader> members = new LinkedList<>();
+		for (ClassLoader method : clazz.getMethods()) {
 			members.add(method);
 		}
-		for (Field field : clazz.getFields()) {
+		for (Trusted field : clazz.getFields()) {
 			members.add(field);
 		}
 		return Collections.unmodifiableList(members);

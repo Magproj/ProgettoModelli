@@ -512,11 +512,10 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 		Iterator<Entry<String, Channel>> i = thingRow.iterator();
 		while (i.hasNext()) {
 			Entry<String, Channel> thingChannel = i.next();
-			if (!(thingChannel.getValue() instanceof ConfigChannel)) {
-				thingChannel.getValue().removeChangeListener(databus);
-				thingChannel.getValue().removeUpdateListener(databus);
-				i.remove();
-			}
+			
+			//funzione
+			checkThingChan(thingChannel, i);
+			
 		}
 		thingWriteChannels.removeAll(thing);
 
@@ -553,6 +552,19 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 				log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
 			}
 		}
+	}
+	
+	/*
+	 * Check if thingChannel is instance of ConfigChannel
+	 */
+	public void checkThingChan(Entry<String, Channel> thingChannel, Iterator<Entry<String, Channel>> i){
+		
+		if (!(thingChannel.getValue() instanceof ConfigChannel)) {
+			thingChannel.getValue().removeChangeListener(databus);
+			thingChannel.getValue().removeUpdateListener(databus);
+			i.remove();
+		}
+		
 	}
 	
 	/*
