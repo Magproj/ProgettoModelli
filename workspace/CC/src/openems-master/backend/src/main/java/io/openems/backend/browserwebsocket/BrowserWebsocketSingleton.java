@@ -71,7 +71,7 @@ public class BrowserWebsocketSingleton
 				Optional<BrowserSession> existingSessionOpt = sessionManager.getSessionByToken(token);
 				
 				//funzione
-				sesssion = exSession(existingSessionOpt, session, sessionIdOpt);
+				session = exSession(existingSessionOpt, session, sessionIdOpt);
 				
 			}
 		} catch (OpenemsException e) {
