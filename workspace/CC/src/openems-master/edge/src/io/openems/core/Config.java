@@ -170,11 +170,10 @@ public class Config implements ChannelChangeListener {
 			 * Things
 			 */
 			JsonArray jThings;
-			if (!jConfig.has("things") || !jConfig.get("things").isJsonArray()) {
-				jThings = new JsonArray();
-			} else {
-				jThings = JsonUtils.getAsJsonArray(jConfig, "things");
-			}
+			
+			//funzione
+			jThings = getThings(jConfig);
+			
 			{
 				/*
 				 * Add SystemBridge
@@ -252,8 +251,24 @@ public class Config implements ChannelChangeListener {
 		return jConfig;
 	}
 	
+	
 	/*
-	 * 
+	 * Configure jThings
+	 */
+	public JsonArray getThings(JsonObject jConfig){
+		
+		JsonArray jThings;
+		if (!jConfig.has("things") || !jConfig.get("things").isJsonArray()) {
+			jThings = new JsonArray();
+		} else {
+			jThings = JsonUtils.getAsJsonArray(jConfig, "things");
+		}
+		
+		return jThings;
+	}
+	
+	/*
+	 * Check JConfig
 	 */
 	public JsonObject checkJConfig(JsonObject jConfig){
 		
@@ -328,20 +343,10 @@ public class Config implements ChannelChangeListener {
 		 * read Users
 		 */
 		synchronized (this) {
-		if (jConfig.has("users")) {
-			JsonObject jUsers = JsonUtils.getAsJsonObject(jConfig, "users");
-			for (Entry<String, JsonElement> jUsersElement : jUsers.entrySet()) {
-				JsonObject jUser = JsonUtils.getAsJsonObject(jUsersElement.getValue());
-				String username = jUsersElement.getKey();
-				String passwordBase64 = JsonUtils.getAsString(jUser, "password");
-				String saltBase64 = JsonUtils.getAsString(jUser, "salt");
-				try {
-					User.getUserByName(username).initialize(passwordBase64, saltBase64);
-				} catch (OpenemsException e) {
-					log.error("Error parsing config: " + e.getMessage());
-				}
-			}
-		}
+			
+			//funzione
+			putUser(jConfig);
+		
 		User.initializeFinished(); // important! no more setting of users allowed!
 
 		/*
@@ -383,46 +388,12 @@ public class Config implements ChannelChangeListener {
 		/*
 		 * read Scheduler
 		 */
-		if (jConfig.has("scheduler")) {
-			JsonObject jScheduler = JsonUtils.getAsJsonObject(jConfig, "scheduler");
-			String schedulerClass = JsonUtils.getAsString(jScheduler, "class");
-			Scheduler scheduler = (Scheduler) InjectionUtils.getThingInstance(schedulerClass);
-			thingRepository.addThing(scheduler);
-			log.debug("Add Scheduler[" + scheduler.id() + "], Implementation[" + scheduler.getClass().getSimpleName()
-					+ "]");
-			ConfigUtils.injectConfigChannels(thingRepository.getConfigChannels(scheduler), jScheduler);
-			/*
-			 * read each Controller in "controllers" array
-			 */
-			JsonArray jControllers = JsonUtils.getAsJsonArray(jScheduler, "controllers");
-			for (JsonElement jControllerElement : jControllers) {
-				JsonObject jController = JsonUtils.getAsJsonObject(jControllerElement);
-				Controller controller = thingRepository.createController(jController);
-				scheduler.addController(controller);
-				controller.init();
-			}
-			scheduler.init();
-		}
-		for(SchedulerInitializedEventListener listener: schedulerInitEventListeners) {
-			listener.onSchedulerInitialized();
-		} }
+		readSched();
 
 		/*
 		 * read Persistence
 		 */
-		if (jConfig.has("persistence")) {
-			JsonArray jPersistences = JsonUtils.getAsJsonArray(jConfig, "persistence");
-			for (JsonElement jPersistenceElement : jPersistences) {
-				JsonObject jPersistence = JsonUtils.getAsJsonObject(jPersistenceElement);
-				String persistenceClass = JsonUtils.getAsString(jPersistence, "class");
-				Persistence persistence = (Persistence) InjectionUtils.getThingInstance(persistenceClass);
-				thingRepository.addThing(persistence);
-				log.info("Add Persistence[" + persistence.id() + "], Implementation["
-						+ persistence.getClass().getSimpleName() + "]");
-				ConfigUtils.injectConfigChannels(thingRepository.getConfigChannels(persistence), jPersistence);
-				persistence.init();
-			}
-		}
+		readPers(jConfig);
 
 		/*
 		 * Configuration is finished -> apply again channel annotation to all of them because many channels are only
@@ -459,6 +430,81 @@ public class Config implements ChannelChangeListener {
 			} catch (ReflectionException e) { /* ignore */}
 		}, 10, TimeUnit.SECONDS);
 	}
+		
+	}
+		
+	/*
+	 * 
+	 */
+	public void readSched(JsonObject jConfig){
+		
+		if (jConfig.has("scheduler")) {
+			JsonObject jScheduler = JsonUtils.getAsJsonObject(jConfig, "scheduler");
+			String schedulerClass = JsonUtils.getAsString(jScheduler, "class");
+			Scheduler scheduler = (Scheduler) InjectionUtils.getThingInstance(schedulerClass);
+			thingRepository.addThing(scheduler);
+			log.debug("Add Scheduler[" + scheduler.id() + "], Implementation[" + scheduler.getClass().getSimpleName()
+					+ "]");
+			ConfigUtils.injectConfigChannels(thingRepository.getConfigChannels(scheduler), jScheduler);
+			/*
+			 * read each Controller in "controllers" array
+			 */
+			JsonArray jControllers = JsonUtils.getAsJsonArray(jScheduler, "controllers");
+			for (JsonElement jControllerElement : jControllers) {
+				JsonObject jController = JsonUtils.getAsJsonObject(jControllerElement);
+				Controller controller = thingRepository.createController(jController);
+				scheduler.addController(controller);
+				controller.init();
+			}
+			scheduler.init();
+		}
+		for(SchedulerInitializedEventListener listener: schedulerInitEventListeners) {
+			listener.onSchedulerInitialized();
+		} }
+	
+	/*
+	 * Read Persistence
+	 */
+	public void readPers(JsonObject jConfig){
+		
+		if (jConfig.has("persistence")) {
+			JsonArray jPersistences = JsonUtils.getAsJsonArray(jConfig, "persistence");
+			for (JsonElement jPersistenceElement : jPersistences) {
+				JsonObject jPersistence = JsonUtils.getAsJsonObject(jPersistenceElement);
+				String persistenceClass = JsonUtils.getAsString(jPersistence, "class");
+				Persistence persistence = (Persistence) InjectionUtils.getThingInstance(persistenceClass);
+				thingRepository.addThing(persistence);
+				log.info("Add Persistence[" + persistence.id() + "], Implementation["
+						+ persistence.getClass().getSimpleName() + "]");
+				ConfigUtils.injectConfigChannels(thingRepository.getConfigChannels(persistence), jPersistence);
+				persistence.init();
+			}
+		}
+		
+	}
+	
+	/*
+	 * Inizialite user data
+	 */
+	public void putUser(JsonObject jConfig){
+		
+		if (jConfig.has("users")) {
+			JsonObject jUsers = JsonUtils.getAsJsonObject(jConfig, "users");
+			for (Entry<String, JsonElement> jUsersElement : jUsers.entrySet()) {
+				JsonObject jUser = JsonUtils.getAsJsonObject(jUsersElement.getValue());
+				String username = jUsersElement.getKey();
+				String passwordBase64 = JsonUtils.getAsString(jUser, "password");
+				String saltBase64 = JsonUtils.getAsString(jUser, "salt");
+				try {
+					User.getUserByName(username).initialize(passwordBase64, saltBase64);
+				} catch (OpenemsException e) {
+					log.error("Error parsing config: " + e.getMessage());
+				}
+			}
+		}
+		
+	}
+	
 
 	public JsonArray getBridgesJson(ConfigFormat format, Role role) throws NotImplementedException {
 		JsonArray jBridges = new JsonArray();
