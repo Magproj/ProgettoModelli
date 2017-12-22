@@ -69,13 +69,10 @@ public class BrowserWebsocketSingleton
 			if (jCookie.has("token")) {
 				String token = JsonUtils.getAsString(jCookie, "token");
 				Optional<BrowserSession> existingSessionOpt = sessionManager.getSessionByToken(token);
-				if (existingSessionOpt.isPresent()) {
-					BrowserSession existingSession = existingSessionOpt.get();
-					// test if it is the same Odoo session_id
-					if (sessionIdOpt.equals(existingSession.getData().getOdooSessionId())) {
-						session = existingSession;
-					}
-				}
+				
+				//funzione
+				sesssion = exSession(existingSessionOpt, session, sessionIdOpt);
+				
 			}
 		} catch (OpenemsException e) {
 			error = e.getMessage();
@@ -127,6 +124,22 @@ public class BrowserWebsocketSingleton
 		}
 	}
 
+	/*
+	 * Replace the existing session
+	 */
+	public BrowserSession exSession(Optional<BrowserSession> existingSessionOpt, BrowserSession session, Optional<String> sessionIdOpt){
+		
+		if (existingSessionOpt.isPresent()) {
+			BrowserSession existingSession = existingSessionOpt.get();
+			// test if it is the same Odoo session_id
+			if (sessionIdOpt.equals(existingSession.getData().getOdooSessionId())) {
+				session = existingSession;
+			}
+		}
+		
+		return session;
+	}
+	
 	/**
 	 * Message event of websocket. Handles a new message.
 	 */
@@ -139,22 +152,9 @@ public class BrowserWebsocketSingleton
 		if (deviceNameOpt.isPresent()) {
 			String deviceName = deviceNameOpt.get();
 			Optional<Integer> deviceIdOpt = Device.parseNumberFromName(deviceName);
-			/*
-			 * Query historic data
-			 */
-			if (jMessage.has("historicData")) {
-				// parse deviceId
-				JsonArray jMessageId = jMessageIdOpt.get();
-				try {
-					JsonObject jHistoricData = JsonUtils.getAsJsonObject(jMessage, "historicData");
-					JsonObject jReply = WebSocketUtils.historicData(jMessageId, jHistoricData, deviceIdOpt,
-							Timedata.instance(), Role.ADMIN);
-					// TODO read role from device
-					WebSocketUtils.send(websocket, jReply);
-				} catch (OpenemsException e) {
-					log.error(e.getMessage());
-				}
-			}
+			
+			//funzione
+			historData(jMessage, jMessageIdOpt,deviceIdOpt, websocket);
 
 			// get session
 			Optional<BrowserSession> sessionOpt = this.getSessionFromWebsocket(websocket);
@@ -164,22 +164,10 @@ public class BrowserWebsocketSingleton
 			}
 			BrowserSession session = sessionOpt.get();
 
-			/*
-			 * Subscribe to currentData
-			 */
-			if (jMessage.has("currentData")) {
-				JsonObject jCurrentData;
-				try {
-					jCurrentData = JsonUtils.getAsJsonObject(jMessage, "currentData");
-					log.info("User [" + session.getData().getUserName() + "] subscribed to current data for device ["
-							+ deviceName + "]: " + StringUtils.toShortString(jCurrentData, 50));
-					JsonArray jMessageId = jMessageIdOpt.get();
-					int deviceId = deviceIdOpt.get();
-					this.currentData(session, websocket, jCurrentData, jMessageId, deviceName, deviceId);
-				} catch (OpenemsException e) {
-					log.error(e.getMessage());
-				}
-			}
+			
+			//funzione
+			subData(jMessage, session, deviceName, jMessageIdOpt,websocket);
+			
 
 			/*
 			 * Serve "Config -> Query" from cache
@@ -205,30 +193,90 @@ public class BrowserWebsocketSingleton
 						} else {
 							log.info("User [" + session.getData().getUserName()
 									+ "]: Sent OpenEMS-Config from cache for device [" + deviceName + "].");
-							JsonObject jReply = DefaultMessages.configQueryReply(openemsConfig.get());
-							if (deviceNameOpt.isPresent()) {
-								jReply.addProperty("device", deviceNameOpt.get());
-							}
-							if (jMessageIdOpt.isPresent()) {
-								jReply.add("id", jMessageIdOpt.get());
-							}
+							JsonObject jReply;
+							//funzione
+							jReply = putRep(deviceIdOpt, jMessageIdOpt);
+							
 							WebSocketUtils.send(websocket, jReply);
 						}
 					}
 				}
 			}
 
-			/*
-			 * Forward to OpenEMS Edge
-			 */
-			if ((jMessage.has("config") && !configModeOpt.orElse("").equals("query")) || jMessage.has("log")
-					|| jMessage.has("system")) {
-				try {
-					forwardMessageToOpenems(session, websocket, jMessage, deviceName);
-				} catch (OpenemsException e) {
-					WebSocketUtils.sendNotification(websocket, new JsonArray(), LogBehaviour.WRITE_TO_LOG,
-							Notification.EDGE_UNABLE_TO_FORWARD, deviceName, e.getMessage());
-				}
+			//funzione
+			checkMess(jMessage, configModeOpt, websocket, session, deviceName);
+		}
+	}
+	
+	
+	/*
+	 * Query historic data
+	 */
+	public void historData(JsonObject jMessage, Optional<JsonArray> jMessageIdOpt, Optional<Integer> deviceIdOpt, WebSocket websocket){
+		
+		if (jMessage.has("historicData")) {
+			// parse deviceId
+			JsonArray jMessageId = jMessageIdOpt.get();
+			try {
+				JsonObject jHistoricData = JsonUtils.getAsJsonObject(jMessage, "historicData");
+				JsonObject jReply = WebSocketUtils.historicData(jMessageId, jHistoricData, deviceIdOpt,
+						Timedata.instance(), Role.ADMIN);
+				// TODO read role from device
+				WebSocketUtils.send(websocket, jReply);
+			} catch (OpenemsException e) {
+				log.error(e.getMessage());
+			}
+		}
+		
+	}
+	
+	/*
+	 * Subscribe to currentData
+	 */
+	public void subData(JsonObject jMessage, BrowserSession session, String deviceName, Optional<JsonArray> jMessageIdOpt, WebSocket websocket){
+		
+		if (jMessage.has("currentData")) {
+			JsonObject jCurrentData;
+			try {
+				jCurrentData = JsonUtils.getAsJsonObject(jMessage, "currentData");
+				log.info("User [" + session.getData().getUserName() + "] subscribed to current data for device ["
+						+ deviceName + "]: " + StringUtils.toShortString(jCurrentData, 50));
+				JsonArray jMessageId = jMessageIdOpt.get();
+				int deviceId = deviceIdOpt.get();
+				this.currentData(session, websocket, jCurrentData, jMessageId, deviceName, deviceId);
+			} catch (OpenemsException e) {
+				log.error(e.getMessage());
+			}
+		}
+	}
+	
+
+	public JsonObject putRep(Optional<Integer> deviceIdOpt, Optional<JsonArray> jMessageIdOpt){
+		
+		JsonObject jReply = DefaultMessages.configQueryReply(openemsConfig.get());
+		if (deviceNameOpt.isPresent()) {
+			jReply.addProperty("device", deviceNameOpt.get());
+		}
+		
+		if (jMessageIdOpt.isPresent()) {
+			jReply.add("id", jMessageIdOpt.get());
+		}
+		return jReply;
+		
+	}
+	
+	/*
+	 * Forward to OpenEMS Edge
+	 */
+	public void checkMess(JsonObject jMessage, Optional<String> configModeOpt, WebSocket websocket, BrowserSession session, String deviceName){
+		
+		if ((jMessage.has("config") && !configModeOpt.orElse("").equals("query")) || jMessage.has("log")
+				|| jMessage.has("system")) {
+			try {
+				forwardMessageToOpenems(session, websocket, jMessage, deviceName);
+			} catch (OpenemsException e) {
+				WebSocketUtils.sendNotification(websocket, new JsonArray(), LogBehaviour.WRITE_TO_LOG,
+					Notification.EDGE_UNABLE_TO_FORWARD, deviceName, e.getMessage());
 			}
 		}
 	}
