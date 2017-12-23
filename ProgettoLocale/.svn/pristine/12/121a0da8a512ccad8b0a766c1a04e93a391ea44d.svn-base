@@ -149,9 +149,9 @@ public class OpenemsWebsocketSingleton
 		if (jMessage.has("config")) {
 			try {
 				JsonObject jConfig = JsonUtils.getAsJsonObject(jMessage, "config");
-				for (MetadataDevice device : devices) {
-					device.setOpenemsConfig(jConfig);
-				}
+				//funzione
+				devices = setConfig(jConfig, devices);
+				
 				sessionData.setOpenemsConfig(jConfig);
 				log.info("Device [" + devices.getNamesString() + "] sent config.");
 			} catch (OpenemsException e) {
@@ -185,6 +185,16 @@ public class OpenemsWebsocketSingleton
 		}
 	}
 
+	public MetadataDevice setConfig(JsonObject jConfig, MetadataDevice devices){
+		
+		for (MetadataDevice device : devices) {
+			device.setOpenemsConfig(jConfig);
+		}
+		
+		return devices;
+		
+	}
+	
 	private void forwardReplyToBrowser(WebSocket openemsWebsocket, String deviceName, JsonObject jMessage) {
 		try {
 			// get browser websocket
@@ -239,24 +249,14 @@ public class OpenemsWebsocketSingleton
 				try {
 					JsonObject jChannels = JsonUtils.getAsJsonObject(jTimedataEntry.getValue());
 
-					// set Odoo last update timestamp only for those channels
-					for (String channel : jChannels.keySet()) {
-						if (channel.endsWith("ActivePower")
-								|| channel.endsWith("ActivePowerL1") | channel.endsWith("ActivePowerL2")
-										| channel.endsWith("ActivePowerL3") | channel.endsWith("Soc")) {
-							for (MetadataDevice device : devices) {
-								device.setLastUpdate();
-							}
-						}
-					}
-
-					// set specific Odoo values
-					if (jChannels.has("ess0/Soc")) {
-						int soc = JsonUtils.getAsPrimitive(jChannels, "ess0/Soc").getAsInt();
-						for (MetadataDevice device : devices) {
-							device.setSoc(soc);
-						}
-					}
+					//funzione
+					devices = updateChan(jChannels, devices);
+					
+					
+					//funzione
+					devices = setDev(jChannels, devices);
+					
+					
 					if (jChannels.has("system0/PrimaryIpAddress")) {
 						String ipv4 = JsonUtils.getAsPrimitive(jChannels, "system0/PrimaryIpAddress").getAsString();
 						for (MetadataDevice device : devices) {
@@ -273,6 +273,41 @@ public class OpenemsWebsocketSingleton
 		}
 	}
 
+	
+	/*
+	 * set specific Odoo values
+	 */
+	public MetadataDevice setDev(JsonObject jChannels, MetadataDevices devices){
+		
+		if (jChannels.has("ess0/Soc")) {
+			int soc = JsonUtils.getAsPrimitive(jChannels, "ess0/Soc").getAsInt();
+			for (MetadataDevice device : devices) {
+				device.setSoc(soc);
+			}
+		}
+		
+		return devices;
+		
+	}
+	
+	/*
+	 * set Odoo last update timestamp only for those channels 
+	 */
+	public MetadataDevice updateChan(JsonObject jChannels, MetadataDevices devices){
+		
+		for (String channel : jChannels.keySet()) {
+			if (channel.endsWith("ActivePower")
+					|| channel.endsWith("ActivePowerL1") | channel.endsWith("ActivePowerL2")
+							| channel.endsWith("ActivePowerL3") | channel.endsWith("Soc")) {
+				for (MetadataDevice device : devices) {
+					device.setLastUpdate();
+				}
+			}
+		}
+		
+		return devices;
+	}
+	
 	/**
 	 * Parses the apikey from websocket onOpen handshake
 	 *

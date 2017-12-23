@@ -76,10 +76,9 @@ public class WriteChannel<T> extends ReadChannel<T> {
 			channelMin = minChannelOptional.get().valueOptional().orElse(null);
 		}
 		T min = valueMin;
-		if (min == null || (writeMin != null && writeMin instanceof Comparable
-				&& ((Comparable<T>) writeMin).compareTo(min) > 0)) {
-			min = writeMin;
-		}
+		//funzione
+		min = checkMin(min, writeMin);
+		
 		if (min == null || (channelMin != null && channelMin instanceof Comparable
 				&& ((Comparable<T>) channelMin).compareTo(min) > 0)) {
 			if (channelMin instanceof Long && (Long) channelMin == 0) {
@@ -91,6 +90,17 @@ public class WriteChannel<T> extends ReadChannel<T> {
 		}
 		return Optional.ofNullable(min);
 
+	}
+	
+	public T checkMin(T min, T writeMin){
+		
+		if (min == null || (writeMin != null && writeMin instanceof Comparable
+				&& ((Comparable<T>) writeMin).compareTo(min) > 0)) {
+			min = writeMin;
+		}
+		
+		return min;
+		
 	}
 
 	/**
@@ -108,10 +118,8 @@ public class WriteChannel<T> extends ReadChannel<T> {
 			channelMax = maxChannelOptional.get().valueOptional().orElse(null);
 		}
 		T max = valueMax;
-		if (max == null || (writeMax != null && writeMax instanceof Comparable
-				&& ((Comparable<T>) writeMax).compareTo(max) < 0)) {
-			max = writeMax;
-		}
+		//funzione
+		max = checkMax(max, writeMax);
 		if (max == null || (channelMax != null && channelMax instanceof Comparable
 				&& ((Comparable<T>) channelMax).compareTo(max) < 0)) {
 			if (channelMax instanceof Long && (Long) channelMax == 0) {
@@ -123,7 +131,17 @@ public class WriteChannel<T> extends ReadChannel<T> {
 		}
 		return Optional.ofNullable(max);
 	}
-
+	
+	public T checkMax(T max, T writeMax){
+		
+		if (max == null || (writeMax != null && writeMax instanceof Comparable
+				&& ((Comparable<T>) writeMax).compareTo(max) < 0)) {
+			max = writeMax;
+		}
+		
+		return max;
+		
+	}
 	/**
 	 * Returns the write interval
 	 *

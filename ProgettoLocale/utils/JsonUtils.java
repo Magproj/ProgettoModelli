@@ -248,14 +248,24 @@ public class JsonUtils {
 			}
 		} else if (j.isJsonPrimitive()) {
 			JsonPrimitive jP = j.getAsJsonPrimitive();
-			if (jP.isString()) {
-				if (jP.getAsString().equals(path)) {
-					result.add(jP);
-				}
-			}
+			//funzione
+			result = checkjP(jP, result);
+			
 		}
 		return result;
 	}
+	
+	public Set<JsonPrimitive> checkjP(JsonPrimitive jP, Set<JsonElement> result){
+		
+		if (jP.isString()) {
+			if (jP.getAsString().equals(path)) {
+				result.add(jP);
+			}
+		}
+		
+		return result;
+	}
+	
 
 	/**
 	 * Pretty print a JsonElement
@@ -300,43 +310,76 @@ public class JsonUtils {
 				value = ((Optional<?>) value).get();
 			}
 		}
-		if (value instanceof Number) {
-			/*
-			 * Number
-			 */
-			return new JsonPrimitive((Number) value);
-		} else if (value instanceof String) {
-			/*
-			 * String
-			 */
-			return new JsonPrimitive((String) value);
-		} else if (value instanceof Boolean) {
-			/*
-			 * Boolean
-			 */
-			return new JsonPrimitive((Boolean) value);
-		} else if (value instanceof Inet4Address) {
-			/*
-			 * Inet4Address
-			 */
-			return new JsonPrimitive(((Inet4Address) value).getHostAddress());
-		} else if (value instanceof JsonElement) {
-			/*
-			 * JsonElement
-			 */
-			return (JsonElement) value;
-		} else if (value instanceof Long[]){
-			/*
-			 * Long-Array
-			 */
-			JsonArray js = new JsonArray();
-			for (Long l : (Long[]) value){
-				js.add(new JsonPrimitive((Long) l));
-			}
-			return js;
+		
+		//funzione
+		if(checkValue(value)){
+			return rightValue();
 		}
+		
 		throw new NotImplementedException("Converter for [" + value + "]" + " of type [" //
 				+ value.getClass().getSimpleName() + "]" //
 				+ " to JSON is not implemented.");
 	}
+
+
+public boolean checkValue(Object value){
+	
+	if (value instanceof Number || value instanceof String || value instanceof Boolean || value instanceof Inet4Address
+			|| value instanceof JsonElement || value instanceof Long[]) {
+		
+		return true;
+	}
+	 return false;
+}
+
+public JsonElement rightValue(Object value){
+	
+	if (value instanceof Number) {
+		/*
+		 * Number
+		 */
+		return new JsonPrimitive((Number) value);
+	} else if (value instanceof String) {
+		/*
+		 * String
+		 */
+		return new JsonPrimitive((String) value);
+	} else if (value instanceof Boolean) {
+		/*
+		 * Boolean
+		 */
+		return new JsonPrimitive((Boolean) value);
+	} else if (value instanceof Inet4Address) {
+		/*
+		 * Inet4Address
+		 */
+		return new JsonPrimitive(((Inet4Address) value).getHostAddress());
+	} else if (value instanceof JsonElement) {
+		/*
+		 * JsonElement
+		 */
+		return (JsonElement) value;
+	} else if (value instanceof Long[]){
+		/*
+		 * Long-Array
+		 */
+		JsonArray js = new JsonArray();
+		//funzione
+		js = longValue(value, js);
+		
+		return js;
+	}
+}
+	
+	public JsonArray longValue(Object value, JsonArray js){
+		
+		for (Long l : (Long[]) value){
+			js.add(new JsonPrimitive((Long) l));
+		}
+		
+		return js;
+	}
+	
+
+
 }
