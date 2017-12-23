@@ -132,37 +132,104 @@ public class SymmetricPower {
 			reducedActivePower = tot[1];
 			reducedReactivePower = tot[2];
 			
-		} else if (minActivePower > activePower || activePower > maxActivePower) {
-			// only activePower is out of allowed value range
-			if (minActivePower > activePower) {
-				// Discharge
-				reducedActivePower = minActivePower;
-				reducedReactivePower = ControllerUtils.calculateReactivePower(reducedActivePower, cosPhi);
-			} else {
-				// Charge
-				reducedActivePower = maxActivePower;
-				reducedReactivePower = ControllerUtils.calculateReactivePower(reducedActivePower, cosPhi);
-			}
 		} else {
-			// only reactivePower is out of allowed value range
-			if (minReactivePower > reactivePower) {
-				// Discharge
-				reducedReactivePower = minReactivePower;
-				reducedActivePower = ControllerUtils.calculateActivePowerFromReactivePower(reducedReactivePower,
-						cosPhi);
-			} else {
-				// Charge
-				reducedReactivePower = maxReactivePower;
-				reducedActivePower = ControllerUtils.calculateActivePowerFromReactivePower(reducedReactivePower,
-						cosPhi);
-			}
+			
+			//funzione
+			long[] pas;
+			pas = statPower(minActivePower,maxActivePower, reducedActivePower,reducedReactivePower);
+			reducedReactivePower = pas[0];
+			reducedActivePower = pas[1];
 		}
+		
+		//funzione
+		logStatus(reducedActivePower, reducedReactivePower);
+		
+		this.activePower = reducedActivePower;
+		this.reactivePower = reducedReactivePower;
+	}
+	
+	
+	public void logStatus(long reducedActivePower, long reducedReactivePower){
+		
 		if (activePower != reducedActivePower || reactivePower != reducedReactivePower) {
 			log.info("Reduce activePower from [{}] to [{}] and reactivePower from [{}] to [{}]",
 					new Object[] { activePower, reducedActivePower, reactivePower, reducedReactivePower });
 		}
-		this.activePower = reducedActivePower;
-		this.reactivePower = reducedReactivePower;
+		
+	}
+	
+	
+	/*
+	 * 
+	 */
+	public long[] statPower(long minActivePower, long maxActivePower, long reducedActivePower, long reducedReactivePower){
+	
+		if (minActivePower > activePower || activePower > maxActivePower) {
+			
+			//funzione
+			long[] tot;
+			tot = checkRangeAct(minActivePower, maxActivePower, cosPhi, reducedActivePower);
+			reducedActivePower = tot[0];
+			reducedReactivePower = tot[1];
+			
+		} else {
+			
+			//funzione
+			long[] tot;
+			tot = checkRangeReact(minReactivePower, cosPhi,maxReactivePower);
+			reducedReactivePower = tot[0];
+			reducedActivePower = tot[1];
+			
+		}
+		
+		long[] pas = {0, 0};
+		pas[0] = reducedReactivePower;
+		pas[1] = reducedActivePower;
+		
+		return pas;
+	
+	}
+	
+	
+	/*
+	 *  only reactivePower is out of allowed value range
+	 */
+	public long[] checkRangeReact(long minReactivePower, double cosPhi, long maxReactivePower){
+		
+
+		
+		long[] tot = {0, 0};
+		if (minReactivePower > reactivePower) {
+			// Discharge
+			tot[0] = minReactivePower;
+			tot[1] = ControllerUtils.calculateActivePowerFromReactivePower(tot[0], cosPhi);
+		} else {
+			// Charge
+			tot[0] = maxReactivePower;
+			tot[1] = ControllerUtils.calculateActivePowerFromReactivePower(tot[0],cosPhi);
+			}
+		return tot;
+		
+	}
+	
+	/*
+	 * Only activePower is out of allowed value range
+	 */
+	public long[] checkRangeAct(long minActivePower,long maxActivePower, double cosPhi){
+		
+		long[] tot = {0, 0};
+		if (minActivePower > activePower) {
+			// Discharge
+			tot[0] = minActivePower;
+			tot[1] = ControllerUtils.calculateReactivePower(tot[0], cosPhi);
+		} else {
+			// Charge
+			tot[0] = maxActivePower;
+			tot[1] = ControllerUtils.calculateReactivePower(tot[0], cosPhi);
+		}
+		
+		return tot;
+					
 	}
 	
 	/*
