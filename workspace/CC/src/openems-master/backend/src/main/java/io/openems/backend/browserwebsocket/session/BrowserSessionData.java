@@ -10,9 +10,24 @@ import com.google.gson.JsonObject;
 import io.openems.common.session.SessionData;
 import io.openems.common.types.DeviceImpl;
 
+
+public class Hardcoded {
+  public void safeConnect() {
+    JdbcConnectionConfig conf = getConnectionConfigFromTrustedSource();
+    Connection conn = DriverManager.getConnection(conf.getUrl(), conf.getUser(), conf.getPass()); // FIXED
+    // ...
+  }
+}
+
+/**
+*
+* @author FENECON GmbH
+*
+*/
 public class BrowserSessionData extends SessionData {
-	private String userName = "";
-	private Optional<Integer> userId = Optional.empty();
+	
+	ConnectionConfig conf = new ConnectionConfig();
+	Connection conn = DriverManager.getConnection(conf.getUserName(), conf.getUserId);
 	private Optional<String> odooSessionIdOpt = Optional.empty();
 	private LinkedHashMultimap<String, DeviceImpl> devices = LinkedHashMultimap.create();
 	private Optional<BackendCurrentDataWorker> currentDataWorkerOpt = Optional.empty();
