@@ -3,6 +3,7 @@ package io.openems.backend.browserwebsocket.session;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.sql.*;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.gson.JsonObject;
@@ -26,8 +27,8 @@ public class Hardcoded {
 */
 public class BrowserSessionData extends SessionData {
 	
-	ConnectionConfig conf = new ConnectionConfig();
-	Connection conn = DriverManager.getConnection(conf.getUserName(), conf.getUserId);
+	JdbcConnectionConfig conf = getConnectionConfigFromTrustedSource();
+    Connection conn = DriverManager.getConnection(conf.getUrl(), conf.getUser(), conf.getPass());
 	private Optional<String> odooSessionIdOpt = Optional.empty();
 	private LinkedHashMultimap<String, DeviceImpl> devices = LinkedHashMultimap.create();
 	private Optional<BackendCurrentDataWorker> currentDataWorkerOpt = Optional.empty();
