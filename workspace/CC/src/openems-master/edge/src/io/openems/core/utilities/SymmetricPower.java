@@ -324,12 +324,19 @@ public class SymmetricPower {
 		} else if (setActivePower.writeMax().isPresent()) {
 			maxPower = setActivePower.writeMax().get();
 		}
+		
+		checkLogMax(valid);
+		return maxPower;
+	}
+	
+	
+	public void checkLogMax(boolean valid){
+		
 		if (!valid) {
 			log.error("Failed to get Max value for ActivePower! Return 0.");
 		}
-		return maxPower;
+		
 	}
-
 	/**
 	 * Get the min active power out of allowedCharge, allowedApparent and writeMin of setActivePower channels
 	 *
@@ -353,10 +360,18 @@ public class SymmetricPower {
 		} else if (setActivePower.writeMin().isPresent()) {
 			minPower = setActivePower.writeMin().get();
 		}
+		
+		checkLogMin(valid);
+		
+		return minPower;
+	}
+	
+	public void checkLogMin(boolean valid){
+	
 		if (!valid) {
 			log.error("Failed to get Min value for ActivePower! Return 0.");
 		}
-		return minPower;
+		
 	}
 
 	/**
