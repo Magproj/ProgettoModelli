@@ -56,19 +56,19 @@ public class ComponentSingleton {
 			// port changed -> restart
 			ComponentSingleton.restartComponent(portt, apiWorkerr);
 		}
-		
+
 		if (ComponentSingleton.instance == null) {
 			// instance not available -> start
 			startComponent(portt, apiWorkerr);
 		}
-		
+
 		return ComponentSingleton.instance;
 	}}
 
 	protected static void restartComponent(int portt, ApiWorker apiWorkerr) throws OpenemsException {
 		synchronized (ComponentSingleton.class){
 			stopComponent();
-		
+
 		startComponent(portt, apiWorkerr);}
 	}
 
