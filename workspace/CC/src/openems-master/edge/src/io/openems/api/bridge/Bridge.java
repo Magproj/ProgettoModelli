@@ -37,7 +37,11 @@ import io.openems.api.scheduler.Scheduler;
 import io.openems.api.thing.Thing;
 import io.openems.core.ThingRepository;
 import io.openems.core.utilities.Mutex;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public abstract class Bridge extends Thread implements Thing {
 	public final static String THINGID_PREFIX = "_bridge";
 	private static int instanceCounter = 0;
@@ -103,28 +107,37 @@ public abstract class Bridge extends Thread implements Thing {
 		return writeTasks;
 	}
 
-	public synchronized void addDevice(Device device) {
-		this.devices.add(device);
-	}
-
-	public synchronized final void addDevices(Device... devices) {
-		for (Device device : devices) {
-			addDevice(device);
+	public void addDevice(Device device) {
+		synchronized (this) {
+			this.devices.add(device);
 		}
 	}
 
-	public synchronized final void addDevices(List<Device> devices) {
-		for (Device device : devices) {
-			addDevice(device);
+	public final void addDevices(Device... devicess) {
+		synchronized (this) {
+			for (Device device : devicess) {
+				addDevice(device);
+			}
+		}
+	}
+	public final void addDevices(List<Device> devicess) {
+		synchronized (this) {
+			for (Device device : devicess) {
+				addDevice(device);
+			}
 		}
 	}
 
-	public synchronized void removeDevice(Device device) {
-		this.devices.remove(device);
+	public void removeDevice(Device device) {
+		synchronized (this) {
+			this.devices.remove(device);
+		}
 	}
 
-	public synchronized List<Device> getDevices() {
-		return Collections.unmodifiableList(this.devices);
+	public List<Device> getDevices() {
+		synchronized (this) {
+			return Collections.unmodifiableList(this.devices);
+		}
 	}
 
 	public void triggerWrite() {
@@ -157,14 +170,16 @@ public abstract class Bridge extends Thread implements Thing {
 			duration += 1;
 		}
 		long targetTime = System.nanoTime() + (duration * 1000000);
-		do {
-			try {
+		try {
+			do {
+			
 				long thisDuration = (targetTime - System.nanoTime()) / 1000000;
 				if (thisDuration > 0) {
 					Thread.sleep(thisDuration);
 				}
-			} catch (InterruptedException e1) {}
-		} while (targetTime > System.nanoTime());
+				long tempo= System.nanoTime();
+			} while (targetTime > tempo);
+		} catch (InterruptedException e1) {}
 		return duration;
 	}
 
@@ -175,13 +190,16 @@ public abstract class Bridge extends Thread implements Thing {
 	public final void run() {
 		long bridgeExceptionSleep = 1; // seconds
 		this.initialize.set(true);
-		while (!isStopped.get()) {
+		boolean flag= isStopped.get();
+		try {
+			while (!flag) {
 			cycleStart = System.currentTimeMillis();
-			try {
+			
 				/*
 				 * Initialize Bridge
 				 */
-				while (initialize.get()) {
+				boolean init=initialize.get();
+				while (init) {
 					// get Scheduler
 					this.scheduler = ThingRepository.getInstance().getSchedulers().iterator().next();
 					boolean initSuccessful = initialize();
@@ -194,19 +212,19 @@ public abstract class Bridge extends Thread implements Thing {
 				List<BridgeWriteTask> writeTasks = this.getWriteTasks();
 				// calculate startTime to run the read
 				long sleep = getNextReadTime() - System.currentTimeMillis() - 10 - requiredTimeListeners();
-				
+
 				//funzione
 				checkSleep(sleep);
 				
-				
 				notifyListeners(Position.BEFOREREADREQUIRED);
 				// run all tasks to read required Channels
-				for (BridgeReadTask task : requiredReadTasks) {
-					try {
+				try {
+					for (BridgeReadTask task : requiredReadTasks) {
+					
 						task.runTask();
-					} catch (Exception e) {
-						log.error("failed to execute ReadTask.", e);
 					}
+				} catch (Exception e) {
+					log.error("failed to execute ReadTask.", e);
 				}
 				long timeUntilWrite = scheduler.getCycleStartTime() + scheduler.getRequiredTime() + 10
 						- requiredTimeListeners();
@@ -233,20 +251,21 @@ public abstract class Bridge extends Thread implements Thing {
 					}
 				}
 				notifyListeners(Position.BEFOREREADOTHER2);
+				// execute additional readTasks if time left
 				
 				addTasks(readTasks);
 				
 				// Everything went ok: reset bridgeExceptionSleep
 				bridgeExceptionSleep = 1;
-			} catch (Throwable e) {
-				/*
-				 * Handle Bridge-Exceptions
-				 */
-				log.error("Bridge-Exception! Retry later: ", e);
-				bridgeExceptionSleep = bridgeExceptionSleep(bridgeExceptionSleep);
-			}
 			requiredCycleTime.setValue(System.currentTimeMillis() - cycleStart);
 			readOtherTaskReadCount.setValue(readOtherTaskCount);
+			}
+		} catch (Throwable e) {
+			/*
+			 * Handle Bridge-Exceptions
+			 */
+			log.error("Bridge-Exception! Retry later: ", e);
+			bridgeExceptionSleep = bridgeExceptionSleep(bridgeExceptionSleep);
 		}
 		dispose();
 		System.out.println("BridgeWorker was interrupted. Exiting gracefully...");
@@ -269,18 +288,24 @@ public abstract class Bridge extends Thread implements Thing {
 		
 	}
 	
+	
 	/*
-	 * Check the status of the thread
+	 * If sleep fail there is an exception 
 	 */
-	private void check(){
+	private void checkSleep(long sleep){
 		
-		try {
-			Thread.sleep(20l);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (sleep > 0) {
+			try {
+				Thread.sleep(sleep);
+			} catch (InterruptedException e) {
+				log.error("sleep failed.", e);
+			}
+		} else {
+			log.debug("cycleTime smaller than required time: " + sleep);
 		}
+		
 	}
+	
 	
 	/*
 	 * Check if writeTasks doesn't throw exception
@@ -327,19 +352,6 @@ public abstract class Bridge extends Thread implements Thing {
 		
 	}
 	
-	/*
-	 * execute additional readTasks if time left
-	 */
-	private void addTasks(List<BridgeReadTask> readTasks){
-		
-		if (readTasks.size() > 0) {
-			if (getNextReadTime() - 10 - System.currentTimeMillis() - requiredTimeListeners() > 0) {
-				readOther(readTasks, getNextReadTime(), true);
-			}
-		}
-		
-	}
-
 	private void readOther(List<BridgeReadTask> tasks, long timeFinished, boolean forceRead) {
 		BridgeReadTask nextReadTask = null;
 		if (readOtherTaskCount + 1 <= tasks.size()) {

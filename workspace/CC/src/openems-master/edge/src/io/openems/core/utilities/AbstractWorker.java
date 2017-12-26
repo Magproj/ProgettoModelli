@@ -27,7 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.openems.api.thing.Thing;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public abstract class AbstractWorker extends Thread implements Thing {
 	private final AtomicBoolean initialize = new AtomicBoolean(true);
 	private Mutex initializedMutex = new Mutex(false);
@@ -68,14 +72,16 @@ public abstract class AbstractWorker extends Thread implements Thing {
 			duration += 1;
 		}
 		long targetTime = System.nanoTime() + (duration * 1000000);
-		do {
-			try {
+		try {
+			do {
+			
 				long thisDuration = (targetTime - System.nanoTime()) / 1000000;
 				if (thisDuration > 0) {
 					Thread.sleep(thisDuration);
 				}
-			} catch (InterruptedException e1) {}
-		} while (targetTime > System.nanoTime());
+				long time=System.nanoTime();
+			} while (targetTime > time);
+		} catch (InterruptedException e1) {}
 		return duration;
 	}
 
@@ -115,13 +121,16 @@ public abstract class AbstractWorker extends Thread implements Thing {
 	public final void run() {
 		long bridgeExceptionSleep = 1; // seconds
 		this.initialize.set(true);
-		while (!isStopped.get()) {
+		boolean flag=isStopped.get();
+		try {
+			while (!flag) {
 			cycleStart = System.currentTimeMillis();
-			try {
+			
 				/*
 				 * Initialize Bridge
 				 */
-				while (initialize.get()) {
+				boolean init=initialize.get();
+				while (init) {
 					boolean initSuccessful = initialize();
 					if (initSuccessful) {
 						isInitialized.set(true);
@@ -138,32 +147,35 @@ public abstract class AbstractWorker extends Thread implements Thing {
 				/*
 				 * Wait for next cycle
 				 */
-				try {
+				
 					long sleep = getCycleTime() - (System.currentTimeMillis() - cycleStart);
 					if (sleep > 0) {
 						Thread.sleep(sleep); // TODO add cycle time
 					}
-				} catch (InterruptedException e) {
-					if (isForceRun.get()) {
-						// check if a "forceRun" was triggereed. In that case Thread.sleep is interrupted and run() is
-						// starting again immediately
-						isForceRun.set(false);
-					} else {
-						// otherwise forward the exception
-						isStopped.set(true);
-						throw e;
-					}
-				}
 				// Everything went ok: reset bridgeExceptionSleep
 				bridgeExceptionSleep = 1;
-			} catch (Throwable e) {
-				/*
-				 * Handle Bridge-Exceptions
-				 */
-				log.error("Bridge-Exception! Retry later: ", e);
-				bridgeExceptionSleep = bridgeExceptionSleep(bridgeExceptionSleep);
+			
 			}
+			
+		} catch (Throwable e | InterruptedException e) {
+				if (isForceRun.get()) {
+					// check if a "forceRun" was triggereed. In that case Thread.sleep is interrupted and run() is
+					// starting again immediately
+					isForceRun.set(false);
+				} else {
+					// otherwise forward the exception
+					isStopped.set(true);
+					throw e;
+				}
+			
+			/*
+			 * Handle Bridge-Exceptions
+			 */
+			log.error("Bridge-Exception! Retry later: ", e);
+			bridgeExceptionSleep = bridgeExceptionSleep(bridgeExceptionSleep);
 		}
+		
+		
 		dispose();
 		System.out.println("BridgeWorker was interrupted. Exiting gracefully...");
 	}

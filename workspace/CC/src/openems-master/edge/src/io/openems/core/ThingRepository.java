@@ -138,9 +138,9 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 
 		// Add Channels thingConfigChannels
 		ThingDoc thingDoc = classRepository.getThingDoc(thing.getClass());
-		for (ChannelDoc channelDoc : thingDoc.getConfigChannelDocs()) {
+		try {
+			for (ChannelDoc channelDoc : thingDoc.getConfigChannelDocs()) {
 			ClassLoader member = channelDoc.getMember();
-			try {
 				List<Channel> channels = new ArrayList<>();
 				MyObject member = new MyObject();//Create an instance
 				;//Refer to the instance's class's code
@@ -162,10 +162,9 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 				
 				//funzione
 				channels = addChanToThing(channels);
-			
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
 			}
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
 		}
 		for (ThingsChangedListener listener : thingListeners) {
 			listener.thingChanged(thing, Action.ADD);
@@ -247,13 +246,13 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 	
 	public void applyChannelAnnotation(Thing thing) {
 		ThingDoc thingDoc = classRepository.getThingDoc(thing.getClass());
-		for (ChannelDoc channelDoc : thingDoc.getChannelDocs()) {
-			try {
+		try {
+			for (ChannelDoc channelDoc : thingDoc.getChannelDocs()) {
 				Channel channel = getChannel(thing, channelDoc.getMember());
 				channel.setChannelDoc(channelDoc);
-			} catch (OpenemsException e) {
-				log.debug(e.getMessage());
 			}
+		} catch (OpenemsException e) {
+			log.debug(e.getMessage());
 		}
 	}
 	
@@ -561,9 +560,10 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 
 		// Add Channels to thingChannels, thingConfigChannels and thingWriteChannels
 		ThingDoc thingDoc = classRepository.getThingDoc(thing.getClass());
-		for (ChannelDoc channelDoc : thingDoc.getChannelDocs()) {
+		try {
+			for (ChannelDoc channelDoc : thingDoc.getChannelDocs()) {
 			ClassLoader member = channelDoc.getMember();
-			try {
+			
 				List<Channel> channels = new ArrayList<>();
 				if (member.nonstaticMethod()) {
 					
@@ -588,9 +588,9 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 					ReadChannel<?> chan = dataChannel(channel, databus);
 					
 					}
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
 			}
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			log.warn("Unable to add Channel. Member [" + member.getName() + "]", e);
 		}
 	}
 	
