@@ -191,6 +191,7 @@ public abstract class Bridge extends Thread implements Thing {
 		long bridgeExceptionSleep = 1; // seconds
 		this.initialize.set(true);
 		boolean flag= isStopped.get();
+		try{
 		try {
 			while (!flag) {
 			cycleStart = System.currentTimeMillis();
@@ -218,14 +219,10 @@ public abstract class Bridge extends Thread implements Thing {
 				
 				notifyListeners(Position.BEFOREREADREQUIRED);
 				// run all tasks to read required Channels
-				try {
 					for (BridgeReadTask task : requiredReadTasks) {
 					
 						task.runTask();
 					}
-				} catch (Exception e) {
-					log.error("failed to execute ReadTask.", e);
-				}
 				long timeUntilWrite = scheduler.getCycleStartTime() + scheduler.getRequiredTime() + 10
 						- requiredTimeListeners();
 				
@@ -266,6 +263,9 @@ public abstract class Bridge extends Thread implements Thing {
 			 */
 			log.error("Bridge-Exception! Retry later: ", e);
 			bridgeExceptionSleep = bridgeExceptionSleep(bridgeExceptionSleep);
+		}
+		} catch (Exception e) {
+			log.error("failed to execute ReadTask.", e);
 		}
 		dispose();
 		System.out.println("BridgeWorker was interrupted. Exiting gracefully...");
@@ -312,12 +312,12 @@ public abstract class Bridge extends Thread implements Thing {
 	 */
 	private void checkTask(List<BridgeWriteTask> writeTasks){
 		
-		for (BridgeWriteTask task : writeTasks) {
-			try {
+		try {
+			for (BridgeWriteTask task : writeTasks) {
 				task.runTask();
-			} catch (Exception e) {
-				log.error("failed to execute WriteTask.", e);
 			}
+		} catch (Exception e) {
+			log.error("failed to execute WriteTask.", e);
 		}
 		
 	}
@@ -357,16 +357,14 @@ public abstract class Bridge extends Thread implements Thing {
 		if (readOtherTaskCount + 1 <= tasks.size()) {
 			nextReadTask = tasks.get(readOtherTaskIndex);
 		}
-		while (nextReadTask != null) {
+		try {
+			while (nextReadTask != null) {
 			if (!forceRead && System.currentTimeMillis() + nextReadTask.getRequiredTime() >= timeFinished) {
 				break;
 			}
 			forceRead = false;
-			try {
+			
 				nextReadTask.runTask();
-			} catch (Exception e) {
-				log.error("failed to execute ReadTask.", e);
-			}
 			readOtherTaskCount++;
 			readOtherTaskIndex++;
 			readOtherTaskIndex %= tasks.size();
@@ -375,6 +373,9 @@ public abstract class Bridge extends Thread implements Thing {
 			} else {
 				nextReadTask = null;
 			}
+			}
+		} catch (Exception e) {
+			log.error("failed to execute ReadTask.", e);
 		}
 	}
 
