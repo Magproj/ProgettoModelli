@@ -245,8 +245,9 @@ public class OpenemsWebsocketSingleton
 				device.setLastMessage();
 			}
 
-			for (Entry<String, JsonElement> jTimedataEntry : jTimedata.entrySet()) {
-				try {
+			try {
+				for (Entry<String, JsonElement> jTimedataEntry : jTimedata.entrySet()) {
+				
 					JsonObject jChannels = JsonUtils.getAsJsonObject(jTimedataEntry.getValue());
 
 					//funzione
@@ -263,9 +264,10 @@ public class OpenemsWebsocketSingleton
 							device.setIpV4(ipv4);
 						}
 					}
-				} catch (OpenemsException e) {
-					log.error("Device [" + String.join(",", devices.getNames()) + "] error: " + e.getMessage());
+				
 				}
+			} catch (OpenemsException e) {
+				log.error("Device [" + String.join(",", devices.getNames()) + "] error: " + e.getMessage());
 			}
 
 		} catch (OpenemsException e) {

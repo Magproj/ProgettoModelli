@@ -444,9 +444,9 @@ public class Config implements ChannelChangeListener {
 		}
 		
 	}
-	
+		
 	/*
-	 * Read if jConfig has scheduler
+	 * Read if jConfig has scheduler 
 	 */
 	public void readSched(JsonObject jConfig){
 		
@@ -502,16 +502,17 @@ public class Config implements ChannelChangeListener {
 		
 		if (jConfig.has("users")) {
 			JsonObject jUsers = JsonUtils.getAsJsonObject(jConfig, "users");
+		  try {
 			for (Entry<String, JsonElement> jUsersElement : jUsers.entrySet()) {
 				JsonObject jUser = JsonUtils.getAsJsonObject(jUsersElement.getValue());
 				String username = jUsersElement.getKey();
 				String passwordBase64 = JsonUtils.getAsString(jUser, "password");
 				String saltBase64 = JsonUtils.getAsString(jUser, "salt");
-				try {
+				
 					User.getUserByName(username).initialize(passwordBase64, saltBase64);
-				} catch (OpenemsException e) {
-					log.error("Error parsing config: " + e.getMessage());
-				}
+			}
+		  } catch (OpenemsException e) {
+				log.error("Error parsing config: " + e.getMessage());
 			}
 		}
 		

@@ -31,7 +31,11 @@ import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.types.ChannelAddress;
 import io.openems.common.utils.InfluxdbUtils;
 import io.openems.common.utils.JsonUtils;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public class InfluxdbSingleton implements TimedataSingleton {
 
 	private final Logger log = LoggerFactory.getLogger(InfluxdbSingleton.class);
@@ -88,9 +92,8 @@ public class InfluxdbSingleton implements TimedataSingleton {
 	 * "timestamp2" { "channel1": value, "channel2": value } }
 	 */
 	@Override
-	public void write(MetadataDevices devices, JsonObject jData) throws NullPointerException{
+	public void write(MetadataDevices devices, JsonObject jData) {
 		TreeBasedTable<Long, String, Object> data = TreeBasedTable.create();
-		
 		for (MetadataDevice device : devices) {
 			int deviceId = device.getIdOpt().orElse(0);
 
@@ -98,15 +101,13 @@ public class InfluxdbSingleton implements TimedataSingleton {
 			DeviceCache deviceCache = this.deviceCacheMap.get(deviceId);
 			
 			//funzione
-			checkDevice(deviceCache);
-
-
-			// Sort incoming data by timestamp
-			TreeMap<Long, JsonObject> sortedData = new TreeMap<Long, JsonObject>();
-			
-			//funzione
 			sortedData = putSortData(jData);
 			
+			// Sort incoming data by timestamp
+			TreeMap<Long, JsonObject> sortedData = new TreeMap<Long, JsonObject>();
+
+			//funzione
+			sortedData = putSortData(jData);
 
 			// Prepare data table. Takes entries starting with eldest timestamp (ascending order)
 			for (Entry<Long, JsonObject> dataEntry : sortedData.entrySet()) {
@@ -127,13 +128,12 @@ public class InfluxdbSingleton implements TimedataSingleton {
 					// update cache timestamp
 					deviceCache.setTimestamp(timestamp);
 
+
 					//funzione
 					data = updateTimeStamp(timestamp, cacheTimestamp, deviceId, deviceCache, data);
-					
-					
+
 					//funzione
 					deviceCache = putChannel(jChannels, deviceCache);
-					
 					
 				}
 
@@ -141,10 +141,10 @@ public class InfluxdbSingleton implements TimedataSingleton {
 				for (Entry<String, JsonElement> channelEntry : jChannels.entrySet()) {
 					String channel = channelEntry.getKey();
 					Optional<Object> valueOpt = this.parseValue(channel, channelEntry.getValue());
-					
+					if (valueOpt.isPresent()) {
 						Object value = valueOpt.get();
 						data.put(timestamp, channel, value);
-					
+					}
 				}
 			}
 
@@ -154,7 +154,9 @@ public class InfluxdbSingleton implements TimedataSingleton {
 
 		// Hook to continue writing data to old Mini monitoring
 		// TODO remove after full migration
-		for (MetadataDevice device : devices) {
+		for (
+
+		MetadataDevice device : devices) {
 			if (device.getProductType().equals("MiniES 3-3")) {
 				writeDataToOldMiniMonitoring(device, data);
 				break;
@@ -162,7 +164,6 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		}
 	}
 	
-
 	/*
 	 * Add incoming data to cache (this replaces already existing cache values) 
 	 */
@@ -200,15 +201,17 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		
 		TreeMap<Long, JsonObject> sortData = new TreeMap<Long, JsonObject>();
 		
-		for (Entry<String, JsonElement> entry : jData.entrySet()) {
-			try {
+		try {
+			for (Entry<String, JsonElement> entry : jData.entrySet()) {
+		
+			
 				Long timestamp = Long.valueOf(entry.getKey());
 				JsonObject jChannels;
 				jChannels = JsonUtils.getAsJsonObject(entry.getValue());
 				sortData.put(timestamp, jChannels);
-			} catch (OpenemsException e) {
-				log.error("Data error: " + e.getMessage());
 			}
+		} catch (OpenemsException e) {
+			log.error("Data error: " + e.getMessage());
 		}
 		
 	}
@@ -238,7 +241,6 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		
 		return data;
 	}
-	
 
 	private void writeData(int deviceId, TreeBasedTable<Long, String, Object> data) {
 		BatchPoints batchPoints = BatchPoints.database(database) //
@@ -312,7 +314,8 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		// write to DB
 		influxDB.write(batchPoints);
 	}
-
+	
+	
 	/*
 	 * convert channel ids to old identifiers
 	 */
@@ -345,7 +348,7 @@ public class InfluxdbSingleton implements TimedataSingleton {
 		}
 		
 	}
-	
+
 	/**
 	 * Add value to Influx Builder in the correct data format
 	 *
@@ -355,18 +358,16 @@ public class InfluxdbSingleton implements TimedataSingleton {
 	 * @return
 	 */
 	private Optional<Object> parseValue(String channel, Object value) {
-		
 		if (value == null) {
 			return Optional.empty();
 		}
-		
 		// convert JsonElement
 		if (value instanceof JsonElement) {
 			JsonElement jValueElement = (JsonElement) value;
-			
-			//funzione
-			value  = convJsonElement(jValueElement);
-
+			if (jValueElement.isJsonPrimitive()) {
+				JsonPrimitive jValue = jValueElement.getAsJsonPrimitive();
+				//funzione
+				value  = convJsonElement(jValueElement);
 		}
 		if (value instanceof Number) {
 			Number numberValue = (Number) value;
