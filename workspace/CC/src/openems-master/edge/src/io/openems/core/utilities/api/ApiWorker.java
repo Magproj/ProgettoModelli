@@ -46,7 +46,8 @@ public class ApiWorker {
 		}
 	}
 
-	private synchronized void resetTimeout() {
+	private void resetTimeout() {
+		synchronized (this) {
 		if (this.future != null) {
 			this.future.cancel(false);
 		}
@@ -65,6 +66,7 @@ public class ApiWorker {
 				}
 			}, this.timeoutSeconds, TimeUnit.SECONDS);
 		}
+		}
 	}
 
 	/**
@@ -82,18 +84,18 @@ public class ApiWorker {
 	 */
 	public void run() {
 		synchronized (this.values) {
-			for (Entry<WriteChannel<?>, WriteObject> entry : this.values.entrySet()) {
+			try {
+				for (Entry<WriteChannel<?>, WriteObject> entry : this.values.entrySet()) {
 				WriteChannel<?> channel = entry.getKey();
 				WriteObject writeObject = entry.getValue();
-				try {
 					log.info("Set Channel [" + channel.address() + "] to Value [" + writeObject.valueToString() + "]");
 					writeObject.pushWrite(channel);
 					writeObject.notifySuccess();
-				} catch (OpenemsException e) {
-					log.error("Unable to set Channel [" + channel.address() + "] to Value [" + writeObject.valueToString() + "]: "
-							+ e.getMessage());
-					writeObject.notifyError(e);
-				}
+			}
+			} catch (OpenemsException e) {
+				log.error("Unable to set Channel [" + channel.address() + "] to Value [" + writeObject.valueToString() + "]: "
+						+ e.getMessage());
+				writeObject.notifyError(e);
 			}
 		}
 	}

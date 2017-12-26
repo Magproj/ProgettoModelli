@@ -21,7 +21,12 @@ import io.openems.core.ThingRepository;
 import io.openems.core.utilities.JsonUtils;
 import io.openems.core.utilities.api.ApiWorker;
 
-@ThingInfo(title = "Modbus/TCP API", description = "Modbus/TCP slave implementation.")
+//@ThingInfo(title = "Modbus/TCP API", description = "Modbus/TCP slave implementation.")
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public class ModbusTcpApiController extends Controller {
 
 	public static final int UNIT_ID = 1;
@@ -115,8 +120,8 @@ public class ModbusTcpApiController extends Controller {
 		ThingRepository thingRepository = ThingRepository.getInstance();
 		if (jMappingOpt.isPresent()) {
 			JsonObject jMapping = jMappingOpt.get();
-			for (Entry<String, JsonElement> entry : jMapping.entrySet()) {
-				try {
+			try {
+				for (Entry<String, JsonElement> entry : jMapping.entrySet()) {
 					int ref = Integer.parseInt(entry.getKey());
 					ChannelAddress channelAddress = ChannelAddress.fromString(JsonUtils.getAsString(entry.getValue()));
 					Optional<ChannelDoc> channelDocOpt = thingRepository.getChannelDoc(channelAddress);
@@ -131,9 +136,9 @@ public class ModbusTcpApiController extends Controller {
 							throw new OpenemsException("Channel [" + channelAddress + "] does not exist.");
 						}
 					}
-				} catch (Exception e) {
-					log.error("Unable to add channel mapping: " + e.getMessage());
 				}
+			} catch (Exception e) {
+					log.error("Unable to add channel mapping: " + e.getMessage());
 			}
 		}
 	}
