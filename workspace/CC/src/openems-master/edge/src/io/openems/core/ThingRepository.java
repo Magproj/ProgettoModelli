@@ -67,6 +67,45 @@ import io.openems.core.ThingsChangedListener.Action;
 import io.openems.core.utilities.ConfigUtils;
 import io.openems.core.utilities.InjectionUtils;
 import io.openems.core.utilities.JsonUtils;
+
+interface Handler<T extends Thing> {
+	  void add(T o);
+	}
+
+private class BridgeHandler implements Handler<Bridge>{
+	public void add(Bridge bridges){
+		this.add(bridges);
+	}
+}
+
+private class SchedulerHandler implements Handler<Scheduler>{
+	public void add(Scheduler schedulers){
+		this.add(schedulers);
+	}
+}
+
+private class PersistenceHandler implements Handler<Persistence>{
+	public void add(Persistence persistences){
+		this.add(persistences);
+	}
+}
+
+private class QueryablePersistenceHand implements Handler<QueryablePersistence>{
+	public void add(QueryablePersistence queryPersist){
+		this.add(queryPersist);
+	}
+}
+
+private class DeviceNature implements Handler<DeviceNature>{
+	public void add(DeviceNature devNat){
+		this.add(devNat);
+	}
+}
+
+
+
+
+
 /**
  *
  * @author FENECON GmbH
@@ -215,40 +254,9 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 	 */
 	public void addInstance(Thing thing){
 		
-		// Add to bridges
-		if (thing instanceof Bridge) {
-			bridges.add((Bridge) thing);
-			return;
-		}
-		
-		// Add to schedulers
-		if (thing instanceof Scheduler) {
-			schedulers.add((Scheduler) thing);
-			return;
-		}
-
-		addInstanceSec(thing);
-	}
-	
-	public void addInstanceSec(Thing thing){
-		
-		// Add to persistences
-		if (thing instanceof Persistence) {
-			persistences.add((Persistence) thing);
-			return;
-		}
-
-		// Add to queryablePersistences
-		if (thing instanceof QueryablePersistence) {
-			queryablePersistences.add((QueryablePersistence) thing);
-			return;
-		}
-
-		// Add to device natures
-		if (thing instanceof DeviceNature) {
-			deviceNatures.add((DeviceNature) thing);
-			return;
-		}
+		 Handler h = handlers.get(o.getClass());
+		 if(h != null) h.print(thing);
+		  else defaultHandler.print(thing);
 				
 	}
 	
