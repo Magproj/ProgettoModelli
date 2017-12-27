@@ -218,26 +218,31 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 		// Add to bridges
 		if (thing instanceof Bridge) {
 			bridges.add((Bridge) thing);
+			return;
 		}
 		
 		// Add to schedulers
 		if (thing instanceof Scheduler) {
 			schedulers.add((Scheduler) thing);
+			return;
 		}
 
 		// Add to persistences
 		if (thing instanceof Persistence) {
 			persistences.add((Persistence) thing);
+			return;
 		}
 
 		// Add to queryablePersistences
 		if (thing instanceof QueryablePersistence) {
 			queryablePersistences.add((QueryablePersistence) thing);
+			return;
 		}
 
 		// Add to device natures
 		if (thing instanceof DeviceNature) {
 			deviceNatures.add((DeviceNature) thing);
+			return;
 		}
 		
 		
