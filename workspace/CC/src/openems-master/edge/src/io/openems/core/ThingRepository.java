@@ -227,6 +227,11 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 			return;
 		}
 
+		addInstanceSec(thing);
+	}
+	
+	public void addInstanceSec(Thing thing){
+		
 		// Add to persistences
 		if (thing instanceof Persistence) {
 			persistences.add((Persistence) thing);
@@ -244,8 +249,7 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 			deviceNatures.add((DeviceNature) thing);
 			return;
 		}
-		
-		
+				
 	}
 	
 	
