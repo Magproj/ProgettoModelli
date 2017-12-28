@@ -19,6 +19,8 @@
  *******************************************************************************/
 package io.openems.core;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -33,6 +35,29 @@ import io.openems.api.device.nature.charger.ChargerNature;
 import io.openems.api.device.nature.meter.AsymmetricMeterNature;
 import io.openems.api.device.nature.meter.SymmetricMeterNature;
 import io.openems.common.types.ChannelAddress;
+
+interface Handler<T extends Object> {
+	  Object instOf(T... value);
+	}
+
+
+private class PersHandler implements Handler<ChannelUpdateListener> {
+	
+	public Object instOf(ChannelUpdateListener value, Optional<T> newValue){
+		
+		return ((ChannelUpdateListener) persistence).channelUpdated(value, newValue);
+	}
+} 
+
+private class MeterNatureHandler implements Handler<SymmetricMeterNature> {
+	
+	public Object instOf(SymmetricMeterNature value){
+		
+		return ((SymmetricMeterNature) value.parent()).updateMinMaxSymmetricActivePower();
+	}
+} 
+
+
 /**
  *
  * @author FENECON GmbH
@@ -60,14 +85,24 @@ public class Databus implements ChannelUpdateListener, ChannelChangeListener {
 
 	@Override
 	public void channelUpdated(Channel channel, Optional<?> newValue) {
+		
+		Map<Class, Handler> handlers = new HashMap<Class, Handler>();
+		handlers.put(ChannelUpdateListener.class, new ChannelUpdateListener());
+		handlers.put(SymmetricMeterNature.class, new SymmetricMeterNature());
+		
+		
+		
+		
 		log.debug("Channel [" + channel.address() + "] updated: " + newValue);
 		// Call Persistence-Workers
 		if (channel instanceof ReadChannel<?> && !(channel instanceof ConfigChannel<?>)) {
+			
 			thingRepository.getPersistences().forEach(persistence -> {
-				if (persistence instanceof ChannelUpdateListener) {
-					((ChannelUpdateListener) persistence).channelUpdated(channel, newValue);
-				}
-			});
+				Handler h = handlers.get(persistence.getClass());
+				  if(h != null) h.instOf(persistence, newValue);
+				});
+			
+			
 		}
 
 		// Update min/max values of meter
@@ -75,13 +110,18 @@ public class Databus implements ChannelUpdateListener, ChannelChangeListener {
 		if (channel.parent() instanceof AsymmetricMeterNature && value) {
 					((AsymmetricMeterNature) channel.parent()).updateMinMaxAsymmetricActivePower();
 			} else if (channel.id().equals("ActivePower")) {
-				if(channel.parent() instanceof SymmetricMeterNature){
-					((SymmetricMeterNature) channel.parent()).updateMinMaxSymmetricActivePower();
-				} else{
-						((ChargerNature) channel.parent()).updateMaxChargerActualPower();
-				}
+				
+				Handler h = handlers.get(channel.parent().getClass());
+				  if(h != null) 
+					  h.instOf(channel.parent());
+				  else 
+					  ((ChargerNature) channel.parent()).updateMaxChargerActualPower();
+				
+			
+			
 			}
 	}
+	
 
 	@Override
 	public void channelChanged(Channel channel, Optional<?> newValue, Optional<?> oldValue) {
