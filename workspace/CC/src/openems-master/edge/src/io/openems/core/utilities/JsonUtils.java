@@ -1,4 +1,5 @@
 /*******************************************************************************
+ /*******************************************************************************
  * OpenEMS - Open Source Energy Management System
  * Copyright (c) 2016, 2017 FENECON GmbH and contributors
  *
@@ -25,8 +26,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,6 +42,61 @@ import com.google.gson.JsonPrimitive;
 
 import io.openems.api.exception.NotImplementedException;
 import io.openems.api.exception.ReflectionException;
+
+interface Handler<T extends Object> {
+	  Object returnPrim(T o);
+	}
+
+
+private class NumbHandler implements Handler<Number>{
+	
+	public JsonElement returnPrim(Number value){
+		return new JsonPrimitive((Number) value);
+	}
+}
+
+private class StringHandler implements Handler<String>{
+	
+	public JsonElement returnPrim(String value){
+		return new JsonPrimitive((String) value);
+	}
+}
+
+
+private class BooleanHandler implements Handler<Boolean>{
+	
+	public JsonElement returnPrim(Boolean value){
+		return new JsonPrimitive((Boolean) value);
+	}
+}
+
+private class Inet4AddressHandler implements Handler<Inet4Address>{
+	
+	public JsonElement returnPrim(Inet4Address value){
+		return new JsonPrimitive((Inet4Address) value);
+	}
+}
+
+private class JsonElementHandler implements Handler<JsonElement>{
+	
+	public JsonElement returnPrim(JsonElement value){
+		return (JsonElement) value;
+	}
+}
+
+private class LongHandler implements Handler<Long[]>{
+	
+	public JsonElement returnPrim(Long[] value){
+		
+		JsonArray js = new JsonArray();
+		for (Long l : (Long[]) value){
+			js.add(new JsonPrimitive((Long) l));
+		}
+		return js;
+	}
+}
+
+
 /**
  *
  * @author FENECON GmbH
@@ -170,6 +228,15 @@ public class JsonUtils {
 				value = ((Optional<?>) value).get();
 			}
 		}
+		
+		Map<Class, Handler> handlers = new HashMap<Class, Handler>();
+		handlers.put(Number.class, new Number());
+		handlers.put(String.class, new String());
+		handlers.put(Boolean.class, new Boolean());
+		handlers.put(Inet4Address.class, new Inet4Address());
+		handlers.put(JsonElement.class, new JsonElement());
+		handlers.put(Long[].class, new Long());
+		
 		//funzione
 		if(returnCorrect(value)){
 			return returnElement(value);
@@ -186,14 +253,9 @@ public class JsonUtils {
 	 */
 	public boolean returnCorrect(Object value){
 		
-		if (value instanceof Number || value instanceof String || value instanceof Boolean || value instanceof Inet4Address || value instanceof JsonElement || value instanceof Long[]) {
-			/*
-			 * Number
-			 */
-			return true;
-		}   
-		
-		return false;
+		Handler h = handlers.get(value.getClass());
+		if(h != null) return true;
+		else return false;
 	}
 	
 	/*
@@ -201,41 +263,9 @@ public class JsonUtils {
 	 */
 	public JsonElement returnElement(Object value){
 		
-		if (value instanceof Number) {
-			/*
-			 * Number
-			 */
-			return new JsonPrimitive((Number) value);
-		} else if (value instanceof String) {
-			/*
-			 * String
-			 */
-			return new JsonPrimitive((String) value);
-		} else if (value instanceof Boolean) {
-			/*
-			 * Boolean
-			 */
-			return new JsonPrimitive((Boolean) value);
-		} else if (value instanceof Inet4Address) {
-			/*
-			 * Inet4Address
-			 */
-			return new JsonPrimitive(((Inet4Address) value).getHostAddress());
-		} else if (value instanceof JsonElement) {
-			/*
-			 * JsonElement
-			 */
-			return (JsonElement) value;
-		} else if (value instanceof Long[]){
-			/*
-			 * Long-Array
-			 */
-			JsonArray js = new JsonArray();
-			for (Long l : (Long[]) value){
-				js.add(new JsonPrimitive((Long) l));
-			}
-			return js;
-		}
+		Handler h = handlers.get(value.getClass());
+		if(h != null) return h.returnPrim(value);
+		else return null;
 		
 	}
 
@@ -278,7 +308,7 @@ public class JsonUtils {
 		return false;
 		
 	}
-
+	
 	/*
 	 * Check what is the value to return
 	 */
@@ -307,7 +337,7 @@ public class JsonUtils {
 			return j.getAsDouble();
 		} else {
 			
-			return checkRest(type, j);
+			checkRest(type, j);
 		}
 		
 	}
@@ -360,7 +390,7 @@ public class JsonUtils {
 
 		}
 	}
-	
+
 	public static boolean hasElement(JsonElement j, String... paths) {
 		return getMatchingElements(j, paths).size() > 0;
 	}
