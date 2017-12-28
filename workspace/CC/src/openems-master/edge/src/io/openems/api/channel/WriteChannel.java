@@ -32,6 +32,7 @@ import io.openems.api.thing.Thing;
 import io.openems.common.exceptions.AccessDeniedException;
 import io.openems.common.session.Role;
 import io.openems.core.utilities.JsonUtils;
+
 /**
  *
  * @author FENECON GmbH
@@ -299,19 +300,28 @@ public class WriteChannel<T> extends ReadChannel<T> {
 		Optional<T> write = this.writeValue;
 		if (!(value instanceof Comparable)) {
 			return;
-		} else if (write.isPresent() && write.get() instanceof Comparable
+		} else if (write.isPresent() && instOf(write)
 				&& ((Comparable<T>) write.get()).compareTo(value) != 0) {
 			throw new WriteChannelException("Value [" + value + "] for [" + address()
 			+ "] is out of boundaries. Different fixed value [" + write.get() + "] had already been set");
-		} else if (max.isPresent() && max.get() instanceof Comparable
+		} else if (max.isPresent() && instOf(max)
 				&& ((Comparable<T>) max.get()).compareTo(value) < 0) {
 			throw new WriteChannelException("Value [" + value + "] for [" + address()
 			+ "] is out of boundaries. Max value [" + max.get() + "] had already been set");
-		} else if (min.isPresent() && min.get() instanceof Comparable
+		} else if (min.isPresent() && instOf(min)
 				&& ((Comparable<T>) min.get()).compareTo(value) > 0) {
 			throw new WriteChannelException("Value [" + value + "] for [" + address()
 			+ "] is out of boundaries. Min value [" + min.get() + "] had already been set");
 		}
+	}
+	
+	public boolean instOf(Optional<T> value){
+		
+		if(value.get() instanceof Comparable) 
+			return true;
+		else 
+			return false;
+		
 	}
 
 	public WriteChannel<T> minWriteChannel(ReadChannel<T> channel) {
