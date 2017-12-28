@@ -198,9 +198,10 @@ public class ConfigUtils {
 	public static JsonElement optValue(Object value, ConfigFormat format, Role role){
 		
 		Map<Class, Handler> handlers = new HashMap<Class, Handler>();
-		handers.put(List<E>.class, new List<E>());
-		handers.put(ThingMap.class, new ThingMap());
-		handers.put(Set<E>.class, new Set<E>());
+		handlers.put(java.util.List<?>.class, new List<T>());
+		handlers.put(ThingMap.class, new ThingMap());
+		handlers.put(Set<T>.class, new Set<T>());
+		
 		
 		
 		if(value instanceof ConfigChannel<?>){
