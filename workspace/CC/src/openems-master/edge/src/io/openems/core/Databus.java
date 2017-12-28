@@ -1,5 +1,4 @@
-/*******************************************************************************
- * OpenEMS - Open Source Energy Management System
+/* OpenEMS - Open Source Energy Management System
  * Copyright (c) 2016, 2017 FENECON GmbH and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -34,17 +33,23 @@ import io.openems.api.device.nature.charger.ChargerNature;
 import io.openems.api.device.nature.meter.AsymmetricMeterNature;
 import io.openems.api.device.nature.meter.SymmetricMeterNature;
 import io.openems.common.types.ChannelAddress;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public class Databus implements ChannelUpdateListener, ChannelChangeListener {
 	private final static Logger log = LoggerFactory.getLogger(Databus.class);
 
 	private static Databus instance;
 
-	public static synchronized Databus getInstance() {
-		if (Databus.instance == null) {
-			Databus.instance = new Databus();
+	public static Databus getInstance() {
+		synchronized (Databus.class) {
+			if (Databus.instance == null) {
+				Databus.instance = new Databus();
+			}
+			return Databus.instance;
 		}
-		return Databus.instance;
 	}
 
 	private final ThingRepository thingRepository;
