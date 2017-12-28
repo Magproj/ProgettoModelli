@@ -59,6 +59,48 @@ import io.openems.api.thing.Thing;
 import io.openems.common.session.Role;
 import io.openems.core.ConfigFormat;
 import io.openems.core.ThingRepository;
+
+interface Handler<T extends Object> {
+	  Object doThings(T o);
+	}
+
+
+private class ThingMapHandler implements Handler<ThingMap> {
+	
+	public Object doThings(ThingMap value){
+		return new JsonPrimitive(((ThingMap) value).id());
+	}
+} 
+
+
+private class ListHandler implements Handler<List<?>>{
+	
+	public Object doThings(List<?> value){
+		
+		JsonArray jArray = new JsonArray();
+		//funzione
+		jArray = addElement(value, jArray);
+		
+		return jArray;
+		
+	}
+}
+
+private class SetHandler implements Handler<Set<?>>{
+	
+	public Object doThings(Set<?> value){
+		
+		JsonArray jArray = new JsonArray();
+		//funzione
+		jArray = addSet(value, jArray);
+		return jArray;
+		
+	}
+}
+
+
+
+
 /**
  *
  * @author FENECON GmbH
@@ -154,41 +196,22 @@ public class ConfigUtils {
 	
 	public static JsonElement optValue(Object value, ConfigFormat format, Role role){
 		
-		if (value instanceof ConfigChannel<?>) {
-			/*
-			 * type ConfigChannel
-			 */
+		Map<Class, Handler> handlers = new HashMap<Class, Handler>();
+		handers.put(List<?>.class, new List<?>());
+		handers.put(ThingMap.class, new ThingMap());
+		handers.pu(Set<?>.class, new Set<?>());
+		
+		
+		if(value instanceof ConfigChannel<?>){
 			ConfigChannel<?> channel = (ConfigChannel<?>) value;
-			
+					
 			//funzione
 			return checkOpt(channel, format, role);
-			
-			
-		} else if (value instanceof ThingMap) {
-			/*
-			 * ThingMap (we need only id)
-			 */
-			return new JsonPrimitive(((ThingMap) value).id());
-		} else if (value instanceof List<?>) {
-			/*
-			 * List
-			 */
-			JsonArray jArray = new JsonArray();
-			//funzione
-			jArray = addElement(value, jArray);
-			
-			return jArray;
-		} else if (value instanceof Set<?>) {
-			/*
-			 * Set
-			 */
-			JsonArray jArray = new JsonArray();
-			//funzione
-			jArray = addSet(value, jArray);
-			return jArray;
 		}
 		
-		return null;
+		Handler h = handlers.get(value.getClass());
+		if(h != null) return h.doThings(value);
+		else return null;
 	}
 	
 	public JsonObject checkChan(ThingRepository thingRepository, Role role, JsonObject j){
