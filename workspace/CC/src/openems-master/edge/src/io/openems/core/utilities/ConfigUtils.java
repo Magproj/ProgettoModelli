@@ -20,6 +20,7 @@
  *******************************************************************************/
 package io.openems.core.utilities;
 
+import java.util.*;
 import java.beans.Beans;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -197,9 +198,9 @@ public class ConfigUtils {
 	public static JsonElement optValue(Object value, ConfigFormat format, Role role){
 		
 		Map<Class, Handler> handlers = new HashMap<Class, Handler>();
-		handers.put(List<?>.class, new List<?>());
+		handers.put(List<E>.class, new List<E>());
 		handers.put(ThingMap.class, new ThingMap());
-		handers.pu(Set<?>.class, new Set<?>());
+		handers.put(Set<E>.class, new Set<E>());
 		
 		
 		if(value instanceof ConfigChannel<?>){

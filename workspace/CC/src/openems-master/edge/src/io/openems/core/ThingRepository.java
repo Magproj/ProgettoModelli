@@ -27,10 +27,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
@@ -253,6 +255,14 @@ public class ThingRepository implements ThingChannelsUpdatedListener {
 	 * Add if thing to the right object
 	 */
 	public void addInstance(Thing thing){
+		
+		
+		Map<Class, Handler> handlers = new HashMap<Class, Handler>();
+		handers.put(Bridge.class, new Bridge());
+		handers.put(Scheduler.class, new Scheduler());
+		handers.put(Persistence.class, new Persistence());
+		handers.put(QueryablePersistence.class, new QueryablePersistence());
+		handers.put(DeviceNature.class, new DeviceNature());
 		
 		 Handler h = handlers.get(o.getClass());
 		 if(h != null) h.print(thing);
