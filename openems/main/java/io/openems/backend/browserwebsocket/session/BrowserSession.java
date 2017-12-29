@@ -1,0 +1,19 @@
+package io.openems.backend.browserwebsocket.session;
+
+import io.openems.common.session.Session;
+/**
+*
+* @author FENECON GmbH
+*
+*/
+public class BrowserSession extends Session<BrowserSessionData> {
+
+	protected BrowserSession(String token, BrowserSessionData data) {
+		super(token, data);
+	}
+
+	@Override
+	public String toString() {
+		return "User [" + getData().getUserName() + "] Session [" + getData().getOdooSessionId().orElse("") + "]";
+	}
+}
