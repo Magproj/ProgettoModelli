@@ -22,11 +22,15 @@ import com.google.gson.JsonObject;
 
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.types.ChannelAddress;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public class InfluxdbUtils {
 
 	public static JsonArray queryHistoricData(InfluxDB influxdb, String database, Optional<Integer> deviceId,
-			ZonedDateTime fromDate, ZonedDateTime toDate, JsonObject channels, int resolution) throws OpenemsException, NullPointerException {
+			ZonedDateTime fromDate, ZonedDateTime toDate, JsonObject channels, int resolution) throws OpenemsException {
 		// Prepare query string
 		StringBuilder query = new StringBuilder("SELECT ");
 		query.append(toChannelAddressList(channels));
@@ -49,10 +53,13 @@ public class InfluxdbUtils {
 		QueryResult queryResult = executeQuery(influxdb, database, query.toString());
 
 		JsonArray j = new JsonArray();
-		for (Result result : queryResult.getResults()) {
+		QueryResult risultato = queryResult.getResults();
+
+		for (Result result : risultato) {
 			List<Series> seriess = result.getSeries();
-			//tolto il controllo seriess != null, può sollevare NullPointerException
+			if (seriess != null) {
 				for (Series series : seriess) {
+					
 					// create thing/channel index
 					ArrayList<ChannelAddress> addressIndex = new ArrayList<>();
 					
@@ -68,22 +75,18 @@ public class InfluxdbUtils {
 						jTimestamp.addProperty("time", timestampString);
 						// add empty channels by copying "channels" parameter
 						JsonObject jChannels = new JsonObject();
-						for (Entry<String, JsonElement> entry : channels.entrySet()) {
-							String thingId = entry.getKey();
-							JsonObject jThing = new JsonObject();
-							JsonArray channelIds = JsonUtils.getAsJsonArray(entry.getValue());
-							
-							//funzione
-							jThing = addElement(channelIds);							
-							
-							jChannels.add(thingId, jThing);
-						}
+						
+						//funzione
+						entryElement(channels, jChannels);
+						
 						jTimestamp.add("channels", jChannels);
 						j.add(jTimestamp);
 					}
 					// then: add all data
-					for (int columnIndex = 1; columnIndex < series.getColumns().size(); columnIndex++) {
-						for (int timeIndex = 0; timeIndex < series.getValues().size(); timeIndex++) {
+					int sizeColumns= series.getColumns().size();
+					int sizeValues=series.getValues().size();
+					for (int columnIndex = 1; columnIndex < sizeColumns; columnIndex++) {
+						for (int timeIndex = 0; timeIndex < sizeValues; timeIndex++) {
 							Double value = (Double) series.getValues().get(timeIndex).get(columnIndex);
 							ChannelAddress address = addressIndex.get(columnIndex - 1);
 							j.get(timeIndex).getAsJsonObject().get("channels").getAsJsonObject()
@@ -92,14 +95,29 @@ public class InfluxdbUtils {
 						}
 					}
 				}
+			}
 		}
 		return j;
 	}
 	
 	
-	/*
-	 * 
-	 */
+	private JsonObject entryElement(JsonObject channels, JsonObject jChannels){
+		
+		for (Entry<String, JsonElement> entry : channels.entrySet()) {
+			String thingId = entry.getKey();
+			JsonObject jThing = new JsonObject();
+			JsonArray channelIds = JsonUtils.getAsJsonArray(entry.getValue());
+			
+			//funzione
+			jThing = addElement(channelIds);
+			
+			jChannels.add(thingId, jThing);
+		}
+		
+		return jChannels;
+		
+	}
+	
 	private JsonObject addElement(JsonArray channelIds){
 		
 		JsonObject jT = new JsonObject();
@@ -112,8 +130,9 @@ public class InfluxdbUtils {
 		return jT;
 	}
 	
+	
 	/*
-	 * Add column when the column isn't equals to time 
+	 * create thing/channel index
 	 */
 	private ArrayList<ChannelAddress> checkTime(Series series){
 		
@@ -128,6 +147,7 @@ public class InfluxdbUtils {
 		return addressIndex;
 		
 	}
+	
 
 //	private static JsonObject querykWh(InfluxDB influxdb, String database, Optional<Integer> fems,
 //			ZonedDateTime fromDate, ZonedDateTime toDate, JsonObject channels, int resolution, JsonObject kWh)
