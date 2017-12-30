@@ -84,40 +84,57 @@ public class AvoidTotalDischargeController extends Controller {
 					}
 					break;
 				case MINSOC:
-					if (ess.soc.value() < ess.chargeSoc.value()) {
-						ess.currentState = State.CHARGESOC;
-					} else if (ess.soc.value() >= ess.minSoc.value() + 5) {
-						ess.currentState = State.NORMAL;
-					} else {
-						try {
-							long maxPower = 0;
-							//funzione
-							ess = setEss(ess, maxPower);
-							
-						} catch (WriteChannelException e) {
-							log.error(ess.id() + "Failed to set Max allowed power.", e);
-						}
-					}
+					
+					//funzione
+					ess = caseMinSoc(ess);
 					break;
 				case NORMAL:
-					if (ess.soc.value() <= ess.minSoc.value()) {
-						ess.currentState = State.MINSOC;
-					} else if (ess.soc.value() >= 99 && ess.allowedCharge.value() == 0
-							&& ess.systemState.labelOptional().equals(Optional.of(EssNature.START))) {
-						ess.currentState = State.FULL;
-					}
+					
+					//funzione
+					ess = caseNormal(ess);
 					break;
+					
 				case FULL:
 					
 					//funzione
 					ess = caseFull(ess);
-					
 					break;
 				}
 			}
 		} catch (InvalidValueException e) {
 			log.error(e.getMessage());
 		}
+	}
+	
+	private Ess caseMinSoc(Ess ess){
+		
+		if (ess.soc.value() < ess.chargeSoc.value()) {
+			ess.currentState = State.CHARGESOC;
+		} else if (ess.soc.value() >= ess.minSoc.value() + 5) {
+			ess.currentState = State.NORMAL;
+		} else {
+			try {
+				long maxPower = 0;
+				//funzione
+				ess = setEss(ess, maxPower);
+				
+			} catch (WriteChannelException e) {
+				log.error(ess.id() + "Failed to set Max allowed power.", e);
+			}
+		}
+		
+	}
+	
+	private Ess caseNormale(Ess ess){
+		
+		if (ess.soc.value() <= ess.minSoc.value()) {
+			ess.currentState = State.MINSOC;
+		} else if (ess.soc.value() >= 99 && ess.allowedCharge.value() == 0
+				&& ess.systemState.labelOptional().equals(Optional.of(EssNature.START))) {
+			ess.currentState = State.FULL;
+		}
+		
+		return ess;
 	}
 	
 	
