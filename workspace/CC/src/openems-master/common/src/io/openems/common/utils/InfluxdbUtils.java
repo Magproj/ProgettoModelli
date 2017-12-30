@@ -77,7 +77,7 @@ public class InfluxdbUtils {
 						JsonObject jChannels = new JsonObject();
 						
 						//funzione
-						entryElement(channels, jChannels);
+						jChannels = entryElement(channels, jChannels);
 						
 						jTimestamp.add("channels", jChannels);
 						j.add(jTimestamp);
