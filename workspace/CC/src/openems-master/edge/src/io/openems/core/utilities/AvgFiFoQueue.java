@@ -50,7 +50,8 @@ public class AvgFiFoQueue {
 		if (sum == 0) {
 			return 0;
 		} else {
-			return (long) (sum / divisor);
+			long result = sum / divisor;
+			return result;
 		}
 	}
 
