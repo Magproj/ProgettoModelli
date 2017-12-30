@@ -69,45 +69,18 @@ public class AvoidTotalDischargeController extends Controller {
 					if (ess.soc.value() > ess.minSoc.value()) {
 						ess.currentState = State.MINSOC;
 					} else {
-						try {
-							Optional<Long> currentMinValueL1 = ess.setActivePowerL1.writeMin();
-							if (currentMinValueL1.isPresent() && currentMinValueL1.get() < 0) {
-								// Force Charge with minimum of MaxChargePower/5
-								log.info("Force charge. Set ActivePowerL1=Max[" + currentMinValueL1.get() / 5 + "]");
-								ess.setActivePowerL1.pushWriteMax(currentMinValueL1.get() / 5);
-							} else {
-								log.info("Avoid discharge. Set ActivePowerL1=Max[-1000 W]");
-								ess.setActivePowerL1.pushWriteMax(-1000L);
-							}
-						} catch (WriteChannelException e) {
-							log.error("Unable to set ActivePowerL1: " + e.getMessage());
-						}
-						try {
-							Optional<Long> currentMinValueL2 = ess.setActivePowerL2.writeMin();
-							if (currentMinValueL2.isPresent() && currentMinValueL2.get() < 0) {
-								// Force Charge with minimum of MaxChargePower/5
-								log.info("Force charge. Set ActivePowerL2=Max[" + currentMinValueL2.get() / 5 + "]");
-								ess.setActivePowerL2.pushWriteMax(currentMinValueL2.get() / 5);
-							} else {
-								log.info("Avoid discharge. Set ActivePowerL2=Max[-1000 W]");
-								ess.setActivePowerL2.pushWriteMax(-1000L);
-							}
-						} catch (WriteChannelException e) {
-							log.error("Unable to set ActivePowerL2: " + e.getMessage());
-						}
-						try {
-							Optional<Long> currentMinValueL3 = ess.setActivePowerL3.writeMin();
-							if (currentMinValueL3.isPresent() && currentMinValueL3.get() < 0) {
-								// Force Charge with minimum of MaxChargePower/5
-								log.info("Force charge. Set ActivePowerL3=Max[" + currentMinValueL3.get() / 5 + "]");
-								ess.setActivePowerL3.pushWriteMax(currentMinValueL3.get() / 5);
-							} else {
-								log.info("Avoid discharge. Set ActivePowerL3=Max[-1000 W]");
-								ess.setActivePowerL3.pushWriteMax(-1000L);
-							}
-						} catch (WriteChannelException e) {
-							log.error("Unable to set ActivePowerL3: " + e.getMessage());
-						}
+						int id = 1;
+						//funzione
+						ess = checkOpt(ess, ess.setActivePowerL1.writeMin(), id);
+						
+						id = 2;
+						//funzione
+						ess = checkOpt(ess, ess.setActivePowerL2.writeMin(), id);
+						
+						id = 3;
+						//funzione
+						ess = checkOpt(ess, ess.setActivePowerL3.writeMin(), id);
+						
 					}
 					break;
 				case MINSOC:
@@ -118,18 +91,9 @@ public class AvoidTotalDischargeController extends Controller {
 					} else {
 						try {
 							long maxPower = 0;
-							if (!ess.setActivePowerL1.writeMax().isPresent()
-									|| maxPower < ess.setActivePowerL1.writeMax().get()) {
-								ess.setActivePowerL1.pushWriteMax(maxPower);
-							}
-							if (!ess.setActivePowerL2.writeMax().isPresent()
-									|| maxPower < ess.setActivePowerL2.writeMax().get()) {
-								ess.setActivePowerL2.pushWriteMax(maxPower);
-							}
-							if (!ess.setActivePowerL3.writeMax().isPresent()
-									|| maxPower < ess.setActivePowerL3.writeMax().get()) {
-								ess.setActivePowerL3.pushWriteMax(maxPower);
-							}
+							//funzione
+							ess = setEss(ess, maxPower);
+							
 						} catch (WriteChannelException e) {
 							log.error(ess.id() + "Failed to set Max allowed power.", e);
 						}
@@ -144,24 +108,10 @@ public class AvoidTotalDischargeController extends Controller {
 					}
 					break;
 				case FULL:
-					try {
-						ess.setActivePowerL1.pushWriteMin(0L);
-					} catch (WriteChannelException e) {
-						log.error("Unable to set ActivePowerL1: " + e.getMessage());
-					}
-					try {
-						ess.setActivePowerL2.pushWriteMin(0L);
-					} catch (WriteChannelException e) {
-						log.error("Unable to set ActivePowerL2: " + e.getMessage());
-					}
-					try {
-						ess.setActivePowerL3.pushWriteMin(0L);
-					} catch (WriteChannelException e) {
-						log.error("Unable to set ActivePowerL3: " + e.getMessage());
-					}
-					if (ess.soc.value() < maxSoc.value()) {
-						ess.currentState = State.NORMAL;
-					}
+					
+					//funzione
+					ess = caseFull(ess);
+					
 					break;
 				}
 			}
@@ -169,5 +119,79 @@ public class AvoidTotalDischargeController extends Controller {
 			log.error(e.getMessage());
 		}
 	}
-
+	
+	
+	private Ess checkOpt(Ess ess, Optional<Long> currentMinValueL, int id){
+		
+		try {
+			if (currentMinValueL.isPresent() && currentMinValueL.get() < 0) {
+				// Force Charge with minimum of MaxChargePower/5
+				log.info("Force charge. Set ActivePowerL" + id + "=Max[" + currentMinValueL.get() / 5 + "]");
+				if(id==1)
+					ess.setActivePowerL1.pushWriteMax(currentMinValueL.get() / 5);
+				else if(id==2)
+					ess.setActivePowerL2.pushWriteMax(currentMinValueL.get() / 5);
+				else
+					ess.setActivePowerL3.pushWriteMax(currentMinValueL.get() / 5);
+			} else {
+				log.info("Avoid discharge. Set ActivePowerL" + id + "=Max[-1000 W]");
+				if(id==1)
+					ess.setActivePowerL1.pushWriteMax(-1000L);
+				else if(id==2)
+					ess.setActivePowerL2.pushWriteMax(-1000L);
+				else
+					ess.setActivePowerL3.pushWriteMax(-1000L);
+			}
+		} catch (WriteChannelException e) {
+			log.error("Unable to set ActivePowerL" + id + ": " + e.getMessage());
+		}
+		
+		return ess;
+		
+	}
+	
+	private Ess caseFull(Ess ess){
+		
+		try {
+			ess.setActivePowerL1.pushWriteMin(0L);
+		} catch (WriteChannelException e) {
+			log.error("Unable to set ActivePowerL1: " + e.getMessage());
+		}
+		try {
+			ess.setActivePowerL2.pushWriteMin(0L);
+		} catch (WriteChannelException e) {
+			log.error("Unable to set ActivePowerL2: " + e.getMessage());
+		}
+		try {
+			ess.setActivePowerL3.pushWriteMin(0L);
+		} catch (WriteChannelException e) {
+			log.error("Unable to set ActivePowerL3: " + e.getMessage());
+		}
+		if (ess.soc.value() < maxSoc.value()) {
+			ess.currentState = State.NORMAL;
+		}
+		
+		return ess;
+	}
+	
+	
+	private Ess setEss(Ess ess, int maxPower){
+		
+		if (!ess.setActivePowerL1.writeMax().isPresent()
+				|| maxPower < ess.setActivePowerL1.writeMax().get()) {
+			ess.setActivePowerL1.pushWriteMax(maxPower);
+		}
+		if (!ess.setActivePowerL2.writeMax().isPresent()
+				|| maxPower < ess.setActivePowerL2.writeMax().get()) {
+			ess.setActivePowerL2.pushWriteMax(maxPower);
+		}
+		if (!ess.setActivePowerL3.writeMax().isPresent()
+				|| maxPower < ess.setActivePowerL3.writeMax().get()) {
+			ess.setActivePowerL3.pushWriteMax(maxPower);
+		}
+		
+		return ess;
+	}
 }
+
+
