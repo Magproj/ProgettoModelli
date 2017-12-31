@@ -379,8 +379,8 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 				multiplier = Math.pow(10, this.multiplier.get());
 			}
 			if (valuee % multiplier != 0) {
-				long mult = (long) multiplier;
-				long roundedValue = (valuee / mult) * mult;
+				long mult = (long) (valuee / multiplier);
+				long roundedValue = mult * (long)multiplier;
 				log.warn("Value [" + valuee + "] is too precise for device. Will round to [" + roundedValue + "]");
 			}
 			return valuee;
