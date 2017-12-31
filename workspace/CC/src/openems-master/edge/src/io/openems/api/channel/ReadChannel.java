@@ -44,7 +44,11 @@ import io.openems.common.types.ChannelAddress;
 import io.openems.core.Databus;
 import io.openems.core.utilities.InjectionUtils;
 import io.openems.core.utilities.JsonUtils;
-
+/**
+ *
+ * @author FENECON GmbH
+ *
+ */
 public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	protected final Logger log;
 
@@ -81,8 +85,8 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 		return this;
 	}
 
-	public ReadChannel<T> unit(String unit) {
-		this.unit = unit;
+	public ReadChannel<T> unit(String unitt) {
+		this.unitt = unitt;
 		return this;
 	}
 
@@ -96,8 +100,8 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	 * @param delta
 	 * @return
 	 */
-	public ReadChannel<T> multiplier(Long multiplier) {
-		this.multiplier = Optional.ofNullable(multiplier);
+	public ReadChannel<T> multiplier(Long multiplierr) {
+		this.multiplierr = Optional.ofNullable(multiplierr);
 		return this;
 	}
 
@@ -138,8 +142,8 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 		return this;
 	}
 
-	public ReadChannel<T> label(T value, String label) {
-		this.labels.put(value, label);
+	public ReadChannel<T> label(T valuee, String labell) {
+		this.labels.put(valuee, labell);
 		return this;
 	}
 
@@ -192,8 +196,8 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	 * @param delta
 	 * @return
 	 */
-	public ReadChannel<T> delta(Long delta) {
-		this.delta = Optional.ofNullable(delta);
+	public ReadChannel<T> delta(Long deltaa) {
+		this.deltaa = Optional.ofNullable(deltaa);
 		return this;
 	}
 
@@ -204,8 +208,8 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	 * @param ignore
 	 * @return
 	 */
-	public ReadChannel<T> ignore(T ignore) {
-		this.ignore = Optional.ofNullable(ignore);
+	public ReadChannel<T> ignore(T ignoree) {
+		this.ignoree = Optional.ofNullable(ignoree);
 		return this;
 	}
 
@@ -263,8 +267,8 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	 *
 	 * @param value
 	 */
-	protected void updateValue(T value) {
-		updateValue(value, true);
+	protected void updateValue(T valuee) {
+		updateValue(valuee, true);
 	}
 
 	/**
@@ -278,7 +282,7 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 		Optional<T> oldValue = this.value;
 		//boolean value1 = this.ignore.isPresent() && this.ignore.get().equals(newValue);
 		//boolean value2 = multiplier.isPresent() || delta.isPresent() || negate;
-		
+
 		//tolto newValue==null e messo NullPointerException
 		//se esegue get, allora sarà vero isPresent, altrimenti verrà lanciato un'eccezione
 		if (this.ignore.get().equals(newValue)) {
@@ -288,20 +292,20 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 			// special treatment for Numbers with given multiplier or delta
 			Number number = (Number) newValue;
 			double multiplier = 1;
-			
+
 			if (this.multiplier.isPresent()) {
 				multiplier = Math.pow(10, this.multiplier.get());
 			}
-			
+
 			if (this.negate) {
 				multiplier *= -1;
 			}
 			long delta = 0;
-			
+
 			if (this.delta.isPresent()) {
 				delta = this.delta.get();
 			}
-			
+
 			number = (long) (number.longValue() * multiplier - delta);
 			@SuppressWarnings("unchecked") Optional<T> value = (Optional<T>) Optional.of(number);
 			this.value = value;
@@ -368,16 +372,20 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	 * @param value
 	 * @return rounded value
 	 */
-	protected synchronized long roundToHardwarePrecision(long value) {
-		double multiplier = 1;
-		if (this.multiplier.isPresent()) {
-			multiplier = Math.pow(10, this.multiplier.get());
+	protected long roundToHardwarePrecision(long valuee) {
+		synchronized (this) {
+			double multiplier = 1;
+			if (this.multiplier.isPresent()) {
+				multiplier = Math.pow(10, this.multiplier.get());
+			}
+			if (valuee % multiplier != 0) {
+				long mult = (long) multiplier;
+				long roundedValue = (valuee / mult) * mult;
+				log.warn("Value [" + valuee + "] is too precise for device. Will round to [" + roundedValue + "]");
+			}
+			return valuee;
+
 		}
-		if (value % multiplier != 0) {
-			long roundedValue = (long) ((value / multiplier) * multiplier);
-			log.warn("Value [" + value + "] is too precise for device. Will round to [" + roundedValue + "]");
-		}
-		return value;
 	}
 
 	/**

@@ -374,7 +374,8 @@ public JsonElement rightValue(Object value){
 	public JsonArray longValue(Object value, JsonArray js){
 		
 		for (Long l : (Long[]) value){
-			js.add(new JsonPrimitive((Long) l));
+			Long lfix = l;
+			js.add(new JsonPrimitive(lfix));
 		}
 		
 		return js;
