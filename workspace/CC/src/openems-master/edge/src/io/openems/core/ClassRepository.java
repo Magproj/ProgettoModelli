@@ -113,7 +113,8 @@ public class ClassRepository {
 		if (this.bridges.isEmpty()) {
 			for (Class<? extends Thing> clazz : ConfigUtils.getAvailableClasses("io.openems.impl.protocol",
 					Bridge.class, "")) {
-				this.bridges.add((Class<? extends Bridge>) clazz);
+				Class<? extends Bridge> fixB = clazz;
+				this.bridges.add(fixB);
 			}
 		}
 		// create result
@@ -130,7 +131,8 @@ public class ClassRepository {
 		if (devices.isEmpty()) {
 			for (Class<? extends Thing> clazz : ConfigUtils.getAvailableClasses("io.openems.impl.device", Device.class,
 					"")) {
-				this.devices.add((Class<? extends Device>) clazz);
+				Class<? extends Device> fixD = clazz;
+				this.devices.add(fixD);
 			}
 		}
 		// create result
@@ -148,7 +150,8 @@ public class ClassRepository {
 		if (deviceNatures.isEmpty()) {
 			for (Class<? extends Thing> clazz : ConfigUtils.getAvailableClasses("io.openems.impl.device",
 					DeviceNature.class, "")) {
-				this.deviceNatures.add((Class<? extends DeviceNature>) clazz);
+				Class<? extends DeviceNature> fixDN = clazz;
+				this.deviceNatures.add(fixDN);
 			}
 		}
 		// create result
@@ -165,7 +168,8 @@ public class ClassRepository {
 		if (this.schedulers.isEmpty()) {
 			for (Class<? extends Thing> clazz : ConfigUtils.getAvailableClasses("io.openems.impl.scheduler",
 					Scheduler.class, "Scheduler")) {
-				this.schedulers.add((Class<? extends Scheduler>) clazz);
+				Class<? extends Scheduler> fixS = clazz;
+				this.schedulers.add(fixS);
 			}
 		}
 		// create result
@@ -182,10 +186,12 @@ public class ClassRepository {
 		if (this.persistences.isEmpty()) {
 			for (Class<? extends Thing> clazz : ConfigUtils.getAvailableClasses("io.openems.impl.persistence",
 					Persistence.class, "Persistence")) {
-				this.persistences.add((Class<? extends Persistence>) clazz);
+				Class<? extends Persistence> fixP = clazz;
+				this.persistences.add(fixP);
 			}
 		}
 		// create result
+		
 		Collection<ThingDoc> persistenceDocs = new ArrayList<>();
 		for (Class<? extends Persistence> clazz : this.persistences) {
 			persistenceDocs.add(this.getThingDoc(clazz));
