@@ -16,7 +16,12 @@ import io.openems.api.doc.ThingInfo;
 import io.openems.api.exception.InvalidValueException;
 import io.openems.common.session.Role;
 
-@ThingInfo(title = "Avoid total charge of battery. (Asymmetric)", description = "Provides control over the battery's maximum state of charge at a specific time of day. For symmetric Ess.")
+//@ThingInfo(title = "Avoid total charge of battery. (Asymmetric)", description = "Provides control over the battery's maximum state of charge at a specific time of day. For symmetric Ess.")
+/**
+*
+* @author FENECON GmbH
+*
+*/
 public class AvoidTotalChargeController extends Controller {
 
 	/*
@@ -85,16 +90,16 @@ public class AvoidTotalChargeController extends Controller {
 			int graphMode = 0;
 			Optional<Boolean> g1aOptional = graph1active.valueOptional();
 			Optional<Boolean> g2aOptional = graph2active.valueOptional();
-			
+
 			//funzione
 			graphMode = setGraphMode(g1aOptional, g2aOptional);
-			
+
 
 			Map<Integer, Double> m = new HashMap<Integer, Double>(0);
 			//funzione
 			m = mapPut(m, graphMode);
-			
-			
+
+
 			io.openems.impl.controller.symmetric.avoidtotalcharge.ManualGraph mg = new io.openems.impl.controller.symmetric.avoidtotalcharge.ManualGraph(m);
 			Long maxWantedSoc = (long) (100 * mg.getCurrentVal());
 
@@ -105,7 +110,8 @@ public class AvoidTotalChargeController extends Controller {
 			Long relativeFeededPower = 0L;
 
 			relativeFeededPower = -100 * gridMeter.value().totalActivePower() / maxAbsoluteProducablePower;
-
+			try {
+				
 			for (Ess ess : esss.value()) {
 
 
@@ -118,29 +124,28 @@ public class AvoidTotalChargeController extends Controller {
 				if (ess.soc.value() >= maxWantedSoc) {
 					if(relativeFeededPower >= criticalPercentage.value()) {
 						long spareProducedPower = (long) (((relativeFeededPower - criticalPercentage.value()) / 100.0) * (-1 * maxAbsoluteProducablePower));
-						
+
 						//funzione
 						ess = minProdPower(spareProducedPower, avgAllowedCharge, ess);
-						
+
 					} else {
-						try {
 							ess.setActivePowerL1.pushWriteMin(getAsymmetricActivePower(0L,gridMeter.value().activePowerL1.value(),gridMeter.value().totalActivePower()));
 							ess.setActivePowerL2.pushWriteMin(getAsymmetricActivePower(0L,gridMeter.value().activePowerL2.value(),gridMeter.value().totalActivePower()));
 							ess.setActivePowerL3.pushWriteMin(getAsymmetricActivePower(0L,gridMeter.value().activePowerL3.value(),gridMeter.value().totalActivePower()));
-						} catch (Exception e) {
-							log.error(e.getMessage(),e);
-						}
 					}
 				}
 			}
-
+			} catch (Exception e) {
+				log.error(e.getMessage(),e);
+			}
+		
 		} catch (InvalidValueException | IndexOutOfBoundsException e){
 			log.error(e.getMessage(),e);
 		}
 	}
-	
+
 	private Ess minProdPower(long spareProducedPower, Long avgAllowedCharge, Ess ess){
-		
+
 		if (spareProducedPower < 0L){
 			try {
 				Long totalActivePower = (long) (((double) ess.allowedCharge.value() / (double) avgAllowedCharge) * ((double) spareProducedPower / (double) esss.value().size()));
@@ -160,27 +165,27 @@ public class AvoidTotalChargeController extends Controller {
 				log.error(e.getMessage(),e);
 			}
 		}
-		
-		
+
+
 		return ess;
 	}
-	
+
 	private int setGraphMode(Optional<Boolean> g1aOptional,Optional<Boolean> g2aOptional){
-		
+
 		int graphMode = 0;
 		if (g1aOptional.isPresent() && g1aOptional.get()){
 			graphMode = 1;
 		} else if (g2aOptional.isPresent() && g2aOptional.get()){
 			graphMode = 2;
 		}
-		
+
 		return graphMode;
-		
+
 	}
-	
-	
+
+
 	private Map<Integer, Double> mapPut(Map<Integer, Double> m, int graphMode){
-		
+
 		for (int i = 0; i < 24; i++) {
 			if (graphMode == 1){
 				m.put(i, (double) graph1.value()[i] / 100.0);
@@ -190,9 +195,9 @@ public class AvoidTotalChargeController extends Controller {
 				m.put(i, 1.0);
 			}
 		}
-		
+
 		return m;
-		
+
 	}
 
 	private long getAsymmetricActivePower(long symmetricTotalActivePower, long gridMeterActivePower, long gridMeterTotalActivePower){
