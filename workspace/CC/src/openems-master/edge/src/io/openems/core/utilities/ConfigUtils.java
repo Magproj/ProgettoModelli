@@ -415,8 +415,10 @@ public class ConfigUtils {
 		/*
 		 * Get expected Object Type (List, Set, simple Object)
 		 */
+		ClassLoader fixRaw = (ClassLoader) ((ParameterizedType) ((ParameterizedType) field).getRawType()).getActualTypeArguments()[0];
 		ClassLoader expectedObjectType = (ClassLoader) ((field).getRawType()).getActualTypeArguments()[0];
-		if (((Object) expectedObjectType).nonstaticMethod()) {
+		Object fixType =  expectedObjectType;
+		if ( (fixType).nonstaticMethod()) {
 			ClassLoader fixObj = (ClassLoader) ((ParameterizedType) expectedObjectType).getRawType();
 			expectedObjectType =  fixObj;
 		}
