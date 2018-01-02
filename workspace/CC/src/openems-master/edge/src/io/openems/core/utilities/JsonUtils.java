@@ -68,7 +68,7 @@ private class BooleanHandler implements Handler<Boolean>{
 	
 	public JsonElement returnPrim(Boolean value){
 		Boolean fix = value;
-		return new JsonPrimitive((Boolean) value);
+		return new JsonPrimitive( value);
 	}
 }
 
@@ -76,7 +76,7 @@ private class Inet4AddressHandler implements Handler<Inet4Address>{
 	
 	public JsonElement returnPrim(Inet4Address value){
 		Inet4Address fix = value;
-		return new JsonPrimitive((Inet4Address) value);
+		return new JsonPrimitive( value);
 	}
 }
 
