@@ -69,7 +69,8 @@ interface Handler<T extends Object> {
 private class ThingMapHandler implements Handler<ThingMap> {
 	
 	public JsonPrimitive doThings(ThingMap value){
-		return new JsonPrimitive(((ThingMap) value).id());
+		ThingMap fix = value;
+		return new JsonPrimitive(fix.id());
 	}
 } 
 
@@ -335,7 +336,7 @@ public class ConfigUtils {
 			/*
 			 * Asking for a Thing
 			 */
-			@SuppressWarnings("unchecked") Class<Thing> thingType = (Class<Thing>) type;
+			@SuppressWarnings("unchecked") Class<Thing> thingType = type;
 			return getThingFromConfig(thingType, j, args);
 
 		} else if (ThingMap.class.isAssignableFrom(type)) {
@@ -416,7 +417,7 @@ public class ConfigUtils {
 		 * Get expected Object Type (List, Set, simple Object)
 		 */
 		ClassLoader fixRaw = (ClassLoader) ((ParameterizedType) ((ParameterizedType) field).getRawType()).getActualTypeArguments()[0];
-		ClassLoader expectedObjectType = (ClassLoader) ((field).getRawType()).getActualTypeArguments()[0];
+		ClassLoader expectedObjectType = fixRaw;
 		Object fixType =  expectedObjectType;
 		if ( (fixType).nonstaticMethod()) {
 			ClassLoader fixObj = (ClassLoader) ((ParameterizedType) expectedObjectType).getRawType();
