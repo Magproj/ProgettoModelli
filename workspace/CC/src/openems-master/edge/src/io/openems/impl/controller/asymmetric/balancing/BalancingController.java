@@ -71,9 +71,9 @@ public class BalancingController extends Controller {
 	@Override
 	public void run() {
 		try {
-			for (Ess ess : esss.value()) {
-				ess.setWorkState.pushWriteFromLabel(EssNature.START);
-			}
+			//funzione
+			Ess ess = setEss();
+			
 			long[] calculatedPowers = new long[3];
 			long calculatedPowerSum = 0;
 			// calculateRequiredPower
@@ -115,23 +115,14 @@ public class BalancingController extends Controller {
 						Tupel<Long> minMax = calculateMinMaxValues(ess, percentage, cosPhi.value(), i);
 						maxDischargePowerPhase += minMax.b;
 						maxChargePowerPhase += minMax.a;
-						try {
-							ess.getSetActivePower(i).pushWriteMax(minMax.b);
-						} catch (WriteChannelException e) {
-							log.debug(e.getMessage());
-						}
-						try {
-							ess.getSetActivePower(i).pushWriteMin(minMax.a);
-						} catch (WriteChannelException e) {
-							log.debug(e.getMessage());
-						}
+						//funzione
+						ess = checkValue(ess);
+						
 					}
 					// reduce Power to possible power
-					if (calculatedPowers[i - 1] > maxDischargePowerPhase) {
-						calculatedPowers[i - 1] = maxDischargePowerPhase;
-					} else if (calculatedPowers[i - 1] < maxChargePowerPhase) {
-						calculatedPowers[i - 1] = maxChargePowerPhase;
-					}
+					//funzione
+					calculatedPowers[i-1] = setCalc(calculatedPowers[i-1], maxDischargePowerPhase, maxChargePowerPhase);
+					
 					calculatePower(calculatedPowers[i - 1], maxDischargePowerPhase, maxChargePowerPhase, i, useableSoc);
 				}
 			}
@@ -141,6 +132,43 @@ public class BalancingController extends Controller {
 		} catch (InvalidValueException | WriteChannelException e) {
 			log.error(e.getMessage());
 		}
+	}
+	
+	
+	private Ess setEss(){
+		
+		for (Ess ess : esss.value()) {
+			ess.setWorkState.pushWriteFromLabel(EssNature.START);
+		}
+		return ess;
+	}
+	
+	private long setCalc(long calcPower, long maxDischargePowerPhase, long maxChargePowerPhase){
+		
+		if (calcPower > maxDischargePowerPhase) {
+			calcPower = maxDischargePowerPhase;
+		} else if (calcPower < maxChargePowerPhase) {
+			calcPower = maxChargePowerPhase;
+		}
+		
+		return calcPower;
+		
+	}
+	
+	private Ess checkValue(Ess ess){
+		
+		try {
+			ess.getSetActivePower(i).pushWriteMax(minMax.b);
+		} catch (WriteChannelException e) {
+			log.debug(e.getMessage());
+		}
+		try {
+			ess.getSetActivePower(i).pushWriteMin(minMax.a);
+		} catch (WriteChannelException e) {
+			log.debug(e.getMessage());
+		}
+		
+		return ess;
 	}
 
 	private long getAvgPower(int phase) {
@@ -171,9 +199,9 @@ public class BalancingController extends Controller {
 			/*
 			 * Discharge
 			 */
-			if (calculatedPower > maxDischargePower) {
-				calculatedPower = maxDischargePower;
-			}
+			//funzione
+			calculatedPower = discharge(calculatedPower, maxDischargePower);
+			
 			// sort ess by useableSoc asc
 			Collections.sort(esss.value(), (a, b) -> {
 				try {
@@ -187,9 +215,9 @@ public class BalancingController extends Controller {
 			/*
 			 * Charge
 			 */
-			if (calculatedPower < maxChargePower) {
-				calculatedPower = maxChargePower;
-			}
+			//funzione
+			calculatedPower = charge(calculatedPower, maxChargePower);
+			
 			/*
 			 * sort ess by 100 - useabelSoc
 			 * 100 - 90 = 10
@@ -218,20 +246,17 @@ public class BalancingController extends Controller {
 				 * Discharge
 				 */
 				minPower = calculatedPower;
-				for (int j = i + 1; j < esss.value().size(); j++) {
-					if (esss.value().get(j).useableSoc() > 0) {
-						minPower -= esss.value().get(j).getSetActivePower(phase).writeMax()
-								.orElse(esss.value().get(j).allowedDischarge.value() / 3);
-					}
-				}
+				//funzione
+				minPower = minSet(minPower, phase);
+				
 				if (minPower < 0) {
 					minPower = 0;
 				}
 				// check maximal power to avoid larger charges then calculatedPower
 				maxPower = ess.getSetActivePower(phase).writeMax().orElse(ess.allowedCharge.value() / 3);
-				if (calculatedPower < maxPower) {
-					maxPower = calculatedPower;
-				}
+				//funzione
+				maxPower = setMax(calculatedPower, maxPower);
+				
 				double diff = maxPower - minPower;
 				/*
 				 * weight the range of possible power by the useableSoc
@@ -243,18 +268,16 @@ public class BalancingController extends Controller {
 				 * Charge
 				 */
 				minPower = calculatedPower;
-				for (int j = i + 1; j < esss.value().size(); j++) {
-					minPower -= esss.value().get(j).getSetActivePower(phase).writeMin()
-							.orElse(esss.value().get(j).allowedCharge.value() / 3);
-				}
-				if (minPower > 0) {
-					minPower = 0;
-				}
+				minPower = setMinPower(minPower, phase);
+				
+				//funzione 
+				minPower = checkMin(minPower);
+				
 				// check maximal power to avoid larger charges then calculatedPower
 				maxPower = ess.getSetActivePower(phase).writeMin().orElse(ess.allowedCharge.value() / 3);
-				if (calculatedPower > maxPower) {
-					maxPower = calculatedPower;
-				}
+				//funzione
+				maxPower = checkMax(maxPower, calculatedPower);
+				
 				double diff = maxPower - minPower;
 				/*
 				 * weight the range of possible power by the useableSoc
@@ -272,6 +295,74 @@ public class BalancingController extends Controller {
 			ess.getSetReactivePower(phase).pushWrite(reactivePower);
 		}
 	}
+	
+	public long setMax(long calculatedPower, long maxPower){
+		
+		if (calculatedPower < maxPower) {
+			maxPower = calculatedPower;
+		}
+		
+	}
+	
+	public long checkMax(long maxPower, long calculatedPower){
+		
+		if (calculatedPower > maxPower) {
+			maxPower = calculatedPower;
+		}
+		return maxPower;
+	}
+	
+	public long checkMin(long minPower){
+		
+		if (minPower > 0) {
+			minPower = 0;
+		}
+		
+		return minPower;
+		
+	}
+	
+	public long setMinPower(long minPower, int phase){
+		
+		for (int j = i + 1; j < esss.value().size(); j++) {
+			minPower -= esss.value().get(j).getSetActivePower(phase).writeMin()
+					.orElse(esss.value().get(j).allowedCharge.value() / 3);
+		}
+		
+		return minPower;
+		
+	}
+	
+	public long charge (long calculatedPower, long maxChargePower){
+		
+		if (calculatedPower < maxChargePower) {
+			calculatedPower = maxChargePower;
+		}
+		return calculatedPower;
+	}
+	
+	public long discharge(long calculatedPower, long maxDischargePower){
+		
+		if (calculatedPower > maxDischargePower) {
+			calculatedPower = maxDischargePower;
+		}
+		return calculatedPower;
+	}
+	
+	public long minSet(long minPower, int phase){
+		
+		for (int j = i + 1; j < esss.value().size(); j++) {
+			if (esss.value().get(j).useableSoc() > 0) {
+				minPower -= esss.value().get(j).getSetActivePower(phase).writeMax()
+						.orElse(esss.value().get(j).allowedDischarge.value() / 3);
+			}
+		}
+		
+		
+		return minPower;
+	}
+	
+	
 
 	/**
 	 * Calculates minimal and maximal value for an Phase
