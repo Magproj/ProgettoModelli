@@ -72,7 +72,7 @@ public class BalancingController extends Controller {
 	public void run() {
 		try {
 			//funzione
-			Ess ess = setEss();
+			setEss();
 			
 			long[] calculatedPowers = new long[3];
 			long calculatedPowerSum = 0;
@@ -126,21 +126,29 @@ public class BalancingController extends Controller {
 					calculatePower(calculatedPowers[i - 1], maxDischargePowerPhase, maxChargePowerPhase, i, useableSoc);
 				}
 			}
-			for (Ess ess : esss.value()) {
-				log.debug(ess.getSetValueLog());
-			}
+			//funzione
+			checkEssValue();
+			
 		} catch (InvalidValueException | WriteChannelException e) {
 			log.error(e.getMessage());
 		}
 	}
 	
 	
-	private Ess setEss(){
+	private void setEss(){
 		
 		for (Ess ess : esss.value()) {
 			ess.setWorkState.pushWriteFromLabel(EssNature.START);
 		}
-		return ess;
+		
+	}
+	
+	private void checkEssValue(){
+		
+		for (Ess ess : esss.value()) {
+			log.debug(ess.getSetValueLog());
+		}
+		
 	}
 	
 	private long setCalc(long calcPower, long maxDischargePowerPhase, long maxChargePowerPhase){
