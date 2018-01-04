@@ -54,30 +54,21 @@ public class ControllerUtils {
 		return (long) Math.sqrt(Math.pow(activePower, 2) + Math.pow(reactivePower, 2));
 	}
 
-	public static long calculateActivePowerFromApparentPower(long apparentPower, double cosPhi) {
+	public static double calculateActivePowerFromApparentPower(long apparentPower, double cosPhi) {
 		 
-		long fix = safeDoubleToLong(cosPhi);
-		return apparentPower * fix;
+		
+		return apparentPower * cosPhi;
 	}
 	
-	public static long safeDoubleToLong(double cosPhi){
-		
-		if (cosPhi >= Long.MIN_VALUE || cosPhi <= Long.MAX_VALUE) {
-			return (int) cosPhi;
-		 } 
-		  
-		
-	}
 
 	public static long calculateActivePowerFromReactivePower(long reactivePower, double cosPhi) {
 		long fix = (long) Math.tan(Math.acos(cosPhi));
 		return reactivePower / fix;
 	}
 
-	public static long calculateApparentPower(long activePower, double cosPhi) {
-	
-		long fix =  safeDoubleToLong(cosPhi);
-		return activePower / fix;
+	public static double calculateApparentPower(long activePower, double cosPhi) {
+		
+		return activePower / cosPhi;
 	}
 
 	public static long reduceActivePower(long activePower, long reactivePower, long maxChargeApparentPower,
