@@ -55,11 +55,20 @@ public class ControllerUtils {
 	}
 
 	public static long calculateActivePowerFromApparentPower(long apparentPower, double cosPhi) {
-		 if (cosPhi < Long.MIN_VALUE || cosPhi > Long.MAX_VALUE) {
-			    throw new IllegalArgumentException(cosPhi + " cannot be cast to int without changing its value.");
-			  }
-		long fix = (long) cosPhi;
+		 
+		long fix = safeDoubleToLong(cosPhi);
 		return apparentPower * fix;
+	}
+	
+	public static long safeDoubleToLong(double cosPhi){
+		
+		if (cosPhi < Long.MIN_VALUE || cosPhi > Long.MAX_VALUE) {
+		    throw new IllegalArgumentException(cosPhi + " cannot be cast to int without changing its value.");
+		  }
+		
+		return (long) cosPhi;
+		
+		
 	}
 
 	public static long calculateActivePowerFromReactivePower(long reactivePower, double cosPhi) {
@@ -68,10 +77,8 @@ public class ControllerUtils {
 	}
 
 	public static long calculateApparentPower(long activePower, double cosPhi) {
-		if (cosPhi < Long.MIN_VALUE || cosPhi > Long.MAX_VALUE) {
-		    throw new IllegalArgumentException(cosPhi + " cannot be cast to int without changing its value.");
-		  }
-		long fix = (long) cosPhi;
+	
+		long fix =  safeDoubleToLong(cosPhi);
 		return activePower / fix;
 	}
 
