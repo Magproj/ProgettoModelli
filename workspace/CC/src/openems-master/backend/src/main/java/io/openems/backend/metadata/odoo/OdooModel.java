@@ -16,16 +16,6 @@ interface FixIssue<T extends Object> {
 	String getModelId();
 }
 
-public class ModelFix implements FixIssue<String>{
-	
-	private String getModelId(){
-		//abstract method change in interface to 
-		//fix issue about modifier of constructor
-	}
-	
-	
-}
-
 
 /**
  * Represents an abstract model in Odoo object relational mapper

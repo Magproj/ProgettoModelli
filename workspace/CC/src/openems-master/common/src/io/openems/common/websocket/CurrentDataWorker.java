@@ -18,15 +18,6 @@ interface FixIssue<T extends Object> {
 	Optional<?> getWebsocket();
 }
 
-public class SocketFix implements FixIssue<Optional<WebSocket>>{
-	
-	private Optional<WebSocket> getWebsocket(){
-		//abstract method change in interface to 
-		//fix issue about modifier of constructor
-	}
-	
-	
-}
 
 /**
  *
