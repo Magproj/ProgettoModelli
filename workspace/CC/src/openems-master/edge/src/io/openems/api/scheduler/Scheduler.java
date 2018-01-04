@@ -114,15 +114,21 @@ public abstract class Scheduler extends AbstractWorker implements Thing {
 			if (maxTime > cycleTime.valueOptional().orElse(500) * 3) {
 				actualCycleTime = cycleTime.valueOptional().orElse(500) * 3;
 			} else {
-				if (maxTime < Integer.MIN_VALUE || maxTime > Integer.MAX_VALUE) {
-				    throw new IllegalArgumentException(maxTime + " cannot be cast to int without changing its value.");
-				  }
-				actualCycleTime = (int) maxTime;
+				
+				actualCycleTime = safeLongToInt(maxTime);
 			}
 		} else {
 			actualCycleTime = cycleTime.valueOptional().orElse(500);
 		}
 		requiredCycleTime.setValue(System.currentTimeMillis() - cycleStartTime);
+	}
+	
+	
+	public static int safeLongToInt(long m){
+		
+		if (m >= Integer.MIN_VALUE || m <= Integer.MAX_VALUE) {
+			return (int) m;
+		  }
 	}
 
 	protected abstract void execute();

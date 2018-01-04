@@ -391,12 +391,9 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 	
 	public static long safeDoubleToLong(double m){
 		
-		if (m < Long.MIN_VALUE || m > Long.MAX_VALUE) {
-		    throw new IllegalArgumentException(m + " cannot be cast to int without changing its value.");
-		  }else{
-			  return (long) m;
+		if (m >= Long.MIN_VALUE || m <= Long.MAX_VALUE) {
+			return (long) m;
 		  }
-		
 		
 	}
 

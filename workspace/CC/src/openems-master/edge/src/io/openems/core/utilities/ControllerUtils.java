@@ -62,11 +62,9 @@ public class ControllerUtils {
 	
 	public static long safeDoubleToLong(double cosPhi){
 		
-		if (cosPhi < Long.MIN_VALUE || cosPhi > Long.MAX_VALUE) {
-		    throw new IllegalArgumentException(cosPhi + " cannot be cast to int without changing its value.");
-		  } else{
-			  return (int) cosPhi;
-		  }
+		if (cosPhi >= Long.MIN_VALUE || cosPhi <= Long.MAX_VALUE) {
+			return (int) cosPhi;
+		 } 
 		  
 		
 	}
