@@ -58,7 +58,7 @@ public abstract class CurrentDataWorker {
 			/*
 			 * This task is executed regularly. Sends data to websocket.
 			 */
-			Optional<WebSocket> wsOpt = this.getWebsocket();
+			Optional<WebSocket> wsOpt = getWebsocket();
 			if (!(wsOpt.isPresent() && wsOpt.get().isOpen())) {
 				// disconnected; stop worker
 				this.dispose();
@@ -68,7 +68,7 @@ public abstract class CurrentDataWorker {
 		}, 0, UPDATE_INTERVAL_IN_SECONDS, TimeUnit.SECONDS);
 	}
 
-	public void dispose() {
+	private void dispose() {
 		// unsubscribe regular task
 		future.cancel(true);
 	}
