@@ -64,10 +64,10 @@ public class ControllerUtils {
 		
 		if (cosPhi < Long.MIN_VALUE || cosPhi > Long.MAX_VALUE) {
 		    throw new IllegalArgumentException(cosPhi + " cannot be cast to int without changing its value.");
+		  } else{
+			  return (int) cosPhi;
 		  }
-		
-		return (long) cosPhi;
-		
+		  
 		
 	}
 

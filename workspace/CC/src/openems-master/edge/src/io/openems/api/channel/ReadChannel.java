@@ -379,18 +379,25 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 				multiplier = Math.pow(10, this.multiplier.get());
 			}
 			if (valuee % multiplier != 0) {
-				
-				 if (multiplier < Long.MIN_VALUE || multiplier > Long.MAX_VALUE) {
-					    throw new IllegalArgumentException(multiplier + " cannot be cast to int without changing its value.");
-					  }
 				 
-				long mult = (long) multiplier;
+				long mult = safeDoubleToLong(multiplier);
 				long roundedValue = (valuee / mult) * mult;
 				log.warn("Value [" + valuee + "] is too precise for device. Will round to [" + roundedValue + "]");
 			}
 			return valuee;
 
 		}
+	}
+	
+	public static long safeDoubleToLong(double m){
+		
+		if (m < Long.MIN_VALUE || m > Long.MAX_VALUE) {
+		    throw new IllegalArgumentException(m + " cannot be cast to int without changing its value.");
+		  }else{
+			  return (long) m;
+		  }
+		
+		
 	}
 
 	/**
