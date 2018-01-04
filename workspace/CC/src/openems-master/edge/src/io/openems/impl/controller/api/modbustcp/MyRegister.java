@@ -98,10 +98,8 @@ public class MyRegister implements Register {
 	@Override
 	public void setValue(int v) {
 		
-		if (v < Short.MIN_VALUE || v > Short.MAX_VALUE) {
-		    throw new IllegalArgumentException(v + " cannot be cast to short without changing its value.");
-		  }
-		this.setValue((short) v);
+		
+		this.setValue(v);
 	}
 
 	@Override

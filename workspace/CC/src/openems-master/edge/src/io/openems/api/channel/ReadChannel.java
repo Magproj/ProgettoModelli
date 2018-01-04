@@ -379,23 +379,15 @@ public class ReadChannel<T> implements Channel, Comparable<ReadChannel<T>> {
 				multiplier = Math.pow(10, this.multiplier.get());
 			}
 			if (valuee % multiplier != 0) {
-				 
-				long mult = safeDoubleToLong(multiplier);
-				long roundedValue = (valuee / mult) * mult;
+				
+				double roundedValue = (valuee / multiplier) * multiplier;
 				log.warn("Value [" + valuee + "] is too precise for device. Will round to [" + roundedValue + "]");
 			}
 			return valuee;
 
 		}
 	}
-	
-	public static long safeDoubleToLong(double m){
-		
-		if (m >= Long.MIN_VALUE || m <= Long.MAX_VALUE) {
-			return (long) m;
-		  }
-		
-	}
+
 
 	/**
 	 * Get this channel and mark it as Required. Default is doing nothing, but a subclass might need the information,

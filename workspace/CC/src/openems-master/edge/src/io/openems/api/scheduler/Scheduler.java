@@ -124,12 +124,14 @@ public abstract class Scheduler extends AbstractWorker implements Thing {
 	}
 	
 	
-	public static int safeLongToInt(long m){
+	public static int safeLongToInt(long l) {
 		
-		if (m >= Integer.MIN_VALUE || m <= Integer.MAX_VALUE) {
-			return (int) m;
-		  }
-	}
+		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+			  throw new IllegalArgumentException(l + " cannot be cast to int without changing its value.");
+		}
+		return (int) l;
+			  
+		}
 
 	protected abstract void execute();
 
