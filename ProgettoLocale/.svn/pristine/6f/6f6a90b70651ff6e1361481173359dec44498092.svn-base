@@ -18,22 +18,29 @@
  * Contributors:
  *   FENECON GmbH - initial API and implementation and initial documentation
  *******************************************************************************/
-package io.openems.impl.controller.symmetric.balancingcosphi;
+package io.openems.common.utils;
 
-import io.openems.api.channel.ReadChannel;
-import io.openems.api.controller.ThingMap;
-import io.openems.api.device.nature.meter.SymmetricMeterNature;
-
-@IsThingMap(type = SymmetricMeterNature.class)
-public class Meter extends ThingMap {
-
-	public final ReadChannel<Long> activePower;
-	public final ReadChannel<Long> reactivePower;
-
-	public Meter(SymmetricMeterNature meter) {
-		super(meter);
-		activePower = meter.activePower().required();
-		reactivePower = meter.reactivePower().required();
+import java.security.SecureRandom;
+/**
+*
+* @author FENECON GmbH
+*
+*/
+public class SecureRandomSingleton {
+	private SecureRandom instance;
+	public init(){
+			instance=null;
 	}
 
+	public static SecureRandom getInstance() {
+		synchronized (SecureRandomSingleton.class) {
+			if (SecureRandomSingleton.instance == null) {
+				SecureRandomSingleton.instance = new SecureRandom();
+			}
+			return SecureRandomSingleton.instance;
+		}
+	}
+	
+	//not used
+	//private SecureRandomSingleton() {}
 }
