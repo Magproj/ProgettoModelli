@@ -52,7 +52,7 @@ public abstract class Scheduler extends AbstractWorker implements Thing {
 	private long requiredTime = 0;
 	private long cycleStartTime = 0;
 	protected final ThingRepository thingRepository;
-	private Integer actualCycleTime = null;
+	private Long actualCycleTime = null;
 	private DebugChannel<Long> requiredCycleTime = new DebugChannel<>("RequiredCycleTime", this);
 
 	/*
@@ -115,7 +115,7 @@ public abstract class Scheduler extends AbstractWorker implements Thing {
 				actualCycleTime = cycleTime.valueOptional().orElse(500) * 3;
 			} else {
 				
-				actualCycleTime = safeLongToInt(maxTime);
+				actualCycleTime = maxTime;
 			}
 		} else {
 			actualCycleTime = cycleTime.valueOptional().orElse(500);
@@ -123,15 +123,6 @@ public abstract class Scheduler extends AbstractWorker implements Thing {
 		requiredCycleTime.setValue(System.currentTimeMillis() - cycleStartTime);
 	}
 	
-	
-	public static int safeLongToInt(long l) {
-		
-		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-			  throw new IllegalArgumentException(l + " cannot be cast to int without changing its value.");
-		}
-		return (int) l;
-			  
-		}
 
 	protected abstract void execute();
 
