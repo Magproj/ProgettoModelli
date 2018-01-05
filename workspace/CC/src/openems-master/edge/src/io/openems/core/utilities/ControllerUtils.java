@@ -156,16 +156,25 @@ public class ControllerUtils {
 		} else if (smaller == null && greater != null) {
 			return greater.y;
 		} else if (smaller != null && greater != null) {
-			if (smaller.equals(greater)) {
-				return smaller.y;
-			} else {
-				double m = (greater.y - smaller.y) / (greater.x - smaller.x);
-				double t = smaller.y - m * smaller.x;
-				return m * x + t;
-			}
+			
+			//funzione
+			return getV(smaller, greater, x);
+			
 		} else {
 			throw new ArithmeticException("x[" + x + "] is out of Range of the points");
 		}
+	}
+	
+	public double getV(Point smaller, Point greater, double x){
+		
+		if (smaller.equals(greater)) {
+			return smaller.y;
+		} else {
+			double m = (greater.y - smaller.y) / (greater.x - smaller.x);
+			double t = smaller.y - m * smaller.x;
+			return m * x + t;
+		}
+		
 	}
 
 	private static Point getGreaterPoint(List<Point> points, double x) {

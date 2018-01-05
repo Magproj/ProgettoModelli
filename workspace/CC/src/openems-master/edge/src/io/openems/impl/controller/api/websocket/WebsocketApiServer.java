@@ -44,7 +44,11 @@ import io.openems.core.utilities.api.ApiWorker;
 import io.openems.impl.controller.api.websocket.session.WebsocketApiSession;
 import io.openems.impl.controller.api.websocket.session.WebsocketApiSessionData;
 import io.openems.impl.controller.api.websocket.session.WebsocketApiSessionManager;
-
+/**
+*
+* @author FENECON GmbH
+*
+*/
 public class WebsocketApiServer
 extends AbstractWebsocketServer<WebsocketApiSession, WebsocketApiSessionData, WebsocketApiSessionManager> {
 
@@ -161,12 +165,8 @@ extends AbstractWebsocketServer<WebsocketApiSession, WebsocketApiSessionData, We
 						 * Authenticate using username and password
 						 */
 						String password = JsonUtils.getAsString(jAuthenticate, "password");
-						if (jAuthenticate.has("username")) {
-							String username = JsonUtils.getAsString(jAuthenticate, "username");
-							return this.sessionManager.authByUserPassword(username, password, websocket, apiWorker);
-						} else {
-							return this.sessionManager.authByPassword(password, websocket, apiWorker);
-						}
+						//funzione
+						return autUser(jAuthenticate, password,websocket);
 					}
 
 				} else if (mode.equals("logout")) {
@@ -176,8 +176,23 @@ extends AbstractWebsocketServer<WebsocketApiSession, WebsocketApiSessionData, We
 					this.removeWebsocket(websocket);
 				}
 			}
-		} catch (OpenemsException e) { /* ignore */ }
+		} catch (OpenemsException e) {
+			/* ignore */
+			System.out.println("Descriptive Error");
+			}
 		return Optional.empty();
+	}
+	
+	
+	public Optional<WebsocketApiSession> autUser(JsonObject jAuthenticate, String password, WebSocket websocket){
+		
+		if (jAuthenticate.has("username")) {
+			String username = JsonUtils.getAsString(jAuthenticate, "username");
+			return this.sessionManager.authByUserPassword(username, password, websocket, apiWorker);
+		} else {
+			return this.sessionManager.authByPassword(password, websocket, apiWorker);
+		}
+		
 	}
 
 	/**
